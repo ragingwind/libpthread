@@ -30,12 +30,12 @@ pthread_setspecific (pthread_key_t key, const void *value)
 
   if (! self->thread_specifics)
     {
-      err = ihash_create (&self->thread_specifics);
+      err = hurd_ihash_create (&self->thread_specifics, HURD_IHASH_NO_LOCP);
       if (err)
 	return ENOMEM;
     }
 
-  err = ihash_add (self->thread_specifics, key, (void *) value, 0);
+  err = hurd_ihash_add (self->thread_specifics, key, (void *) value);
   if (err)
     return ENOMEM;
       

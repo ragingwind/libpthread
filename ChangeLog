@@ -1,3 +1,17 @@
+2003-08-17  Marcus Brinkmann  <marcus@gnu.org>
+
+	* sysdeps/hurd/pt-key.h (PTHREAD_KEY_MEMBERS): Change type of
+	THREAD_SPECIFICS to hurd_ihash_t.
+	* sysdeps/hurd/pt-setspecific.c (pthread_setspecific): Call
+	hurd_ihash_create instead ihash_create, and hurd_ihash_add instead
+	ihash_add.
+	* sysdeps/hurd/pt-getspecific.c (pthread_getspecific): Call
+	hurd_ihash_find instead of ihash_find.
+	* sysdeps/hurd/pt-destroy-specific.c (__pthread_destroy_specific):
+	Call hurd_ihash_find instead of ihash_find, hurd_ihash_remove
+	instead of ihash_remove, and hurd_ihash_free instead of
+	ihash_free.
+
 2003-08-03  Marco Gerards  <metgerards@student.han.nl>
 
 	* Makefile (install): Do not install from $(srcdir).

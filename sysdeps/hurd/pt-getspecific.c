@@ -33,5 +33,5 @@ pthread_getspecific (pthread_key_t key)
   if (! self->thread_specifics)
     return 0;
 
-  return ihash_find (self->thread_specifics, key);
+  return hurd_ihash_find (self->thread_specifics, key);
 }
