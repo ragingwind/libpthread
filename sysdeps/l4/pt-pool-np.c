@@ -46,7 +46,8 @@ pthread_pool_get_np (void)
   __pthread_mutex_lock (&pool_lock);
   /* FIXME: Do error checking.  */
   tid = pool_list;
-  pool_list = l4_user_defined_handle_of (tid);
+  if (tid != l4_nilthread)
+    pool_list = l4_user_defined_handle_of (tid);
   __pthread_mutex_unlock (&pool_lock);
   return tid;
 }
