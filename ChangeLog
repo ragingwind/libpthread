@@ -1,3 +1,10 @@
+2005-01-12  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/pt-thread-alloc.c: Replace assert with a compile time
+	warning.
+	* sysdeps/l4/hurd/pt-sigstate.c (__pthread_sigstate): Don't return
+	EINVAL.  Pretend to work so the generic code is happy.
+
 2004-11-02  Marcus Brinkmann  <marcus@gnu.org>
 
 	* sysdeps/generic/bits/condition.h (__PTHREAD_COND_INITIALIZER): 

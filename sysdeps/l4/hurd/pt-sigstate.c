@@ -1,5 +1,5 @@
 /* Set a thread's signal state.  Hurd on L4 version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -28,5 +28,6 @@ __pthread_sigstate (struct __pthread *thread, int how,
 		    const sigset_t *set, sigset_t *oset,
 		    int clear_pending)
 {
-  return EINVAL;
+  /* FIXME: Do the right thing here.  */
+  return 0;
 }

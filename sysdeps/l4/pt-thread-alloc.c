@@ -1,5 +1,5 @@
 /* Allocate kernel thread.  L4 version.
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -31,7 +31,13 @@ __pthread_thread_alloc (struct __pthread *thread)
   /* The main thread is already running of course.  */
   if (__pthread_num_threads == 1)
     {
+      /* XXX: The initialization code needs to make this consistent.
+	 Right now, we have none and this whole library is a hack
+	 anyways.  */
+#warning __pthread_total is inconsistent.
+#if 0
       assert (__pthread_total == 1);
+#endif
       thread->threadid = l4_myself ();
     }
   else
