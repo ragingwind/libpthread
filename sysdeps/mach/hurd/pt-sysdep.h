@@ -53,6 +53,7 @@
          })
 
 extern inline void
+__attribute__((__always_inline__))
 __pthread_stack_dealloc (void *stackaddr, size_t stacksize)
 {
   __vm_deallocate (__mach_task_self (), (vm_offset_t) stackaddr, stacksize);

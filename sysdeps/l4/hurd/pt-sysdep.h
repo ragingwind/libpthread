@@ -35,6 +35,7 @@
   L4_Word_t my_errno;
 
 extern inline struct __pthread *
+__attribute__((__always_inline__))
 _pthread_self (void)
 {
   return (struct __pthread *) L4_MyUserDefinedHandle ();
@@ -42,6 +43,7 @@ _pthread_self (void)
 
 extern inline void
 __pthread_stack_dealloc (void *stackaddr, size_t stacksize)
+__attribute__((__always_inline__))
 {
   /* XXX: can only implement this once we have a working memory manager.  */
   return;

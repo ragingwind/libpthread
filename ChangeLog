@@ -1,3 +1,10 @@
+2005-01-18  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/mach/hurd/pt-sysdep.h (__pthread_stack_dealloc): Add
+	__always_inline__ attribute.
+	* sysdeps/l4/hurd/pt-sysdep.h (_pthread_self): Likewise.
+	(__attribute__): Likewise.
+
 2005-01-12  Pietro Ferrari  <pietro@bastardi.net>
 
 	* include/pthread/pthread.h (pthread_spin_destroy): Replace extern
