@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 1994,95,96,97,2000,02 Free Software Foundation, Inc.
+#   Copyright (C) 1994,95,96,97,2000,02, 2004 Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License as
@@ -181,14 +181,16 @@ install-headers: $(addprefix $(includedir)/, $(sysdeps_headers))
 .PHONY: $(libdir)/libpthread.a $(libdir)/libpthread_pic.a
 
 # XXX: These rules are a hack.  But it is better than messing with
-# ../Makeconf at the moment.
+# ../Makeconf at the moment.  Note that the linker scripts
+# $(srcdir)/libpthread.a and $(srcdir)/libpthread_pic.a get overwritten
+# when building in $(srcdir) and not a seperate build directory.
 $(libdir)/libpthread2.a: $(libdir)/libpthread.a
 	mv $< $@
-	$(INSTALL_DATA) libpthread.a $<
+	$(INSTALL_DATA) $(srcdir)/libpthread.a $<
 
 $(libdir)/libpthread2_pic.a: $(libdir)/libpthread_pic.a
 	mv $< $@
-	$(INSTALL_DATA) libpthread_pic.a $<
+	$(INSTALL_DATA) $(srcdir)/libpthread_pic.a $<
 
 .PHONY: $(addprefix $(includedir)/, $(sysdeps_headers))
 
