@@ -23,10 +23,10 @@
 
 #include <pt-internal.h>
 
-#include <bits/atomic.h>
+#include <atomic.h>
 
 /* List of thread structures corresponding to free thread IDs.  */
-extern __atomicptr_t __pthread_free_threads;
+extern uatomicptr_t __pthread_free_threads;
 
 /* Deallocate the thread structure for PTHREAD and the resources
    associated with it.  */
@@ -54,8 +54,8 @@ __pthread_dealloc (struct __pthread *pthread)
   while (1)
     {
       pthread->next = (struct __pthread *)__pthread_free_threads;
-      if (__atomicptr_compare_and_swap (&__pthread_free_threads,
-					pthread->next, pthread))
+      if (atomic_compare_and_exchange_val_acq (&__pthread_free_threads,
+					       pthread->next, pthread))
 	return;
     }
 

@@ -1,5 +1,5 @@
 /* Thread termination.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2004 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
 
 #include <pt-internal.h>
 
-#include <bits/atomic.h>
+#include <atomic.h>
 
 
 /* Terminate the current thread and make STATUS available to any
@@ -56,7 +56,7 @@ pthread_exit (void *status)
 
   /* Decrease the number of threads.  We use an atomic operation to
      make sure that only the last thread calls `exit'.  */
-  if (__atomic_dec_and_test (&__pthread_total))
+  if (atomic_decrement_and_test (&__pthread_total))
     /* We are the last thread.  */
     exit (0);
 

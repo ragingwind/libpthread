@@ -22,8 +22,6 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include <bits/atomic.h>
-
 #include <pt-internal.h>
 
 /* Create a thread with attributes given by ATTR, executing

@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2004 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 #include <signal.h>
 #include <assert.h>
 #endif
-#include <bits/atomic.h>
+#include <atomic.h>
 
 #include <pt-key.h>
 
@@ -126,7 +126,7 @@ __pthread_dequeue (struct __pthread *thread)
 	     element = element->next)
 
 /* The total number of threads currently active.  */
-extern __atomic_t __pthread_total;
+extern uatomic_max_t __pthread_total;
 
 /* The total number of thread IDs currently in use, or on the list of
    available thread IDs.  */

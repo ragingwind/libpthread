@@ -1,3 +1,24 @@
+2004-11-01  Marcus Brinkmann  <marcus@gnu.org>
+
+	* pthread/pt-internal.h: Include <atomic.h>, not <bits/atomic.h>.
+	(__pthread_total): Change type of declaration to uatomic_max_t.
+	* pthread/pt-alloc.c: Include <atomic.h>, not <bits/atomic.h>.
+	(__pthread_free_threads): Change type to uatomicptr_t.
+	(__pthread_alloc): Call atomic_compare_and_exchange_val_acq
+	instead of __atomicptr_compare_and_swap.
+	* pthread/pt-create.c: Include <atomic.h>, not <bits/atomic.h>.
+	(__pthread_total): Change type to uatomic_max_t.
+	(__pthread_create_internal): Call atomic_increment, not
+	__atomic_inc and atomic_decrement, not __atomic_dec.
+	* pthread/pt-dealloc.c: Include <atomic.h>, not <bits/atomic.h>.
+	(__pthread_free_threads): Declare as uatomicptr_t.
+	(__pthread_dealloc): Call atomic_compare_and_exchange_val_acq
+	instead of __atomicptr_compare_and_swap.
+	* pthread/pt-exit.c: Include <atomic.h>, not <bits/atomic.h>.
+	(pthread_exit): Call atomic_decrement_and_test instead of
+	__atomic_dec_and_test.
+	* sysdeps/l4/pt-create-np.c: Do not include <bits/atomic.h>.
+
 2004-10-29  Marcus Brinkmann  <marcus@gnu.org>
 
 	* headers.am (AC_CONFIG_LINKS): Remove include/bits/atomic.h.

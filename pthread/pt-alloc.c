@@ -25,7 +25,7 @@
 
 #include <pt-internal.h>
 
-#include <bits/atomic.h>
+#include <atomic.h>
 
 /* This braindamage is necessary because the standard says that some
    of the threads functions "shall fail" if "No thread could be found
@@ -46,7 +46,7 @@ pthread_rwlock_t __pthread_threads_lock;
 
 
 /* List of thread structures corresponding to free thread IDs.  */
-__atomicptr_t __pthread_free_threads;
+uatomicptr_t __pthread_free_threads;
 
 static inline error_t
 initialize_pthread (struct __pthread *new, int recycling)
@@ -97,8 +97,8 @@ __pthread_alloc (struct __pthread **pthread)
   /* Try to re-use a thread structure before creating a new one.  */
   while ((new = (struct __pthread *)__pthread_free_threads))
     {
-      if (__atomicptr_compare_and_swap (&__pthread_free_threads,
-					new, new->next))
+      if (atomic_compare_and_exchange_val_acq (&__pthread_free_threads,
+					       new, new->next))
 	{
 	  /* Yes, we managed to get one.  The thread number in the
              thread structure still refers to the correct slot.  */
@@ -110,8 +110,8 @@ __pthread_alloc (struct __pthread **pthread)
 	    while (1)
 	      {
 		new->next = (struct __pthread *)__pthread_free_threads;
-		if (__atomicptr_compare_and_swap (&__pthread_free_threads,
-						  new->next, new))
+		if (atomic_compare_and_exchange_val_acq
+		    (&__pthread_free_threads, new->next, new))
 		  break;
 	      }
 
