@@ -1,5 +1,5 @@
 /* Spin locks.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -51,3 +51,4 @@ _pthread_spin_lock (__pthread_spinlock_t *lock)
 }
 
 weak_alias (_pthread_spin_lock, pthread_spin_lock);
+weak_alias (_pthread_spin_lock, __pthread_spin_lock);

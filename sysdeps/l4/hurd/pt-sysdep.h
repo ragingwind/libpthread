@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -33,12 +33,14 @@
   l4_word_t my_errno;
 
 extern inline struct __pthread *
+__attribute__((__always_inline__))
 _pthread_self (void)
 {
   return (struct __pthread *) l4_user_defined_handle ();
 }
 
 extern inline void
+__attribute__((__always_inline__))
 __pthread_stack_dealloc (void *stackaddr, size_t stacksize)
 {
   /* XXX: can only implement this once we have a working memory manager.  */

@@ -1,3 +1,11 @@
+2005-02-08  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/posix/pt-spin.c (__pthread_spin_lock): Make a weak alias
+	to _pthread_spin_lock.
+	* sysdeps/l4/hurd/pt-sysdep.h (_pthread_self): Add
+	__always_inline__ attribute.
+	(__pthread_stack_dealloc): Likewise.
+
 2005-01-12  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/pt-thread-alloc.c: Replace assert with a compile time
