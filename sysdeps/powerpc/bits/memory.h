@@ -1,4 +1,4 @@
-/* Allocate kernel thread.  L4 version.
+/* Memory barrier operations.  PowerPC version.
    Copyright (C) 2003 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -17,36 +17,20 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <assert.h>
-#include <errno.h>
-#include <string.h>
+#ifndef _BITS_MEMORY_H
+#define _BITS_MEMORY_H	1
 
-#include <pt-internal.h>
-
-int
-__pthread_thread_alloc (struct __pthread *thread)
+/* Prevent read and write reordering across this function.  */
+inline void
+__memory_barrier (void)
 {
-  error_t err;
-
-  /* The main thread is already running of course.  */
-  if (__pthread_num_threads == 1)
-    {
-      assert (__pthread_total == 1);
-      thread->threadid = l4_myself ();
-    }
-  else
-    {
-#if 0
-      CORBA_Environment env;
-
-      env = idl4_default_environment;
-      err = thread_create (__task_server,
-			   L4_Version (L4_Myself ()),
-			   * (L4_Word_t *) &__system_pager,
-			   (L4_Word_t *) &thread->threadid, &env);
-      if (err)
-#endif
-	return EAGAIN;
-    }
-  return 0;
+  asm ("sync" ::: "memory");
 }
+
+/* Prevent read reordering across this function.  */
+#define __memory_read_barrier __memory_barrier
+
+/* Prevent write reordering across this function.  */
+#define __memory_write_barrier __memory_barrier
+
+#endif

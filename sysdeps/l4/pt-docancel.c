@@ -30,6 +30,7 @@ call_exit (void)
 int
 __pthread_do_cancel (struct __pthread *p)
 {
+#if 0
   assert (p->cancel_pending = 1);
   assert (p->cancel_state == PTHREAD_CANCEL_ENABLE);
 
@@ -46,6 +47,6 @@ __pthread_do_cancel (struct __pthread *p)
 			    &dummy, &dummy, &dummy, &dummy, &dummy,
 			    &dummy_id);
     }
-
+#endif
   return 0;
 }

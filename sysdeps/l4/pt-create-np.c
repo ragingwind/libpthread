@@ -1,4 +1,4 @@
-/* Allocate kernel thread.  L4 version.
+/* Thread creation from provided L4 thread.
    Copyright (C) 2003 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -19,34 +19,29 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <string.h>
+#include <pthread.h>
+#include <signal.h>
+
+#include <bits/atomic.h>
 
 #include <pt-internal.h>
 
+/* Create a thread with attributes given by ATTR, executing
+   START_ROUTINE with argument ARG.  TID is the provided L4
+   kernel thread.  */
 int
-__pthread_thread_alloc (struct __pthread *thread)
+pthread_create_from_l4_tid_np (pthread_t *thread, 
+			       const pthread_attr_t *attr,
+			       l4_thread_id_t tid, 
+			       void *(*start_routine)(void *), void *arg)
 {
-  error_t err;
+  int err;
+  struct __pthread *pthread;
 
-  /* The main thread is already running of course.  */
-  if (__pthread_num_threads == 1)
-    {
-      assert (__pthread_total == 1);
-      thread->threadid = l4_myself ();
-    }
-  else
-    {
-#if 0
-      CORBA_Environment env;
+  err = __pthread_create_internal (&pthread, attr, (void *) &tid, 
+				   start_routine, arg);
+  if (! err)
+    *thread = pthread->thread;
 
-      env = idl4_default_environment;
-      err = thread_create (__task_server,
-			   L4_Version (L4_Myself ()),
-			   * (L4_Word_t *) &__system_pager,
-			   (L4_Word_t *) &thread->threadid, &env);
-      if (err)
-#endif
-	return EAGAIN;
-    }
-  return 0;
+  return err;
 }

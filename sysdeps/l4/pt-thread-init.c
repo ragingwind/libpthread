@@ -1,4 +1,4 @@
-/* Allocate kernel thread.  L4 version.
+/* Start thread.  L4 version.
    Copyright (C) 2003 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -23,30 +23,12 @@
 
 #include <pt-internal.h>
 
+/* Initialize provided kernel thread.  */
 int
-__pthread_thread_alloc (struct __pthread *thread)
+__pthread_init_provided_thread (struct __pthread *thread,
+				void *p)
 {
-  error_t err;
-
-  /* The main thread is already running of course.  */
-  if (__pthread_num_threads == 1)
-    {
-      assert (__pthread_total == 1);
-      thread->threadid = l4_myself ();
-    }
-  else
-    {
-#if 0
-      CORBA_Environment env;
-
-      env = idl4_default_environment;
-      err = thread_create (__task_server,
-			   L4_Version (L4_Myself ()),
-			   * (L4_Word_t *) &__system_pager,
-			   (L4_Word_t *) &thread->threadid, &env);
-      if (err)
-#endif
-	return EAGAIN;
-    }
+  l4_thread_id_t *tid = (l4_thread_id_t *) p;
+  thread->threadid = *tid;
   return 0;
 }

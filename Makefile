@@ -148,12 +148,12 @@ sysdeps_headers =				\
               bits/rwlock.h			\
               bits/rwlock-attr.h
 
-SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/i386	\
-	 $(srcdir)/sysdeps/$(MICROKERNEL)/i386			\
+SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/ia32	\
+	 $(srcdir)/sysdeps/$(MICROKERNEL)/ia32			\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/hurd			\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)			\
 	 $(srcdir)/sysdeps/hurd					\
-	 $(srcdir)/sysdeps/i386					\
+	 $(srcdir)/sysdeps/ia32					\
 	 $(srcdir)/sysdeps/generic				\
 	 $(srcdir)/sysdeps/posix				\
 	 $(srcdir)/pthread					\

@@ -21,7 +21,7 @@
 #include <hurd/ihash.h>
 
 #define PTHREAD_KEY_MEMBERS \
-  ihash_t thread_specifics;
+  hurd_ihash_t thread_specifics;
 
 #define PTHREAD_KEY_INVALID (void *) (-1)
 

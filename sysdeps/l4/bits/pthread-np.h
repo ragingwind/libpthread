@@ -1,4 +1,4 @@
-/* Allocate kernel thread.  L4 version.
+/* Non-portable functions. L4 version.
    Copyright (C) 2003 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -17,36 +17,22 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <assert.h>
-#include <errno.h>
-#include <string.h>
+/*
+ * Never include this file directly; use <pthread.h> or <cthreads.h> instead.
+ */
 
-#include <pt-internal.h>
+#ifndef _BITS_PTHREAD_NP_H
+#define _BITS_PTHREAD_NP_H	1
 
-int
-__pthread_thread_alloc (struct __pthread *thread)
-{
-  error_t err;
+#include <l4.h>
 
-  /* The main thread is already running of course.  */
-  if (__pthread_num_threads == 1)
-    {
-      assert (__pthread_total == 1);
-      thread->threadid = l4_myself ();
-    }
-  else
-    {
-#if 0
-      CORBA_Environment env;
+/* Create a thread with attributes given by ATTR, executing
+   START_ROUTINE with argument ARG.  TID is the provided L4
+   kernel thread.  */
+extern int pthread_create_from_l4_tid_np (pthread_t *thread, 
+					  const pthread_attr_t *attr,
+					  l4_thread_id_t tid, 
+					  void *(*start_routine)(void *), 
+					  void *arg);
 
-      env = idl4_default_environment;
-      err = thread_create (__task_server,
-			   L4_Version (L4_Myself ()),
-			   * (L4_Word_t *) &__system_pager,
-			   (L4_Word_t *) &thread->threadid, &env);
-      if (err)
-#endif
-	return EAGAIN;
-    }
-  return 0;
-}
+#endif /* bits/pthread-np.h */

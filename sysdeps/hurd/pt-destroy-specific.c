@@ -50,10 +50,10 @@ __pthread_destroy_specific (struct __pthread *thread)
 	  if (__pthread_key_destructors[i] == PTHREAD_KEY_INVALID)
 	    break;
 
-	  value = ihash_find (thread->thread_specifics, i);
+	  value = hurd_ihash_find (thread->thread_specifics, i);
 	  if (value)
 	    {
-	      err = ihash_remove (thread->thread_specifics, i);
+	      err = hurd_ihash_remove (thread->thread_specifics, i);
 	      assert (err == 1);
 
 	      if (__pthread_key_destructors[i])
@@ -71,9 +71,10 @@ __pthread_destroy_specific (struct __pthread *thread)
 
       /* This may take a very long time.  Let those blocking on
 	 pthread_key_create or pthread_key_delete make progress.  */
-      sched_yield ();
+      /* FIXME what should we do with this one? */
+      /* sched_yield (); */
     }
-
-  ihash_free (thread->thread_specifics);
+  
+  hurd_ihash_free (thread->thread_specifics);
   thread->thread_specifics = 0;
 }

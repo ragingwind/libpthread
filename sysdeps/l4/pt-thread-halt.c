@@ -19,20 +19,13 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <mach.h>
 
 #include <pt-internal.h>
-
-extern L4_ThreadId_t __task_server;
 
 /* Deallocate the kernel thread resources associated with THREAD.  */
 void
 __pthread_thread_halt (struct __pthread *thread)
 {
-  CORBA_Environment env = idl4_default_environment;
-  L4_Word_t *t = (L4_Word_t *) &thread->threadid;
-
-  assert (*t);
-  assert (thread_terminate (__task_server, *t, &env));
-  *t = 0;
+  /* FIXME reuse thread somehow */
+  l4_stop (thread->threadid);
 }

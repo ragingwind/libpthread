@@ -1,5 +1,5 @@
 /* Start thread.  L4 version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2003 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,70 +23,24 @@
 
 #include <pt-internal.h>
 
-#include "task_client.h"
-
-extern L4_ThreadId_t __system_pager;
-extern L4_ThreadId_t __task_server;
-
-#ifndef WORKING_EXREGS
-static void
-send_startup_ipc (L4_ThreadId_t id, L4_Word_t ip, L4_Word_t sp)
-{
-  L4_Msg_t msg;
-
-  printf ("%s: Sending startup message to %x, "
-	  "(ip=%x, sp=%x)\n",
-	  __FUNCTION__, * (L4_Word_t *) &id, ip, sp);
-
-  L4_Clear (&msg);
-#ifdef HAVE_PROPAGATION
-  L4_Set_VirtualSender (pager_tid);
-  L4_Set_Propagation (&msg.tag);
-#endif
-  L4_Append_Word (&msg, ip);
-  L4_Append_Word (&msg, sp);
-#ifndef HAVE_PROPAGATION
-  L4_Append_Word (&msg, *(L4_Word_t *) &id);
-  id = __system_pager;
-#if 0
-  DODEBUG (2, printf ("%s: Redirecting start request to pager (%x).\n",
-		      __FUNCTION__, * (L4_Word_t *) &id));
-#endif
-#endif
-  L4_LoadMsg (&msg);
-  L4_Send (id);
-}
-#endif
-
 /* Start THREAD.  Get the kernel thread scheduled and running.  */
 int
 __pthread_thread_start (struct __pthread *thread)
 {
-  error_t err;
-
   /* The main thread is already running of course.  */
   if (__pthread_num_threads == 1)
-    {
-      assert (__pthread_total == 1);
-      assert (thread->thread_id == L4_Myself ());
-    }
+    assert (__pthread_total == 1);
   else
     {
-      env = idl4_default_environment;
-      err = thread_resume (__task_server,
-			   * (L4_Word_t *) &thread->threadid,
-			   &env);
-      assert (! err);
+      l4_thread_id_t dest = thread->threadid;
+      l4_word_t control = (L4_XCHG_REGS_SET_HALT | L4_XCHG_REGS_SET_SP
+			   | L4_XCHG_REGS_SET_IP | L4_XCHG_REGS_SET_PAGER);
+      l4_word_t sp = (l4_word_t) thread->mcontext.sp;
+      l4_word_t ip = (l4_word_t) thread->mcontext.pc;
+      l4_word_t dummy = 0;
+      l4_thread_id_t pager = l4_pager ();
 
-#ifndef WORKING_EXREGS
-      L4_AbortIpc_and_stop (thread->threadid);
-      L4_Start_SpIp (thread->threadid, (L4_Word_t) thread->mcontext.sp,
-		     (L4_Word_t) thread->mcontext.pc);
-#endif
-      send_startup_ipc (thread->threadid, (L4_Word_t) thread->mcontext.pc,
-			(L4_Word_t) thread->mcontext.sp);
-
+      l4_exchange_registers (&dest, &control, &sp, &ip, &dummy, &dummy, &pager);
     }
-
   return 0;
 }

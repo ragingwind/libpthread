@@ -17,7 +17,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <l4/l4.h>
+#include <l4.h>
 
 #include <pt-internal.h>
 
@@ -25,5 +25,5 @@
 void
 __pthread_block (struct __pthread *thread)
 {
-  L4_Receive (L4_anylocalthread);
+  l4_receive (l4_anylocalthread);
 }

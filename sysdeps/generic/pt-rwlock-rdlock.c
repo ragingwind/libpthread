@@ -21,7 +21,7 @@
 #include <pt-internal.h>
 
 /* Implemented in pt-rwlock-timedrdlock.c.  */
-extern int __pthread_rwlock_timedrdlock_internal (struct __pthread_mutex *mutex,
+extern int __pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *mutex,
 						  const struct timespec *abstime);
 
 /* Acquire RWLOCK for reading, block if we can't get it.  */

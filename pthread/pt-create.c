@@ -57,7 +57,7 @@ pthread_create (pthread_t *thread, const pthread_attr_t *attr,
   int err;
   struct __pthread *pthread;
 
-  err = __pthread_create_internal (&pthread, attr, start_routine, arg);
+  err = __pthread_create_internal (&pthread, attr, 0, start_routine, arg);
   if (! err)
     *thread = pthread->thread;
 
@@ -69,6 +69,7 @@ pthread_create (pthread_t *thread, const pthread_attr_t *attr,
 int
 __pthread_create_internal (struct __pthread **thread,
 			   const pthread_attr_t *attr,
+			   void *provided_thread,
 			   void *(*start_routine)(void *), void *arg)
 {
   int err;
@@ -122,10 +123,20 @@ __pthread_create_internal (struct __pthread **thread,
       pthread->stack = 1;
     }
 
-  /* Allocate the kernel thread and other required resources.  */
-  err = __pthread_thread_alloc (pthread);
-  if (err)
-    goto failed_thread_alloc;
+  /* Allocate the kernel thread and other required resources
+     if they were not provided with this call.  */
+  if (!provided_thread)
+    {
+      err = __pthread_thread_alloc (pthread);
+      if (err)
+	goto failed_thread_alloc;
+    }
+  else
+    {
+      err = __pthread_init_provided_thread (pthread, provided_thread);
+      if (err)
+	goto failed_thread_alloc;
+    }
 
   /* And initialize the rest of the machine context.  This may include
      additional machine- and system-specific initializations that
@@ -146,7 +157,8 @@ __pthread_create_internal (struct __pthread **thread,
      shall be empty."  If the currnet thread is not a pthread then we
      just inherit the process' sigmask.  */
   if (__pthread_num_threads == 1)
-    err = sigprocmask (0, 0, &sigset);
+    /* FIXME no sigprocmask yet */
+    err = 0; /* sigprocmask (0, 0, &sigset); */
   else
     err = __pthread_sigstate (_pthread_self (), 0, 0, &sigset, 0);
   assert_perror (err);

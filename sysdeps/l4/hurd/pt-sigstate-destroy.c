@@ -1,5 +1,5 @@
-/* Allocate kernel thread.  L4 version.
-   Copyright (C) 2003 Free Software Foundation, Inc.
+/* Destroy the signal state.  Hurd on L4 version.
+   Copyright (C) 2002 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,36 +17,12 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <assert.h>
-#include <errno.h>
-#include <string.h>
+#include <pthread.h>
 
 #include <pt-internal.h>
 
-int
-__pthread_thread_alloc (struct __pthread *thread)
+void
+__pthread_sigstate_destroy (struct __pthread *thread)
 {
-  error_t err;
-
-  /* The main thread is already running of course.  */
-  if (__pthread_num_threads == 1)
-    {
-      assert (__pthread_total == 1);
-      thread->threadid = l4_myself ();
-    }
-  else
-    {
-#if 0
-      CORBA_Environment env;
-
-      env = idl4_default_environment;
-      err = thread_create (__task_server,
-			   L4_Version (L4_Myself ()),
-			   * (L4_Word_t *) &__system_pager,
-			   (L4_Word_t *) &thread->threadid, &env);
-      if (err)
-#endif
-	return EAGAIN;
-    }
-  return 0;
+  /* Nothing to do.  */
 }

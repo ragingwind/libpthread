@@ -20,24 +20,22 @@
 #ifndef _PT_SYSDEP_H
 #define _PT_SYSDEP_H	1
 
-#include <l4/l4.h>
-#include <task_client.h>
-#include <machine/vmparam.h>
+#include <l4.h>
 
 /* XXX */
 #define _POSIX_THREAD_THREADS_MAX	64
 
 /* The default stack size.  */
-#define PTHREAD_STACK_DEFAULT	(PAGE_SIZE)
+#define PTHREAD_STACK_DEFAULT	4096
 
 #define PTHREAD_SYSDEP_MEMBERS \
-  L4_ThreadId_t threadid; \
-  L4_Word_t my_errno;
+  l4_thread_id_t threadid; \
+  l4_word_t my_errno;
 
 extern inline struct __pthread *
 _pthread_self (void)
 {
-  return (struct __pthread *) L4_MyUserDefinedHandle ();
+  return (struct __pthread *) l4_user_defined_handle ();
 }
 
 extern inline void

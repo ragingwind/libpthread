@@ -686,6 +686,8 @@ extern int pthread_setschedparam (pthread_t thread, int *policy,
 /* Set thread THREAD's scheduling priority.  */
 extern int pthread_setschedprio (pthread_t thread, int prio);
 
+
+#include <bits/pthread-np.h>
 
 __END_DECLS
 

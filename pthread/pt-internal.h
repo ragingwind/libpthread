@@ -21,11 +21,12 @@
 #define _PT_INTERNAL_H	1
 
 #include <pthread.h>
+#if 0
 #include <stddef.h>
 #include <sched.h>
 #include <signal.h>
 #include <assert.h>
-
+#endif
 #include <bits/atomic.h>
 
 #include <pt-key.h>
@@ -164,6 +165,7 @@ extern void __pthread_initialize (void);
    tid, we return the whole __pthread structure in *PTHREAD.  */
 extern int __pthread_create_internal (struct __pthread **pthread,
 				      const pthread_attr_t *attr,
+				      void *provided_thread,
 				      void *(*start_routine)(void *),
 				      void *arg);
 
@@ -203,6 +205,9 @@ extern int __pthread_thread_start (struct __pthread *thread);
    with THREAD.  */
 extern void __pthread_thread_halt (struct __pthread *thread);
 
+/* Initialize provided kernel thread.  */
+extern int __pthread_init_provided_thread (struct __pthread *thread,
+					   void *p);
 
 /* Block THREAD.  */
 extern void __pthread_block (struct __pthread *thread);
