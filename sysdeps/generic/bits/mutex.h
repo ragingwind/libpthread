@@ -108,7 +108,7 @@ __pthread_mutex_lock (struct __pthread_mutex *__mutex)
   return _pthread_mutex_lock (__mutex);
 }
 
-extern inline int
+extern __inline int
 __pthread_mutex_trylock (struct __pthread_mutex *__mutex)
 {
   extern int _pthread_mutex_trylock (struct __pthread_mutex *);
@@ -120,13 +120,13 @@ __pthread_mutex_trylock (struct __pthread_mutex *__mutex)
   return _pthread_mutex_trylock (__mutex);
 }
 
-extern inline int
+extern __inline int
 pthread_mutex_lock (struct __pthread_mutex *__mutex)
 {
   return __pthread_mutex_lock (__mutex);
 }
 
-extern inline int
+extern __inline int
 pthread_mutex_trylock (struct __pthread_mutex *__mutex)
 {
   return __pthread_mutex_trylock (__mutex);

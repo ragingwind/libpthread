@@ -1,3 +1,19 @@
+2005-01-12  Pietro Ferrari  <pietro@bastardi.net>
+
+	* include/pthread/pthread.h (pthread_spin_destroy): Replace extern
+	inline with extern __inline.
+	(pthread_spin_init): Likewise.
+	(pthread_spin_lock): Likewise.
+	(pthread_spin_trylock): Likewise.
+	(pthread_spin_unlock): Likewise.
+	* sysdeps/mach/bits/spin-lock.h (__pthread_spin_lock): Likewise.
+	* sysdeps/i386/bits/spin-lock.h (__pthread_spin_lock): Likewise.
+	* sysdeps/generic/bits/mutex.h (__pthread_mutex_trylock):
+	Likewise.
+	(pthread_mutex_lock): Likewise.
+	(pthread_mutex_trylock): Likewise.
+	* sysdeps/generic/bits/pthread.h (pthread_equal): Likewise.
+
 2003-08-17  Marcus Brinkmann  <marcus@gnu.org>
 
 	* sysdeps/hurd/pt-key.h (PTHREAD_KEY_MEMBERS): Change type of

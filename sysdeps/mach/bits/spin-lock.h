@@ -70,10 +70,10 @@ __pthread_spin_trylock (__pthread_spinlock_t *__lock)
   return __spin_try_lock (__lock) ? 0 : __EBUSY;
 }
 
-extern inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
+extern __inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
 extern int _pthread_spin_lock (__pthread_spinlock_t *__lock);
 
-extern inline int
+extern __inline int
 __pthread_spin_lock (__pthread_spinlock_t *__lock)
 {
   if (__pthread_spin_trylock (__lock))
