@@ -184,11 +184,11 @@ install-headers: $(addprefix $(includedir)/, $(sysdeps_headers))
 # ../Makeconf at the moment.
 $(libdir)/libpthread2.a: $(libdir)/libpthread.a
 	mv $< $@
-	$(INSTALL_DATA) $(srcdir)/libpthread.a $<
+	$(INSTALL_DATA) libpthread.a $<
 
 $(libdir)/libpthread2_pic.a: $(libdir)/libpthread_pic.a
 	mv $< $@
-	$(INSTALL_DATA) $(srcdir)/libpthread_pic.a $<
+	$(INSTALL_DATA) libpthread_pic.a $<
 
 .PHONY: $(addprefix $(includedir)/, $(sysdeps_headers))
 
