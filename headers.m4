@@ -13,7 +13,6 @@
 AC_CONFIG_LINKS([
   include/pthread.h:libpthread/include/pthread.h
   include/pthread/pthread.h:libpthread/include/pthread/pthread.h
-  include/bits/atomic.h:libpthread/sysdeps/${arch}/bits/atomic.h
   include/bits/memory.h:libpthread/sysdeps/${arch}/bits/memory.h
   include/bits/spin-lock.h:libpthread/sysdeps/${arch}/bits/spin-lock.h
   include/bits/pthreadtypes.h:libpthread/sysdeps/generic/bits/pthreadtypes.h

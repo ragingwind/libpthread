@@ -1,3 +1,7 @@
+2004-10-29  Marcus Brinkmann  <marcus@gnu.org>
+
+	* headers.am (AC_CONFIG_LINKS): Remove include/bits/atomic.h.
+
 2004-03-23  Marcus Brinkmann  <marcus@gnu.org>
 
 	* sysdeps/generic/bits/mutex.h (__PTHREAD_MUTEX_INITIALIZER):
