@@ -32,15 +32,9 @@ __pthread_thread_start (struct __pthread *thread)
     assert (__pthread_total == 1);
   else
     {
-      l4_thread_id_t dest = thread->threadid;
-      l4_word_t control = (L4_XCHG_REGS_SET_HALT | L4_XCHG_REGS_SET_SP
-			   | L4_XCHG_REGS_SET_IP | L4_XCHG_REGS_SET_PAGER);
-      l4_word_t sp = (l4_word_t) thread->mcontext.sp;
-      l4_word_t ip = (l4_word_t) thread->mcontext.pc;
-      l4_word_t dummy = 0;
-      l4_thread_id_t pager = l4_pager ();
-
-      l4_exchange_registers (&dest, &control, &sp, &ip, &dummy, &dummy, &pager);
+      l4_set_pager_of (thread->threadid, l4_pager ());
+      l4_start_sp_ip (thread->threadid, (l4_word_t) thread->mcontext.sp,
+		      (l4_word_t) thread->mcontext.pc);
     }
   return 0;
 }

@@ -1,5 +1,8 @@
 2004-03-17  Marcus Brinkmann  <marcus@gnu.org>
 
+	* sysdeps/l4/pt-thread-start.c (__pthread_thread_start): Use L4
+	convenience interface.
+
 	* sysdeps/l4/pt-spin.c (_pthread_spin_lock): Implement using new
 	time period interface.
 
