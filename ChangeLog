@@ -1,9 +1,15 @@
+2005-02-08  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/mach/pt-spin.c (__pthread_spin_lock): Make a weak alias
+	to _pthread_spin_lock.
+	* sysdeps/posix/pt-spin.c (__pthread_spin_lock): Likewise.
+
 2005-01-18  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/mach/hurd/pt-sysdep.h (__pthread_stack_dealloc): Add
 	__always_inline__ attribute.
 	* sysdeps/l4/hurd/pt-sysdep.h (_pthread_self): Likewise.
-	(__attribute__): Likewise.
+	(__pthread_stack_dealloc): Likewise.
 
 2005-01-12  Pietro Ferrari  <pietro@bastardi.net>
 
