@@ -29,6 +29,6 @@ pthread_cond_init (pthread_cond_t *cond,
   if (attr)
     assert (attr->pshared == PTHREAD_PROCESS_PRIVATE);
 
-  *cond = __PTHREAD_COND_INITIALIZER;
+  *cond = (struct __pthread_cond) __PTHREAD_COND_INITIALIZER;
   return 0;
 }

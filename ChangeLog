@@ -1,3 +1,10 @@
+2004-11-02  Marcus Brinkmann  <marcus@gnu.org>
+
+	* sysdeps/generic/bits/condition.h (__PTHREAD_COND_INITIALIZER): 
+	Remove compound statement.
+	* pthread/pt-alloc.c (initialize_pthread): Use compound statement.
+	* sysdeps/generic/pt-cond-init.c (pthread_cond_init): Likewise.
+
 2004-11-01  Marcus Brinkmann  <marcus@gnu.org>
 
 	* pthread/pt-create.c (__pthread_total): Change type to uatomic32_t.

@@ -34,7 +34,6 @@ struct __pthread_cond
 
 /* Initializer for a condition variable.  */
 #define __PTHREAD_COND_INITIALIZER \
-  ((struct __pthread_cond) \
-    { __SPIN_LOCK_INITIALIZER, NULL, NULL, NULL, NULL })
+  { __SPIN_LOCK_INITIALIZER, NULL, NULL, NULL, NULL }
 
 #endif /* bits/condition.h */
