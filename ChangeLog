@@ -1,3 +1,8 @@
+2002-11-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/i386/pt-setup.c (__pthread_setup): Fix last
+	change.
+
 2002-11-18  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* sysdeps/mach/pt-wakeup.c (__pthread_wakeup): Use the size of
