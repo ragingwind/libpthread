@@ -40,9 +40,10 @@ _pthread_spin_lock (__pthread_spinlock_t *lock)
 {
   l4_time_t timeout;
   int i;
- 
-  timeout.period.m = 1;
-  timeout.period.e = 1;
+
+  /* Start with a small timeout of 2 microseconds, then back off
+     exponentially.  */
+  timeout = l4_time_period (2);
 
   while (1)
     {
@@ -51,9 +52,11 @@ _pthread_spin_lock (__pthread_spinlock_t *lock)
 	  if (__pthread_spin_trylock (lock) == 0)
 	    return 0;
 	}
-      /* FIXME verify this */
-      l4_receive_timeout (l4_nilthread, timeout);
-      timeout.period.e++;
+      l4_sleep (timeout);
+
+      timeout = l4_time_mul2 (timeout);
+      if (timeout == L4_NEVER)
+	timeout = L4_TIME_PERIOD_MAX;
     }
 }
 
