@@ -52,9 +52,8 @@ struct __pthread_mutex
 /* Initializer for a mutex.  N.B.  this also happens to be compatible
    with the cthread mutex initializer.  */
 #  define __PTHREAD_MUTEX_INITIALIZER \
-    ((struct __pthread_mutex) \
       { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, NULL, NULL, NULL, \
-	NULL, 0, 0 })
+	NULL, 0, 0 }
 
 # endif
 #endif /* Not __pthread_mutex_defined.  */
@@ -80,7 +79,7 @@ pthread_mutex_init (struct __pthread_mutex *__mutex,
   if (attr)
     return _pthread_mutex_init (__mutex, attr);
 
-  *__mutex = __PTHREAD_MUTEX_INITIALIZER;
+  *__mutex = (struct __pthread_mutex) __PTHREAD_MUTEX_INITIALIZER;
   return 0;
 }
 

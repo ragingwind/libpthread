@@ -28,7 +28,7 @@ int
 _pthread_mutex_init (pthread_mutex_t *mutex,
 		     const pthread_mutexattr_t *attr)
 {
-  *mutex = __PTHREAD_MUTEX_INITIALIZER;
+  *mutex = (struct __pthread_mutex) __PTHREAD_MUTEX_INITIALIZER;
 
   if (! attr
       || memcmp (attr, &__pthread_default_mutexattr, sizeof (*attr) == 0))
