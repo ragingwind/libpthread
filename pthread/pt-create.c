@@ -26,6 +26,10 @@
 
 #include <pt-internal.h>
 
+#ifdef HAVE_USELOCALE
+# include <locale.h>
+#endif
+
 /* The total number of pthreads currently active.  This is defined
    here since it would be really stupid to have a threads-using
    program that doesn't call `pthread_create'.  */
@@ -36,6 +40,11 @@ __atomic_t __pthread_total;
 static void
 entry_point (void *(*start_routine)(void *), void *arg)
 {
+#ifdef HAVE_USELOCALE
+  /* A fresh thread needs to be bound to the global locale.  */
+  uselocale (LC_GLOBAL_LOCALE);
+#endif
+
   pthread_exit (start_routine (arg));
 }
 

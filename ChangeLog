@@ -1,3 +1,9 @@
+2002-11-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-create.c [HAVE_USELOCAL]: Include <locale.h>.
+	(entry_point) [HAVE_USELOCALE]: Initialize the thread to the
+	global locale.
+
 2002-11-25  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* sysdeps/mach/hurd/i386/pt-setup.c (__pthread_setup): Fix last
