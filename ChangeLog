@@ -1,3 +1,8 @@
+2002-11-09  Roland McGrath  <roland@frob.com>
+
+	* include/pthread/pthread.h: Avoid `__thread' as an identifier,
+	since it might be a keyword.
+
 2002-11-02  Alfred M. Szmidt  <ams@kemisten.nu>
 
 	* sysdeps/generic/pt-key-delete.c, sysdeps/hurd/pt-key-delete.c
@@ -59,7 +64,7 @@
 
 	* sysdeps/hurd/pt-getspecific.c (pthread_getspecific): Add an
 	assert.
-	
+
 2002-09-28  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* sysdeps/generic/pt-cond-timedwait.c
@@ -74,7 +79,7 @@
 
 	* sysdeps/mach/hurd/pt-sysdep.h (_pthread_self): Assert that
 	__pthread_threads is initialized.
-	
+
 	(__pthread_self): Beautify.
 
 2002-09-28  Neal H. Walfield  <neal@cs.uml.edu>
@@ -217,7 +222,7 @@
 	__pthread_kill.  Remove weak alias.
 	* sysdeps/generic/pt-atfork.c (pthread_atfork): Rename from
 	__pthread_atfork.  Remove weak alias.
-	
+
 2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* pthread/pt-internal.h (__pthread_create_internal): Renamed from
@@ -228,7 +233,7 @@
 
 	* Makefile: New file.
 	* tests/Makefile: New file.
-	
+
 2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* sysdeps/generic/bits/barrier.h: Include <bits/spin-lock.h>.
@@ -286,7 +291,7 @@
 	(pthread_getschedparam): New definition.
 	(pthread_setschedparam): New definition.
 	(pthread_setschedprio): New definition.
-	
+
 	* sysdeps/generic/pt-getschedparam.c: New file.
 	* sysdeps/generic/pt-mutex-getprioceiling.c: New file.
 	* sysdeps/generic/pt-mutex-setprioceiling.c: New file.
@@ -349,17 +354,17 @@
 
 	* pthread/pt-internal.h (__pthread_timedblock): New definition.
 	* sysdeps/mach/pt-timedblock.c: New file.
-	
+
 	* include/pthread/pthread.h (pthread_mutex_timedlock): New
 	definition.
 	(pthread_cond_timedwait): Enable unconditionally.
 	(pthread_rwlock_timedrdlock): New definition.
 	(pthread_rwlock_timedwrlock): New definition.
-	
+
 	* sysdeps/generic/pt-mutex-timedlock.c: New file.
 	* sysdeps/generic/pt-mutex-lock.c (__pthread_mutex_lock):
 	Reimplement in terms of __pthread_mutex_timedlock.
-	
+
 	* sysdeps/generic/pt-cond-timedwait.c: New file.
 	* sysdeps/generic/pt-cond-wait.c (pthread_cond_wait): Reimplement
 	in terms of pthread_cond_timedwait.
@@ -368,11 +373,11 @@
 	* sysdeps/generic/pt-rwlock-rdlock.c
 	(__pthread_rwlock_rdlock): Reimplement in terms of
 	__pthread_rwlock_timedrdlock.
-	
+
 	* sysdeps/generic/pt-rwlock-timedwrlock.c: New file.
 	* sysdeps/generic/pt-rwlock-wrlock.c (__pthread_rwlock_wrlock):
 	Reimplement in terms of __pthread_rwlock_timedwrlock.
-	
+
 	* sysdeps/generic/pt-cond-signal.c (cond_signal): Clear the
 	previous pointer of the thread which we decide to wake up.
 
@@ -499,7 +504,7 @@
 	(__pthread_rwlock_rlock): Remove macro.
 	(__pthread_rwlock_wlock): Remove macro.
 	(__pthread_rwlock_unlock): Remove macro.
-	
+
 	(__pthread_default_rwlockattr): New definition.
 
 	* pthread/pt-alloc.c (__pthread_alloc): Use
@@ -642,7 +647,7 @@
 	pt-thread-start.c, pt-sigstate-init.c, pt-sigstate-destroy.c
 	pt-sigstate.c.
 	Remove pt-stack.c and pt-start.c.
-	
+
 	* pthread/pt-create.c (__pthread_create): Instead of calling
 	__pthread_start, first call __pthread_thread_alloc, then setup the
 	signal state and finally start the thread by calling
@@ -686,7 +691,7 @@
 	* sysdeps/mach/hurd/pt-sigstate-destroy.c: New file.
 	* sysdeps/mach/hurd/pt-sigstate-init.c: New file.
 	* sysdeps/mach/hurd/pt-sigstate.c: New file.
-	
+
 	* sysdeps/mach/hurd/i386/pt-setup.c (__pthread_setup): Setup the
 	initial thread state but only if THREAD is not the main thread.
 
@@ -697,7 +702,7 @@
 	* sysdeps/mach/hurd/pt-destroy-signal-state.c: Likewise.
 	* sysdeps/mach/hurd/pt-init-signal-state.c: Likewise.
 	* sysdeps/mach/hurd/pt-sigstate.c: Likewise.
-	
+
 
 	* pthread/pt-internal.h: Include <signal.h>.
 	(__pthread_init_signal_state): New definition.
@@ -717,14 +722,14 @@
 	* pthread/pt-alloc.c (__pthread_alloc): Factor out initialization
 	code into ...
 	(initialize_pthread): ... this new function.
-	
+
 	(__pthread_alloc): If reusing a thread structure fails, clean up
 	the mess correctly.
 
 2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* pthread/pt-alloc.c (__pthread_alloc): Revert last change.
-	
+
 2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* pthread/pt-alloc.c (__pthread_alloc): Remove assert.
@@ -805,7 +810,7 @@
 	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Likewise.
 
 2002-09-17  Neal H. Walfield  <neal@cs.uml.edu>
-	
+
 	* Makefile.am (AM_CPPFLAGS): Add -D_IO_MTSAFE_IO.
 	(SYSDEPS) [MACH]: Add lockfile.c.
 
@@ -899,7 +904,7 @@
 	* sysdeps/generic/pt-key.h: Likewise.
 	* sysdeps/generic/pt-setspecific.c: Likewise.
 	* sysdeps/generic/bits/thread-specific.h: Likewise.
-	
+
 	* sysdeps/hurd: New directory for files that only depend on a Hurd
 	personality (and not the underlying microkernel).
 
@@ -929,7 +934,7 @@
 	* pthread/pt-internal.h: Include <pt-key.h>
 	[! PTHREAD_KEY_MEMBERS]: Define it to be empty.
 	(struct __pthread): Include the value of PTHREAD_KEY_MEMBERS.
-	
+
 	(__pthread_init_specific): New definition.
 	(__pthread_destroy_specific): Likewise.
 
@@ -981,18 +986,18 @@
 	(PTHREAD_PROCESS_PRIVATE): New macro.
 	(PTHREAD_PROCESS_SHARED): Likewise.
 	(pthread_barrierattr_t): New typedef.
-	
+
 	(pthread_barrierattr_init): New definition.
 	(pthread_barrierattr_destroy): Likewise.
 	(pthread_barrierattr_getpshared): Likewise.
 	(pthread_barrierattr_setpshared): Likewise.
 
-	(pthread_barrier_t): New typedef.	
+	(pthread_barrier_t): New typedef.
 	(PTHREAD_BARRIER_SERIAL_THREAD): New macro.
 	(pthread_barrier_init): New declaration.
 	(pthread_barrier_destroy): Likewise.
 	(pthread_barrier_wait): Likewise.
-	
+
 	* pthread/pt-internal.h (__pthread_default_barrierattr): New
 	definition.
 
@@ -1021,7 +1026,7 @@
 	* sysdeps/mach/hurd/pt-attr-setstackaddr.c: New file.
 	* sysdeps/mach/hurd/pt-attr-setstacksize.c: New file.
 	* sysdeps/mach/hurd/i386/pt-setup.c: New file.
-	
+
 	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Setup the stack
 	guard if necessary.
 
@@ -1050,9 +1055,9 @@
 	* sysdeps/generic/pt-attr-setstackaddr.c: New file.
 	* sysdeps/generic/pt-attr-setstacksize.c: New file.
 	* sysdeps/generic/pt-attr.c: New file.
-	
+
 	* sysdeps/generic/bits/thread-attr.h: New file.
-	
+
 	* Makefile.am (libpthread_a_SOURCES): Add pt-attr.c,
 	pt-attr-destroy.c, pt-attr-getdetachstate.c,
 	pt-attr-getguardsize.c, pt-attr-getinheritsched.c,
@@ -1070,7 +1075,7 @@
 	(__pthread_inheritsched): New enumeration.
 	(__pthread_contentionscop): Likewise.
 	(__pthread_detachstate): Beautify.
-	
+
 	(pthread_attr_t): Update declaration.
 
 	(pthread_attr_init): New definition.
@@ -1224,16 +1229,16 @@
 	and use RUN_HOOK.
 
 2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
-	
+
 	* pthread/pt-create.c: Include <signal.h>.
 
 2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
-	
+
 	* sysdeps/mach/hurd/pt-docancel.c: New file.
 	* sysdeps/mach/hurd/pt-save-self.c: New file.
 
 2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
-	
+
 	* include/pthread/pthread.h: Include <sched.h> and <time.h>.
 	(pthread_mutexattr_t): Add prototype.
 	(pthread_mutex_init): Likewise.
@@ -1245,7 +1250,7 @@
 	* sysdeps/generic/bits/pthread.h (pthread_equal): New function.
 
 2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
-	
+
 	* pthread/pt-setcancelstate.c (pthread_setcancelstate): Add
 	explicit break to elide gcc warning.
 	* pthread/pt-setcanceltype.c (pthread_setcanceltype): Likewise.
@@ -1292,7 +1297,7 @@
 	* include/pthread: Moved from include/pthread.
 	* include/lock-intern.h: Moved from include/lock-intern.h.
 	* include/pthread.h: Moved from include/pthread.h.
-	
+
 	* headers.m4: New file.
 
 2002-08-19  Neal H. Walfield  <neal@cs.uml.edu>
@@ -1355,7 +1360,7 @@
 	* bits/cancelation.h: ... to here.
 	* pthread/pthread.h (pthread_cleanup_pop): Moved from here ...
 	* bits/cancelation.h: ... to here.
-	
+
 	* pthread/pthread.h (pthread_cleanup_push): New definition.
 	* pthread/pthread.h (pthread_cleanup_pop): New definition.
 
@@ -1369,7 +1374,7 @@
 	* bits/spin-lock.h (__SPIN_LOCK_INITIALIZER): Likewise.
 
 2002-07-29  Neal H. Walfield  <neal@cs.uml.edu>
-	
+
 	* pthread/pthread.h: Include <bits/cancelation.h> and <assert.h>.
 	(PTHREAD_CANCEL_DISABLE): New macro.
 	(PTHREAD_CANCEL_ENABLE): New macro.
@@ -1523,9 +1528,9 @@
 2002-07-24  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* pthread/pthread.h: New file imported from Mark's pthead package.
-	
+
 2002-07-24  Neal H. Walfield  <neal@cs.uml.edu>
-	
+
 	* bits/condition.h: New file imported from Mark's pthead package.
 	* bits/mutex.h: Likewise.
 	* bits/pthread.h: Likewise.
@@ -1543,4 +1548,3 @@
 
 	* Makefile.am (AM_CFLAGS): Library is no longer called libcrt0 but
 	libc.  Adjust accordingly.
-
