@@ -1,0 +1,179 @@
+-*- Mode: outline -*-
+
+* Interfaces
+** All interfaces specified by IEEE Std 1003.1-2001 are present, however,
+   pthread_kill and pthread_sigmask are defined in <pthread.h> and not
+   <signal.h> as they should be.  Once we are compiled with glibc,
+   this should be eaiser.
+** Must add the restrict keyword where appropriate for full compliance.
+
+* Test cases.  Can never have enough.
+
+* Ports
+  Port to other kernels (e.g. Linux and FreeBSD) and test on other
+  platforms.
+
+* Implementation details
+** Feature test macros
+   This is most likely wrong.  We need a standards expert to really
+   look over this or someone who can outline what I need to do.
+
+** pthread_atfork
+   This cannot be implemented without either changing glibc to export
+   some hooks (c.f. libc/sysdeps/mach/hurd/fork.c) or by providing a
+   custom fork implementation that wraps the origial using dlopen et
+   al.
+
+** Scheduling and priorities
+
+   We do not support scheduling right now in any way what so ever.
+
+   This affects:
+     pthread_attr_getinheritsched
+     pthread_attr_setinheritsched
+     pthread_attr_getschedparam
+     pthread_attr_setschedparam
+     pthread_attr_getschedpolicy
+     pthread_attr_setschedpolicy
+     pthread_attr_getscope
+     pthread_attr_setscope
+
+     pthread_mutexattr_getprioceiling
+     pthread_mutexattr_setprioceiling
+     pthread_mutexattr_getprotocol
+     pthread_mutexattr_setprotocol
+     pthread_mutex_getprioceiling
+     pthread_mutex_setprioceiling
+
+     pthread_setschedprio
+     pthread_getschedparam
+     pthread_setschedparam
+
+** Alternate stacks
+
+   Supporting alternate stacks (via pthread_attr_getstackaddr,
+   pthread_attr_setstackaddr, pthread_attr_getstack,
+   pthread_attr_setstack, pthread_attr_getstacksize and
+   pthread_attr_setstacksize) is no problem as long as they are of the
+   correct size and have the correct alignment.  This is due to
+   limitations in the Hurd TSD implementation
+   (c.f. <hurd/threadvar.h>).
+
+** Cancelation
+*** Cancelation points
+    The only cancelation points are pthread_join, pthread_cond_wait,
+    pthead_cond_timedwait and pthread_testcancel.  Need to explore if
+    the hurd_sigstate->cancel_hook (c.f. <hurd/signal.h>) provides the
+    desired semantics.  If not, must either wrap the some functions
+    using dlsym or wait until integration with glibc.
+*** Async cancelation
+    We inject a new IP into the cancelled (running) thread and then
+    run the cancelation handlers
+    (c.f. sysdeps/mach/hurd/pt-docancel.c).  The handlers need to have
+    access to the stack as they may use local variables.  I think that
+    this method may leave the frame pointer in a corrupted state if
+    the thread was in, for instance, the middle of a function call.
+    The robustness needs to be confirmed.
+
+** Process Shared Attribute
+
+   Currently, there is no real support for the process shared
+   attribute.  spinlocks work because we just use a test and set loop,
+   however, barriers, conditions mutexes and rwlocks, however, signal
+   wakeups via ports of which the names are process local.
+
+   We could have some process local data that is hashed to via the
+   address of the data structure.  Then the first thread that blocks
+   per process would spin on the shared memory area and all others
+   would then block as normal.  When the resource became available,
+   the first thread would signal the other local threads as necessary.
+   Alternatively, there could be some server, however, this opens a
+   new question: what can we use as an authentication agent.
+
+** Locking algorithm
+
+   When a thread blocks, it puts itself on a queue and then waits for
+   a message on a thread local port.  The thread which eventually does
+   the wakeup sends a message to the waiter thereby waking it up.  If
+   the wakeup is a broadcast wakeup (e.g. pthread_cond_broadcast,
+   pthread_barrier_wait and pthread_rdlock_unlock), the thread must
+   send O(N) messages where N is the number of waiting threads.  If
+   all the threads instead received on a lock local (rather than
+   thread local) port then the thread which eventually does the wake
+   need just do one operation, mach_port_destroy and all of the
+   waiting threads would wakeup and get MACH_RCV_PORT_DIED back from
+   mach_msg.  Note that the trade off is that the port must be
+   recreated.  This needs to be benchmarked.
+
+   A possible problem with this is scheduling priorities.  There may
+   be a preference for certain threads to wakeup before others
+   (especially if we are not doing a broadcast, for instance,
+   pthread_mutex_unlock and pthread_cond_signal).  If we take this
+   approach, the kernel chooses which threads are awakened.  If we
+   find that the kernel makes the wrong choices, we can still overcome
+   this by merging the two algorithms: have a list of ports sorted in
+   priority order and the waker does a mach_port_destroy on each as
+   appropriate.
+
+** Barriers
+
+   Barriers can be very slow and the contention can be very high.  The
+   above algorithm is very appealing, however, this may be augmented
+   with an initial number of spins and yields.  It is expected that
+   all of the threads reach the barrier within close succession, thus
+   queuing a message may be more expensive.  This needs to be
+   benchmarked.
+
+** Clocks
+*** pthread_condattr_setclock allows a process to specify a clock for
+    use with pthread_cond_timedwaits.  What is the correct default for
+    this, right now, we use CLOCK_REALTIME, however, we are really
+    using the system clock which, if I understand correctly, is
+    completely different.
+*** Could we even use other clocks? mach_msg uses a relative time against
+    the system clock.
+*** pthread_getcpuclockid just returns CLOCK_THREAD_CPUTIME_ID if defined.
+    Is this the correct behavior?
+
+** Timed Blocking
+*** pthread_cond_timedwait, pthead_mutex_timedlock, pthread_rwlock_timedrdlock
+    and pthread_rwlock_timedwrlock all take absolute times.  We need
+    to convert them to relative times for mach_msg.  Is there a way
+    around this?  How will clock skew affect us?
+
+** weak aliases
+   Use them consistently and correctly and start by reading
+   http://sources.redhat.com/ml/libc-alpha/2002-08/msg00278.html.
+
+* L4 Specific Issues
+** Stack
+*** Size
+   The stack size is defined to be a single page in
+   sysdeps/l4/hurd/pt-sysdep.h.  Once we are able to setup regions,
+   this can be expanded to two megs as suggested by the Mach version.
+   Until then, however, we need to allocate too much physical memory.
+*** Deallocation
+   __thread_stack_dealloc currently does not deallocate the stack.
+   For a proper implementation, we need a working memory manager.
+
+** Scheduling
+*** yield
+   [L4] We cannot use yield for spin locks as L4 only yields to threads of
+   priority which are greater than or equal to the yielding thread.
+   If there are threads of lower priority, they are not considered;
+   the yielding thread is just placed back on the processor.  This
+   introduces priority inversion quite quickly.  L4 will not add a
+   priority suppression function call.  As such, we need to do
+   an ipc with a small time out and then use exponential back off to
+   do the actual waiting.  This sucks.
+
+** Stub code
+  [L4] We include <task_client.h> in pt-start.c, however, we need a library
+  so we do not have to play with the corba stuff.
+
+** Root server and Task server
+*** Getting the tids.
+   pt-start.c has a wonderfully evil hack that will never work well.
+
+** Paging
+  We set the pager to the root server. Evil.  Fix this in pt-start.c.

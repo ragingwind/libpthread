@@ -1,0 +1,1535 @@
+2002-10-10  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* libpthread.a: It is _cthread_init_routine, not _cthread_init.
+	Add -lihash.
+	* libpthread_pic.a: Likewise but add -lihash_pic.
+
+	* tests/Makefile (%-static): New rule.
+	(CHECK_PROGS): Build static test programs.
+
+2002-10-10  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile (install): Add $(libdir)/libpthread2.a and
+	$(libdir)/libpthread2_pic.a.
+	(.PHONY): Likewise.
+	($(libdir)/libpthread2.a): New rule.
+	($(libdir)/libpthread2_pic.a): Likewise.
+
+	* libpthread_pic.a: New file.
+	* libpthread.a: New file.
+
+2002-10-10  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile (SRCS): Remove pt-errno.c.
+	* sysdeps/mach/hurd/pt-errno.c: Removed.
+	* sysdeps/l4/hurd/pt-errno.c: Removed.
+
+2002-10-10  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/lock-intern.h: Removed.  Use the one provided by glibc.
+	* Makefile (sysdeps_headers): Remove lock-intern.h.
+
+2002-10-10  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Save the thread
+	pointer using the __hurd_threadvar routines; not a the top of the
+	stack.
+	* sysdeps/mach/hurd/pt-sysdep.h (_HURD_THREADVAR_THREAD): New
+	marcro.
+	(_pthread_self): Use __hurd_threadvar_location to access the self
+	pointer.
+	* sysdeps/mach/hurd/pt-sysdep.c (init_routine): Likewise.  Update
+	the calculation of __hurd_threadvar_stack_offset.
+
+2002-10-10  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-alloc.c (alloc_init): Removed.
+	(__pthread_alloc): Allocate __pthread_threads lazily.
+
+	* sysdeps/hurd/pt-getspecific.c (pthread_getspecific): Add an
+	assert.
+	
+2002-09-28  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-cond-timedwait.c
+	(__pthread_cond_timedwait_internal): Add definition.
+	* sysdeps/generic/pt-rwlock-rdlock.c
+	(__pthread_rwlock_timedrdlock_internal): Define this ...
+	(__pthread_mutex_timedlock_internal): ... not this.
+	* sysdeps/generic/pt-rwlock-wrlock.c
+	(__pthread_rwlock_timedwrlock_internal): Add an extern.
+
+2002-09-28  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/pt-sysdep.h (_pthread_self): Assert that
+	__pthread_threads is initialized.
+	
+	(__pthread_self): Beautify.
+
+2002-09-28  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/pt-sysdep.c (init_routine): Only call
+	__pthread_initialize once.
+
+2002-09-28  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-cond-init.c (pthread_cond_init): Only assert
+	that ATTR->pshared is PTHREAD_PROCESS_PRIVATE if ATTR is not NULL.
+	Reported by Manuel Menal <mmenal@netcourrier.com>.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/mutex.h (__PTHREAD_MUTEX_INITIALIZER):
+	Initialize the LOCKS member of struct __pthread_mutex to 0, not
+	NULL.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/mutex.h (struct __pthread_mutex): New
+	field, cthreadcompat1: cthreads does not initialize the third
+	field of a mutex and as a result, neither does glibc.  Avoid
+	this pit.
+	(__PTHREAD_MUTEX_INITIALIZER): Initialize cthreadcompat1 to 0.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile ($(addprefix $(includedir)/, $(sysdeps_headers))): Do
+	not prepend ${srcdir}.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_enqueue): New function.
+	(__pthread_dequeue): New function.
+	(__pthread_queue_iterate): New macro.
+	(__pthread_dequeuing_iterate): New macro.
+
+	* sysdeps/generic/pt-barrier-wait.c (pthread_barrier_wait): Use
+	the new convenience functions.
+	* sysdeps/generic/pt-cond-brdcast.c (pthread_cond_broadcast):
+	Likewise.
+	* sysdeps/generic/pt-cond-signal.c (cond_signal): Likewise.
+	* sysdeps/generic/pt-cond-timedwait.c
+	(__pthread_cond_timedwait_internal): Likewise.
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal): Likewise.
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
+	Likewise.
+	* sysdeps/generic/pt-rwlock-timedrdlock.c
+	(__pthread_rwlock_timedrdlock_internal): Likewise.
+	* sysdeps/generic/pt-rwlock-timedwrlock.c
+	(__pthread_rwlock_timedwrlock_internal): Likewise.
+	* sysdeps/generic/pt-rwlock-unlock.c (pthread_rwlock_unlock):
+	Likewise.
+
+	* pthread/pt-alloc.c (initialize_pthread): Initialize the next and
+	prevp pointers to 0.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/Makefile (CFLAGS): New variable.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-mutex-timedlock.c (pthread_mutex_timedlock):
+	Call __pthread_mutex_timedlock_internal, not
+	pthread_mutex_timedlock.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_rwlock_unlock): Remove obsolete
+	definition.
+	* pthread/pt-alloc.c (__pthread_alloc): Use pthread_rwlock_wrlock
+	and pthread_rwlock_unlock, not __pthread_rwlock_wrlock and
+	__pthread_rwlock_unlock.
+	* pthread/pt-create.c (__pthread_create_internal): Use
+	pthread_rwlock_rdlock and pthread_rwlock_unlock, not
+	__pthread_rwlock_rdlock and __pthread_rwlock_unlock.
+	* sysdeps/generic/pt-cond-timedwait.c (pthread_cond_timedwait):
+	Call __pthread_cond_timedwait_internal, not
+	__pthread_cond_timedwait.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_mutex_timedlock): Remove
+	definition.
+	(__pthread_rwlock_timedrdlock): Likewise.
+	(__pthread_rwlock_timedwrlock): Likewise.
+	(__pthread_cond_timedwait): Likewise.
+	* include/pthread/pthread.h (pthread_mutex_timedlock): Remove
+	verbage about GNU extension.
+	(pthread_cond_timedwait): Likewise.
+	(pthread_rwlock_timedrdlock): Likewise.
+	(pthread_rwlock_timedwrlock): Likewise.
+
+	* sysdeps/generic/pt-rwlock-timedrdlock.c
+	(__pthread_rwlock_timedrdlock_internal): Renamed from
+	__pthread_rwlock_timedrdlock.
+	(pthread_rwlock_timedrdlock): New function.  Remove weak alias.
+	* sysdeps/generic/pt-rwlock-rdlock.c
+	(__pthread_mutex_timedlock_internal): New definition.
+	(pthread_rwlock_rdlock): Renamed from __pthread_rwlock_rdlock.
+	Use __pthread_rwlock_timedlock_internal.  Remove weak alias.
+
+	* sysdeps/generic/pt-cond-timedwait.c
+	(__pthread_cond_timedwait_internal): Rename from
+	__pthread_cond_timedwait.  Remove weak aliases.
+	(pthread_cond_timedwait): New function.
+	* sysdeps/generic/pt-cond-wait.c
+	(__pthread_cond_timedwait_internal): New definition.
+	(pthread_cond_wait): Use it.
+
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal): Rename from
+	__pthread_mutex_timedlock.  Remove weak alias.
+	(pthread_mutex_timedlock): New function.
+	* sysdeps/generic/pt-mutex-lock.c
+	(__pthread_mutex_timedlock_internal): New definition.
+	(__pthread_mutex_lock): Use it.
+
+	* sysdeps/generic/pt-rwlock-timedwrlock.c
+	(__pthread_rwlock_timedwrlock_internal): Rename from
+	__pthread_rwlock_timedwrlock.
+	(pthread_rwlock_timedwrlock): New function.  Remove weak alias.
+	* sysdeps/generic/pt-rwlock-wrlock.c
+	(__pthread_mutex_timedlock_internal): New definition.
+	(pthread_rwlock_wrlock): Renamed from __pthread_rwlock_wrlock.
+	Use __pthread_rwlock_timedlock_internal.  Remove weak alias.
+
+	* sysdeps/generic/pt-rwlock-tryrdlock.c
+	(pthread_rwlock_tryrdlock): Rename from
+	__pthread_rwlock_tryrdlock.  Remove weak alias.
+	* sysdeps/generic/pt-rwlock-trywrlock.c
+	(pthread_rwlock_trywrlock): Rename from
+	__pthread_rwlock_trywrlock.  Remove weak alias.
+
+	* sysdeps/hurd/pt-kill.c (pthread_kill): Rename from
+	__pthread_kill.  Remove weak alias.
+	* sysdeps/generic/pt-atfork.c (pthread_atfork): Rename from
+	__pthread_atfork.  Remove weak alias.
+	
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_create_internal): Renamed from
+	__pthread_create.  Updated all callers.  Suggested by Roland
+	McGrath.
+
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile: New file.
+	* tests/Makefile: New file.
+	
+2002-09-27  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/barrier.h: Include <bits/spin-lock.h>.
+	(struct __pthread_barrier): Change lock to a __pthread_spinlock_t:
+	pthread_spinlock_t may not be defined in this context.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/once.h (__PTHREAD_ONCE_INIT): Be standards
+	compliant: do not cast the result.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-join.c (pthread_join): Fix typo in previous change.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/barrier.h (struct __pthread_barrier): Add
+	new members attr and data.
+	* sysdeps/generic/pt-barrier-init.c: Inlucde <string.h>.
+	(pthread_barrier_init): Set *BARRIER to zero.
+
+	* sysdeps/generic/bits/condition.h (__PTHREAD_COND_INITIALIZER):
+	Initialize all fields.
+
+	* sysdeps/generic/bits/mutex.h (__pthread_mutex): Rename
+	cthread_compat1 to data.
+	(pthread_mutex_destroy): Avoid
+	inline version if __MUTEX->data is not NULL.
+	(__pthread_mutex_lock): Likewise.
+	(__pthread_mutex_trylock): Likewise.
+
+	* sysdeps/generic/bits/rwlock.h: New member __attr.
+	(__PTHREAD_RWLOCK_INITIALIZER): Initialize it to zero.
+	(pthread_rwlock_destroy): Avoid inline version if __RWLOCK->__data
+	is not NULL.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-join.c (pthread_join): Protect PTHREAD->state_lock
+	inconsistency due to cancelation.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/pthread.h (pthread_equal): Change from
+	static inline to extern inline.
+	* sysdeps/generic/pt-equal.c: New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-equal.c.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h (pthread_mutex_getprioceiling): New
+	definition.
+	(pthread_mutex_setprioceiling): New definition.
+	(pthread_getschedparam): New definition.
+	(pthread_setschedparam): New definition.
+	(pthread_setschedprio): New definition.
+	
+	* sysdeps/generic/pt-getschedparam.c: New file.
+	* sysdeps/generic/pt-mutex-getprioceiling.c: New file.
+	* sysdeps/generic/pt-mutex-setprioceiling.c: New file.
+	* sysdeps/generic/pt-setschedparam.c: New file.
+	* sysdeps/generic/pt-setschedprio.c: New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-getschedparam.c,
+	pt-mutex-getprioceiling.c, pt-mutex-setprioceiling.c,
+	pt-setschedparam.c and pt-setschedprio.c.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/Makefile.glibc: Removed.
+	* pthread/pthread.patch: Removed.
+
+2002-09-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h (pthread_getcpuclockid): New
+	definition.
+	* sysdeps/generic/pt-getcpuclockid.c: New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-getcpuclockid.c.
+
+2002-09-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h (pthread_kill): New definition.
+	* sysdeps/hurd/pt-kill.c (__pthread_kill): New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-kill.c.
+
+	* tests/Makefile.am (check_PROGRAMS): Add test-16.
+	(TEST_COUNT): Bump to 16.
+	(MOSTLYCLEANFILES): Add test-16.out.
+	(test_16_SOURCES): New variable.
+
+	* tests/test-16.c: New file.
+
+2002-09-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-attr.c: Include <sched.h>.
+
+2002-09-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/Makefile.am (check_PROGRAMS): Remove test-5.
+	Unintentionally checked in.
+
+2002-09-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h (pthread_atfork): New definition.
+	* sysdeps/generic/pt-atfork.c: New file.
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-atfork.c.
+
+2002-09-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_rwlock_rdlock): New definition.
+	(__pthread_rwlock_timedrdlock): New definition.
+	(__pthread_rwlock_wrlock): New definition.
+	(__pthread_rwlock_timedwrlock): New definition.
+	(__pthread_rwlock_unlock): New definition.
+
+2002-09-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_timedblock): New definition.
+	* sysdeps/mach/pt-timedblock.c: New file.
+	
+	* include/pthread/pthread.h (pthread_mutex_timedlock): New
+	definition.
+	(pthread_cond_timedwait): Enable unconditionally.
+	(pthread_rwlock_timedrdlock): New definition.
+	(pthread_rwlock_timedwrlock): New definition.
+	
+	* sysdeps/generic/pt-mutex-timedlock.c: New file.
+	* sysdeps/generic/pt-mutex-lock.c (__pthread_mutex_lock):
+	Reimplement in terms of __pthread_mutex_timedlock.
+	
+	* sysdeps/generic/pt-cond-timedwait.c: New file.
+	* sysdeps/generic/pt-cond-wait.c (pthread_cond_wait): Reimplement
+	in terms of pthread_cond_timedwait.
+
+	* sysdeps/generic/pt-rwlock-timedrdlock.c: New file.
+	* sysdeps/generic/pt-rwlock-rdlock.c
+	(__pthread_rwlock_rdlock): Reimplement in terms of
+	__pthread_rwlock_timedrdlock.
+	
+	* sysdeps/generic/pt-rwlock-timedwrlock.c: New file.
+	* sysdeps/generic/pt-rwlock-wrlock.c (__pthread_rwlock_wrlock):
+	Reimplement in terms of __pthread_rwlock_timedwrlock.
+	
+	* sysdeps/generic/pt-cond-signal.c (cond_signal): Clear the
+	previous pointer of the thread which we decide to wake up.
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-mutex-lock.c,
+	pt-mutex-trylock.c, pt-mutex-timedlock.c, pt-rwlock-timedrdlock.c,
+	pt-rwlock-timedwrlock.c, pt-cond-timedwait.c and pt-timedblock.c.
+
+	* tests/Makefile.am (check_PROGRAMS): Add test-13, test-14 and
+	test-15.
+	(TEST_COUNT): Bump to 15.
+	(MOSTLYCLEANFILES): Add test-13.out, test-14.out and test-15.out.
+	(test_13_SOURCES): New variable.
+	(test_14_SOURCES): New variable.
+	(test_15_SOURCES): New variable.
+	* tests/test-13.c: New file.
+	* tests/test-14.c: New file.
+	* tests/test-15.c: New file.
+
+2002-09-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h: Include <bits/condition-attr.h>
+	(pthread_condattr_t): New type.
+	(pthread_condattr_init): New definition.
+	(pthread_condattr_destroy): New definition.
+	(pthread_condattr_getclock): New definition.
+	(pthread_condattr_setclock): New definition.
+	(pthread_condattr_getpshared): New definition.
+	(pthread_condattr_setpshared): New definition.
+	(pthread_cond_init): New definition.
+	(pthread_cond_destroy): New definition.
+	* pthread/pt-internal.h (__pthread_default_condattr): New
+	definition.
+
+	* sysdeps/generic/pt-cond-destroy.c: New file.
+	* sysdeps/generic/pt-cond-init.c: New file.
+	* sysdeps/generic/pt-cond.c: New file.
+	* sysdeps/generic/pt-condattr-destroy.c: New file.
+	* sysdeps/generic/pt-condattr-getclock.c: New file.
+	* sysdeps/generic/pt-condattr-getpshared.c: New file.
+	* sysdeps/generic/pt-condattr-init.c: New file.
+	* sysdeps/generic/pt-condattr-setclock.c: New file.
+	* sysdeps/generic/pt-condattr-setpshared.c: New file.
+	* sysdeps/generic/bits/condition-attr.h: New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-cond.c,
+	pt-condattr-init.c, pt-condattr-destroy.c, pt-condattr-getclock.c,
+	pt-condattr-getpshared.c, pt-condattr-setclock.c,
+	pt-condattr-setpshared.c, pt-cond-destroy.c and pt-cond-init.c.
+	* headers.m4 (hurd_SYSDEPS): Add bits/condition-attr.h.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-cond-wait.c (pthread_cond_wait): If canceled,
+	be sure to disconnect ourself from the waiters' queue.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/pt-docancel.c (__pthread_do_cancel): Before
+	overwriting the thread's state, abort any system call in progress.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-cond-wait.c (pthread_cond_wait): Rewrite
+	cancelation support.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-cond-wait.c (pthread_cond_wait): Before
+	returning add a cancelation point.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h (pthread_setconcurrency): New
+	definition.
+	(pthread_getconcurrency): New definition.
+
+	* pthread/pt-internal.h (__pthread_concurrency): New definition.
+
+	* sysdeps/generic/pt-getconcurrency.c: New file.
+	* sysdeps/generic/pt-setconcurrency.c: New file.
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-getconcurrency.c and
+	pt-setconcurrency.c.
+
+	* tests/Makefile.am (check_PROGRAMS): Add test-12.
+	(TEST_COUNT): Bump to 12.
+	(MOSTLYCLEANFILES): Add test-12.out.
+	(test_12_SOURCES): New variable.
+	* tests/test-12.c: New file.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/hurd/pt-key.h (__pthread_key_lock_ready): New function.
+	Initialize the __pthread_key_lock.
+	* sysdeps/hurd/pt-key-create.c (__pthread_key_lock): Do not
+	initialize it.
+	(pthread_key_create): Do it here by calling
+	__pthread_key_lock_ready.
+	* sysdeps/hurd/pt-key-delete.c (pthread_key_destory): Call
+	__pthread_key_lock_ready.
+	* sysdeps/hurd/pt-destroy-specific.c (__pthread_destroy_specific):
+	Likewise.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h: Include <bits/rwlock-attr.h>.
+	(pthread_rwlockattr_t): New type.
+	(pthread_rwlockattr_init): New definition.
+	(pthread_rwlockattr_destroy): New definition.
+	(pthread_rwlockattr_getpshared): New definition.
+	(pthread_rwlockattr_setpshared): New definition.
+
+	Include <bits/rwlock.h>.
+	(pthread_rwlock_t): New type.
+
+	(pthread_rwlock_init): New definition.
+	(pthread_rwlock_destroy): New definition.
+	(pthread_rwlock_rdlock): New definition.
+	(pthread_rwlock_tryrdlock): New definition.
+	(pthread_rwlock_wrlock): New definition.
+	(pthread_rwlock_trywrlock): New definition.
+	(pthread_rwlock_unlock): New definition.
+
+	* pthread/pt-internal.h (pthread_rwlock_t): Remove macro.
+	(__pthread_rwlock_rlock): Remove macro.
+	(__pthread_rwlock_wlock): Remove macro.
+	(__pthread_rwlock_unlock): Remove macro.
+	
+	(__pthread_default_rwlockattr): New definition.
+
+	* pthread/pt-alloc.c (__pthread_alloc): Use
+	__pthread_rwlock_wrlock, not __pthread_rwlock_wlock.
+	* pthread/pt-create.c (__pthread_create): Use
+	__pthread_rwlock_rdlock, not __pthread_rwlock_rlock.
+
+	* sysdeps/generic/pt-rwlock-attr.c: New file.
+	* sysdeps/generic/pt-rwlock-destroy.c: New file.
+	* sysdeps/generic/pt-rwlock-init.c: New file.
+	* sysdeps/generic/pt-rwlock-rdlock.c: New file.
+	* sysdeps/generic/pt-rwlock-tryrdlock.c: New file.
+	* sysdeps/generic/pt-rwlock-trywrlock.c: New file.
+	* sysdeps/generic/pt-rwlock-unlock.c: New file.
+	* sysdeps/generic/pt-rwlock-wrlock.c: New file.
+	* sysdeps/generic/pt-rwlockattr-destroy.c: New file.
+	* sysdeps/generic/pt-rwlockattr-getpshared.c: New file.
+	* sysdeps/generic/pt-rwlockattr-init.c: New file.
+	* sysdeps/generic/pt-rwlockattr-setpshared.c: New file.
+	* sysdeps/generic/bits/rwlock-attr.h: New file.
+	* sysdeps/generic/bits/rwlock.h: New file.
+
+	* headers.m4 [hurd_SYSDEPS]: Add bits/rwlock.h and
+	bits/rwlock-attr.h.
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-rwlock-attr.c,
+	pt-rwlockattr-init.c, pt-rwlockattr-destroy.c,
+	pt-rwlockattr-getpshared.c, pt-rwlockattr-setpshared.c,
+	pt-rwlock-init.c, pt-rwlock-destroy.c, pt-rwlock-rdlock.c,
+	pt-rwlock-tryrdlock.c, pt-rwlock-trywrlock.c, pt-rwlock-wrlock.c
+	and pt-rwlock-unlock.c.
+
+	* tests/Makefile.am (check_PROGRAMS): Add test-11.
+	(TEST_COUNT): Bump to 11.
+	(MOSTLYCLEANFILES): Add test-11.out.
+	(test_11_SOURCES): New variable.
+	* tests/test-11.c: New file.
+
+2002-09-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (SYSDEPS) [L4]: Removed crt0.c.
+
+	* crt0.c: Moved to ../libc/crt0.c.
+
+2002-09-23  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-mutexattr.c,
+	pt-mutexattr-destroy.c, pt-mutexattr-init.c,
+	pt-mutexattr-getprioceiling.c, pt-mutexattr-getprotocol.c,
+	pt-mutexattr-getpshared.c, pt-mutexattr-gettype.c,
+	pt-mutexattr-setprioceiling.c, pt-mutexattr-setprotocol.c,
+	pt-mutexattr-setpshared.c, pt-mutexattr-settype.c,
+	pt-mutex-init.c, pt-mutex-destroy.c and pt-mutex-trylock.c.
+
+	* headers.m4 [hurd_SYSDEPS]: Add bits/mutex-attr.h.
+
+	* include/pthread/pthread.h: Include <bits/mutex-attr.h>.
+	(__pthread_mutex_protocol): New enumeration.
+	(__pthread_mutex_type): New enumeration.
+	(pthread_mutexattr_t): New type.
+	(pthread_mutexattr_init): New definition.
+	(pthread_mutexattr_destroy): New definition.
+	(pthread_mutexattr_getprioceiling): New definition.
+	(pthread_mutexattr_setprioceiling): New definition.
+	(pthread_mutexattr_getprotocol): New definition.
+	(pthread_mutexattr_setprotocol): New definition.
+	(pthread_mutexattr_getpshared): New definition.
+	(pthread_mutexattr_setpshared): New definition.
+	(pthread_mutexattr_gettype): New definition.
+	(pthread_mutexattr_settype): New definition.
+
+	* pthread/pt-internal.h (__pthread_default_mutexattr): New
+	definition.
+
+	* sysdeps/generic/bits/mutex.h: Include <bits/mutex-attr.h>.
+	(struct __pthread_mutex): Add member OWNER and member LOCKS to
+	support error checking and recursive mutexes.  Renamed __attr to
+	attr, updated users.
+	(pthread_mutexattr_t): Removed.
+	(__PTHREAD_MUTEX_INITIALIZER): Add initializers for new members.
+	(pthread_mutex_init): If ATTR, call _pthread_mutex_init.
+	(pthread_mutex_destroy): If __MUTEX has an attribute, call
+	_pthread_mutex_destroy.
+	* sysdeps/generic/pt-mutex-lock.c (__pthread_mutex_lock): Grok
+	mutex attribute.
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
+	Likewise.
+	Add a weak alias to _pthread_mutex_unlock.
+
+	* sysdeps/generic/pt-mutex-destroy.c: New file.
+	* sysdeps/generic/pt-mutex-init.c: New file.
+	* sysdeps/generic/pt-mutex-trylock.c: New file.
+	* sysdeps/generic/pt-mutexattr-destroy.c: New file.
+	* sysdeps/generic/pt-mutexattr-getprioceiling.c: New file.
+	* sysdeps/generic/pt-mutexattr-getprotocol.c: New file.
+	* sysdeps/generic/pt-mutexattr-getpshared.c: New file.
+	* sysdeps/generic/pt-mutexattr-gettype.c: New file.
+	* sysdeps/generic/pt-mutexattr-init.c: New file.
+	* sysdeps/generic/pt-mutexattr-setprioceiling.c: New file.
+	* sysdeps/generic/pt-mutexattr-setprotocol.c: New file.
+	* sysdeps/generic/pt-mutexattr-setpshared.c: New file.
+	* sysdeps/generic/pt-mutexattr-settype.c: New file.
+	* sysdeps/generic/pt-mutexattr.c: New file.
+	* sysdeps/generic/bits/mutex-attr.h: New file.
+
+	* tests/Makefile.am (AM_LDFLAGS): Add `-u__pthread_mutex_trylock
+	-u__pthread_mutex_unlock -u__pthread_mutex_unlock'.
+	(check_PROGRAMS): Add test-9 and test-10.
+	(TEST_COUNT): Bump to 10.
+	(MOSTLYCLEANFILES): Add test-9.out and test-10.out.
+	(test_9_SOURCES): New variable.
+	(test_10_SOURCES): Likewise.
+	* tests/test-9.c: New file.
+	* tests/test-10.c: New file.
+
+2002-09-23  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-exit.c (pthread_exit): Call pthread_setcancelstate
+	correctly: NULL is not a legal value for the oldstate parameter.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-exit.c: Remove dead code.
+	(pthread_exit): When running the cancelation handlers, disable
+	cancelation.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/test-5.c (main): Fork a child.  Do not dump a core.
+	(thr): Renamed from foo.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-initialize.c (__pthread_init): Fully prototype it.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-sigmask.c,
+	pt-stack-alloc.c, pt-thread-alloc.c, pt-thread-dealloc.c,
+	pt-thread-start.c, pt-sigstate-init.c, pt-sigstate-destroy.c
+	pt-sigstate.c.
+	Remove pt-stack.c and pt-start.c.
+	
+	* pthread/pt-create.c (__pthread_create): Instead of calling
+	__pthread_start, first call __pthread_thread_alloc, then setup the
+	signal state and finally start the thread by calling
+	__pthread_thread_start.
+
+	* pthread/pt-exit.c (pthread_exit): Destroy any signal state by
+	calling __pthread_sigstate_destroy.
+
+	* pthread/pt-sigmask.c: New file.
+
+	* pthread/pt-internal.c (__pthread_thread_halt): New definition to
+	replace __pthread_halt macro.  Update all callers.
+	* sysdeps/mach/hurd/pt-sysdep.h (__pthread_halt): Renamed to
+	__pthread_thread_halt and moved from here ...
+	* sysdeps/mach/pt-thread-halt.c: ... to here.
+	* sysdeps/l4/hurd/pt-sysdep.h (__pthread_halt): Renamed to
+	__pthread_thread_halt and moved from here ...
+	* sysdeps/l4/pt-thread-halt.c: ... to here.
+
+	* pthread/pt-internal.h (__pthread_start): Split into
+	__pthread_thread_alloc and __pthread_thread_start.  Update all
+	callers.
+	(__pthread_thread_alloc): New definition.
+	(__pthread_thread_start): Likewise.
+	* sysdeps/l4/pt-start.c: Split file into ...
+	* sysdeps/l4/pt-thread-alloc.c: ... this ...
+	* sysdeps/l4/pt-thread-start.c: ... and this.
+	* sysdeps/mach/pt-start.c: Split file into ...
+	* sysdeps/mach/pt-thread-alloc.c: ... this ...
+	* sysdeps/mach/pt-thread-start.c: ... and this.
+
+	* sysdeps/l4/pt-stack.c: Moved from here ...
+	* sysdeps/l4/pt-stack-alloc.c: ... to here.
+	* sysdeps/mach/pt-stack.c: Moved from here ...
+	* sysdeps/mach/pt-stack-alloc.c: ... to here.
+
+	* pt-internal.h: Include <signal.h>.
+	(__pthread_sigstate_init): New definition.
+	(__pthread_sigstate_destroy): Likewise.
+	(__pthread_sigstate): Likewise.
+	* sysdeps/mach/hurd/pt-sigstate-destroy.c: New file.
+	* sysdeps/mach/hurd/pt-sigstate-init.c: New file.
+	* sysdeps/mach/hurd/pt-sigstate.c: New file.
+	
+	* sysdeps/mach/hurd/i386/pt-setup.c (__pthread_setup): Setup the
+	initial thread state but only if THREAD is not the main thread.
+
+2002-09-17  Neal H. Walfield  <neal@cs.uml.edu>
+
+	Get signals working.
+
+	* sysdeps/mach/hurd/pt-destroy-signal-state.c: Likewise.
+	* sysdeps/mach/hurd/pt-init-signal-state.c: Likewise.
+	* sysdeps/mach/hurd/pt-sigstate.c: Likewise.
+	
+
+	* pthread/pt-internal.h: Include <signal.h>.
+	(__pthread_init_signal_state): New definition.
+	(__pthread_destroy_signal_state): Likewise.
+	(__pthread_sigstate): Likewise.
+
+	* pthread/pt-create.c (pthread_create): Call
+	__pthread_init_signal_state (and __pthread_destroy_signal_state on
+	a failure).  Also set the new thread's sigmask and pending signal
+	state appropriately.
+
+	* pthread/pt-exit.c (pthread_exit): Call
+	__pthread_destroy_signal_state as appropriate.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-alloc.c (__pthread_alloc): Factor out initialization
+	code into ...
+	(initialize_pthread): ... this new function.
+	
+	(__pthread_alloc): If reusing a thread structure fails, clean up
+	the mess correctly.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-alloc.c (__pthread_alloc): Revert last change.
+	
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-alloc.c (__pthread_alloc): Remove assert.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-initialize.c (__pthread_main): Removed.  The added
+	convenience does not help initialization and severely complicates
+	the library if the the main thread calls pthread_exit.
+	(__pthread_init): Remove parameter, thread.
+	(__pthread_initialize): Updated to reflect new semantics.
+	* pthread/pt-alloc.c (alloc_init): Update to new semantics.  Do
+	not try to initialize the main thread.
+
+	* pthread/pt-create.c (__pthread_total): The main thread is now
+	created explicitly, initialize to zero.
+
+	* pthread/pt-internal.h (__pthread_num_threads): Add definition.
+	(__pthread_main): Removed.
+
+	* pthread/pt-internal.h (__pthread_create): New definition.
+	* pthread/pt-create.c (pthread_create): Move functionality from
+	here ...
+	(__pthread_create): ... to here.
+	(pthread_create): Use __pthread_create.
+
+	* sysdeps/mach/hurd/pt-sysdep.c (init_routine): Use
+	__pthread_create directly rather than rewriting the functionality
+	here.
+	* sysdeps/l4/hurd/pt-sysdep.c (init_routine): Likewise.
+
+	* sysdeps/mach/pt-start.c (__pthread_start): Do not detect the
+	main thread using __pthread_main.  If main thread, set the kernel
+	thread id.
+	* sysdeps/l4/pt-start.c (__pthread_start): Likewise.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/hurd/pt-save-self.c (__pthread_save_self): Move
+	functionality from here ...
+	* sysdeps/l4/hurd/i386/pt-setup.c (__pthread_setup): ... to here
+	where it belongs.
+
+	* sysdeps/l4/hurd/pt-sysdep.c (init_routine): Do not save pthread
+	self pointer here, it will be done automatically in
+	__pthread_setup.
+
+	__pthread_save_self is now obsolete.
+
+	* pthread/pt-internal.h (__pthread_save_self): Remove definition.
+	* sysdeps/mach/hurd/pt-save-self.c: Removed file.
+	* sysdeps/l4/hurd/pt-save-self.c: Removed file.
+	* Makefile.am (libpthread_a_SOURCES): Remove pt-save-self.c.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-create.c (pthread_create): Do not call
+	__pthread_save_self.  This is completely bogus.
+
+	* pthread/pt-internal.h: Permit _pthread_self to be a macro.
+
+	* sysdeps/mach/hurd/pt-sysdep.h (__pthread_self): Renamed from
+	_pthread_self.
+	(_pthread_self): New marcro.  Do some sanity checks.
+
+2002-09-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/pt-sysdep.c (init_routine): We cannot use
+	__hurd_threadvar_location with the initial stack.  This is
+	completely bogus; removed.  Neither can we use the TSD on the new
+	stack: once the initial thread returns to the libc initialization
+	code, libc overwrites it.  Thus, we shift the TSD by a pointer and
+	use the first word of the stack to store the self pointer.
+	* sysdeps/mach/hurd/pt-sysdep.h (_HURD_THREADVAR_THREAD): Removed.
+	(_pthread_self): Update to reflect new semantics.
+	* sysdeps/mach/hurd/pt-save-self.c (__pthread_save_self):
+	Likewise.
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Likewise.
+
+2002-09-17  Neal H. Walfield  <neal@cs.uml.edu>
+	
+	* Makefile.am (AM_CPPFLAGS): Add -D_IO_MTSAFE_IO.
+	(SYSDEPS) [MACH]: Add lockfile.c.
+
+	* lockfile.c: Include <cthread.h>.
+
+	* tests/Makefile.am (AM_LDFLAGS): Add -u_cthreads_flockfile to
+	force the inclusion of lockfile.c.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/test-7.c: Include <stdio.h>.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/cthreads-compat.c (__mutex_lock_solid): New function.
+	(__mutex_unlock_solid): Likewise.
+
+	* sysdeps/mach/pt-spin.c: New file.
+	* sysdeps/mach/bits: New directory.
+	* sysdeps/mach/bits/spin-lock.h: New file.
+
+	* sysdeps/generic/bits/mutex.h: Add comments.
+
+	* sysdeps/posix/pt-spin.c (_pthread_spin_lock): Renamed from
+	__pthread_spin_lock. Update weak aliases to point to _pthread_spin
+	lock in lieu of __pthread_spin_lock.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (AM_CPPFLAGS): Order more appropriately.
+	(VPATH): Likewise.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/spin-lock.h: Move from here ...
+	* sysdeps/i386/bits/spin-lock.h: ... to here.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/cthreads-compat.c (__libc_getspecific): New function.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/cthreads-compat.c (cthread_keycreate): New function.
+	(cthread_getspecific): Likewise.
+	(cthread_setspecific): Likewise.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/bits/pthread.h (pthread_equal): Add comments.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/test-6.c: Include <stdio.h>.
+	(main): Remove superfluous sleep.
+
+2002-09-16  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-once.c.
+	* headers.m4 [hurd_SYSDEPS]: Add bits/once.h.
+
+	* sysdeps/generic/pt-once.c: New file.
+	* sysdeps/generic/bits/once.h: New file.
+	* sysdeps/i386/bits/memory.h: New file.
+
+	* include/pthread/pthread.h: Include <bits/once.h>.
+	(PTHREAD_ONCE_INIT): New macro.
+	(pthread_once): New definition.
+
+	* tests/Makefile.am (AM_CFLAGS): Set to -Wall.
+	(check_PROGRAMS): Add test-8.
+	(TEST_COUNT): Bump to 8.
+	(MOSTLYCLEANFILES): Add test-8.out.
+	(test_8_SOURCES): New variable.
+
+	* tests/test-8.c (main): New file.
+
+2002-09-15  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/pt-stack.c (__pthread_stack_alloc): If we reach the
+	end of the virtual address space, do not just fail but wrap
+	around.
+
+2002-09-15  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-destroy-specific.c: New file.
+	* sysdeps/generic/pt-getspecific.c: Likewise.
+	* sysdeps/generic/pt-init-specific.c: Likewise.
+	* sysdeps/generic/pt-key-create.c: Likewise.
+	* sysdeps/generic/pt-key-delete.c: Likewise.
+	* sysdeps/generic/pt-key.h: Likewise.
+	* sysdeps/generic/pt-setspecific.c: Likewise.
+	* sysdeps/generic/bits/thread-specific.h: Likewise.
+	
+	* sysdeps/hurd: New directory for files that only depend on a Hurd
+	personality (and not the underlying microkernel).
+
+	* sysdeps/hurd/pt-destroy-specific.c: New file.
+	* sysdeps/hurd/pt-getspecific.c: Likewise.
+	* sysdeps/hurd/pt-init-specific.c: Likewise.
+	* sysdeps/hurd/pt-key-create.c: Likewise.
+	* sysdeps/hurd/pt-key-delete.c: Likewise.
+	* sysdeps/hurd/pt-key.h: Likewise.
+	* sysdeps/hurd/pt-setspecific.c: Likewise.
+
+	* Makefile.am (AM_CPPFLAGS): Add -I$(srcdir)/sysdeps/hurd.
+	(VPATH): Add $(srcdir)/sysdeps/hurd.
+	(libpthread_a_SOURCES): Add pt-key.h, pt-destroy-specific.c,
+	pt-init-specific.c, pt-key-create.c, pt-key-delete.c,
+	pt-getspecific.c and pt-setspecific.c.
+
+	* headers.m4 (hurd_SYSDEPS): Add thread_specific.h.
+
+	* include/pthread/pthread.h: Include <bits/thread-specific>.
+	(pthread_key_t): New definition.
+	(pthread_key_create): Likewise.
+	(pthread_key_delete): Likewise.
+	(pthread_getspecific): Likewise.
+	(pthread_setspecific): Likewise.
+
+	* pthread/pt-internal.h: Include <pt-key.h>
+	[! PTHREAD_KEY_MEMBERS]: Define it to be empty.
+	(struct __pthread): Include the value of PTHREAD_KEY_MEMBERS.
+	
+	(__pthread_init_specific): New definition.
+	(__pthread_destroy_specific): Likewise.
+
+	* pthread/pt-alloc.c (__pthread_alloc): Call
+	__pthread_init_specific.
+	* pthread/pt-exit.c (pthread_exit): Call
+	__pthread_destroy_specific.
+
+	* tests/Makefile.am (LDADD): Add -lihash.
+	(check_PROGRAMS): Add test-7.
+	(MOSTLYCLEANFILES): Add test-7.out.
+	(TEST_COUNT): Bump to 7.
+	(test_7_SOURCES): New variable.
+	* tests/test-7.c: New file.
+
+2002-09-15  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/test-6.c: Improve test; iterate WAIT times over
+	pthread_barrier_wait rather than just once.
+
+2002-09-14  Neal H. Walfield  <neal@cs.uml.edu>
+
+	Add support for barrier attributes and barriers.
+
+	* sysdeps/generic/pt-barrier-destroy.c: New file.
+	* sysdeps/generic/pt-barrier-init.c: Likewise.
+	* sysdeps/generic/pt-barrier-wait.c: Likewise.
+	* sysdeps/generic/pt-barrier.c: Likewise.
+	* sysdeps/generic/pt-barrierattr-destroy.c: Likewise.
+	* sysdeps/generic/pt-barrierattr-getpshared.c: Likewise.
+	* sysdeps/generic/pt-barrierattr-init.c: Likewise.
+	* sysdeps/generic/pt-barrierattr-setpshared.c: Likewise.
+	* sysdeps/generic/bits/barrier-attr.h: Likewise.
+	* sysdeps/generic/bits/barrier.h: Likewise.
+	* sysdeps/generic/bits/thread-barrier.h: Likewise.
+
+	* Makefile.am (libpthread_a_SOURCES): Added pt-barrier-destroy.c,
+	pt-barrier-init.c, pt-barrier-wait.c, pt-barrier.c,
+	pt-barrierattr-destroy.c, pt-barrierattr-init.c,
+	pt-barrierattr-getpshared.c and pt-barrierattr-setpshared.c.
+
+	* headers.m4 (hurd_SYSDEPS): Added bits/barrier-attr.h and
+	bits/barrier.h.
+
+	* include/pthread/pthread.h: Include <bits/barrier-attr.h> and
+	<bits/barrier.h>.
+
+	(__pthread_process_shared): New enumeration.
+	(PTHREAD_PROCESS_PRIVATE): New macro.
+	(PTHREAD_PROCESS_SHARED): Likewise.
+	(pthread_barrierattr_t): New typedef.
+	
+	(pthread_barrierattr_init): New definition.
+	(pthread_barrierattr_destroy): Likewise.
+	(pthread_barrierattr_getpshared): Likewise.
+	(pthread_barrierattr_setpshared): Likewise.
+
+	(pthread_barrier_t): New typedef.	
+	(PTHREAD_BARRIER_SERIAL_THREAD): New macro.
+	(pthread_barrier_init): New declaration.
+	(pthread_barrier_destroy): Likewise.
+	(pthread_barrier_wait): Likewise.
+	
+	* pthread/pt-internal.h (__pthread_default_barrierattr): New
+	definition.
+
+	* tests/test-6.c: New file.
+	* tests/Makefile.am (check_PROGRAMS): Add test-6.
+	(MOSTLYCLEANFILES): Add test-6.out.
+	(test_6_SOURCES): New variable.
+	(TEST_COUNT): Update.
+
+2002-09-12  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/Makefile.am
+	(check_PROGRAMS): Add test test-3 and test-5.
+	(MOSTLYCLEANFILES): Add test-3.out, test-4.out and test-5.out.
+	(TEST_COUNT): Change to 5.
+	(test_3_SOURCES): New variable.
+	(test_5_SOURCES): New variable.
+	(check): Fix typo.
+
+	* tests/test-3.c: New file.
+	* tests/test-4.c: New file.
+	* tests/test-5.c: New file.
+
+2002-09-12  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/pt-attr-setstackaddr.c: New file.
+	* sysdeps/mach/hurd/pt-attr-setstacksize.c: New file.
+	* sysdeps/mach/hurd/i386/pt-setup.c: New file.
+	
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Setup the stack
+	guard if necessary.
+
+2002-09-12  Neal H. Walfield  <neal@cs.uml.edu>
+
+	Generic attributes.
+
+	* sysdeps/generic/pt-attr-destroy.c: New file.
+	* sysdeps/generic/pt-attr-getdetachstate.c: New file.
+	* sysdeps/generic/pt-attr-getguardsize.c: New file.
+	* sysdeps/generic/pt-attr-getinheritsched.c: New file.
+	* sysdeps/generic/pt-attr-getschedparam.c: New file.
+	* sysdeps/generic/pt-attr-getschedpolicy.c: New file.
+	* sysdeps/generic/pt-attr-getscope.c: New file.
+	* sysdeps/generic/pt-attr-getstack.c: New file.
+	* sysdeps/generic/pt-attr-getstackaddr.c: New file.
+	* sysdeps/generic/pt-attr-getstacksize.c: New file.
+	* sysdeps/generic/pt-attr-init.c: New file.
+	* sysdeps/generic/pt-attr-setdetachstate.c: New file.
+	* sysdeps/generic/pt-attr-setguardsize.c: New file.
+	* sysdeps/generic/pt-attr-setinheritsched.c: New file.
+	* sysdeps/generic/pt-attr-setschedparam.c: New file.
+	* sysdeps/generic/pt-attr-setschedpolicy.c: New file.
+	* sysdeps/generic/pt-attr-setscope.c: New file.
+	* sysdeps/generic/pt-attr-setstack.c: New file.
+	* sysdeps/generic/pt-attr-setstackaddr.c: New file.
+	* sysdeps/generic/pt-attr-setstacksize.c: New file.
+	* sysdeps/generic/pt-attr.c: New file.
+	
+	* sysdeps/generic/bits/thread-attr.h: New file.
+	
+	* Makefile.am (libpthread_a_SOURCES): Add pt-attr.c,
+	pt-attr-destroy.c, pt-attr-getdetachstate.c,
+	pt-attr-getguardsize.c, pt-attr-getinheritsched.c,
+	pt-attr-getschedparam.c, pt-attr-getschedpolicy.c,
+	pt-attr-getscope.c, pt-attr-getstack.c, pt-attr-getstackaddr.c,
+	pt-attr-getstacksize.c, pt-attr-init.c, pt-attr-setdetachstate.c,
+	pt-attr-setguardsize.c, pt-attr-setinheritsched.c,
+	pt-attr-setschedparam.c, pt-attr-setschedpolicy.c,
+	pt-attr-setscope.c, pt-attr-setstack.c, pt-attr-setstackaddr.c,
+	pt-attr-setstacksize.c and pt-attr.c.
+
+	* headers.m4: Add bits/thread-attr.h.
+
+	* include/pthread/pthread.h: Inlucde <bits/thread-attr.h>.
+	(__pthread_inheritsched): New enumeration.
+	(__pthread_contentionscop): Likewise.
+	(__pthread_detachstate): Beautify.
+	
+	(pthread_attr_t): Update declaration.
+
+	(pthread_attr_init): New definition.
+	(pthread_attr_destroy): Likewise.
+	(pthread_attr_getinheritsched): Likewise.
+	(pthread_attr_setinheritsched): Likewise.
+	(pthread_attr_getschedparam): Likewise.
+	(pthread_attr_setschedparam): Likewise.
+	(pthread_attr_getschedpolicy): Likewise.
+	(pthread_attr_setschedpolicy): Likewise.
+	(pthread_attr_getscope): Likewise.
+	(pthread_attr_setscope): Likewise.
+	(pthread_attr_getstackaddr): Likewise.
+	(pthread_attr_setstackaddr): Likewise.
+	(pthread_attr_getstack): Likewise.
+	(pthread_attr_setstack): Likewise.
+	(pthread_attr_getdetachstate): Likewise.
+	(pthread_attr_setdetachstate): Likewise.
+	(pthread_attr_getguardsize): Likewise.
+	(pthread_attr_setguardsize): Likewise.
+	(pthread_attr_getstacksize): Likewise.
+	(pthread_attr_setstacksize): Likewise.
+
+	* pthread/pt-internal.h (struct __pthread): New member, guardsize.
+	(__pthread_default_attr): Make constant.
+	(struct __pthread_attr): Moved definition from here ...
+	* sysdeps/generic/bits/thread-attr.h: ... to here.
+	(struct __pthread_attr): Add new members: guardsize, inheritsched,
+	contentionscope and schedpolicy.
+
+	* pthread/pt-attr.c: Moved from here ...
+	* sysdeps/generic/pt-attr.c: ... to here.
+	(__pthread_default_attr): Initialize new members guardsize,
+	inheritsched, contentionscope and schedpolicy.
+
+	* pthread/pt-create.c (pthread_create): Make SETUP constant.
+	Sync with pthread_attr_t type change.
+	Set PTHREAD->guardsize appropriately.
+
+2002-09-12  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/Makefile.am (AM_CPPFLAGS): Learn to spel.
+
+2002-09-12  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* tests/test-2.c: Implement it.
+
+2002-09-11  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (SUBDIRS): New variable.
+
+	* tests/Makefile.am: New file.
+	* tests/test-1.c: file.
+	* tests/test-2.c: file.
+
+2002-09-11  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/libc-symbols.h: Do not define SHARED.
+	* not-in-libc.h (__mach_port_allocate): New macro.
+
+	* pthread/pt-alloc.c (__pthread_alloc): Add an assert.
+
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
+	Simplify logic: WAKEUP is known not to be NULL after it is tested.
+
+	* sysdeps/mach/pt-start.c (create_wakeupmsg): Do not allocate a
+	reply port; use a normal port.
+	If __mach_port_insert_right fails, deallocate
+	THREAD->wakeupmsg.msgh_remote_port.
+
+2002-09-11  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (libpthread_a_SOURCES): Add cthreads-compat.c.
+
+2002-08-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/pt-errno.c: New file.
+
+2002-08-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/pthread/pthread.h (pthread_mutexattr_t): Moved from here
+	..
+	* sysdeps/generic/bits/mutex.h: ... to here.
+
+2002-08-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (SYSDEPS) [MACH]: Do not built lockfile.c.
+	(include_HEADERS): List headers to be installed.  Leave commented
+	until it works with VPATH.
+
+2002-08-26  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/pt-stack.c (allocate_page): Fix typo.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/pt-stack.c (allocate_page): Request the correct
+	permissions for the request memory.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/Makefile: Moved from here ...
+	* pthread/Makefile.glibc: ... to here to avoid confusing automake.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (AM_CPPFLAGS): Fix the include paths.
+	Implicitly include include/libc-symbols.h.
+	(SYSDEPS) [L4]: Add crt0.c.
+	(libpthread_a_SOURCES): Remove crt0.c.
+
+	(VPATH): New variable.
+	(libpthread_a_SOURCES): Depend on the VPATH; do not use absolute
+	paths.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-cond-wait.c: Doc fix thanks to Marcus
+	Brinkmann for pointing this out.
+	* sysdeps/generic/pt-mutex-lock.c: Likewise.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/pt-sysdep.h (__thread_set_pcsp): Prototype new
+	function.
+	* sysdeps/mach/hurd/i386/pt-machdep.c (__thread_set_pcsp):
+	Implement it.
+	* sysdeps/mach/pt-start.c (__pthread_start): Use it.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/pt-stack.c: Remove comment about next_stack_base.
+	This is baggage carried over from the Mach version.
+	(allocate_page): Use L4_FpageLog2 properly.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (struct __pthread_attr): Add schedparam
+	field.
+	* pthread/pt-attr.c (__pthread_default_attr): Initialize
+	schedparam field.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_do_cancel): Add prototype.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-alloc.c (alloc_init): Make static and use RUN_HOOK.
+	* pthread/pt-initialize.c (__pthread_initialize): Remove the hack
+	and use RUN_HOOK.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+	
+	* pthread/pt-create.c: Include <signal.h>.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+	
+	* sysdeps/mach/hurd/pt-docancel.c: New file.
+	* sysdeps/mach/hurd/pt-save-self.c: New file.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+	
+	* include/pthread/pthread.h: Include <sched.h> and <time.h>.
+	(pthread_mutexattr_t): Add prototype.
+	(pthread_mutex_init): Likewise.
+	(pthread_mutex_destroy): Likewise.
+
+	* sysdeps/generic/bits/mutex.h (pthread_mutex_init): New function.
+	(pthread_mutex_destroy): New function.
+
+	* sysdeps/generic/bits/pthread.h (pthread_equal): New function.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+	
+	* pthread/pt-setcancelstate.c (pthread_setcancelstate): Add
+	explicit break to elide gcc warning.
+	* pthread/pt-setcanceltype.c (pthread_setcanceltype): Likewise.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include/libc-symbols.h: Do not define _LIBC as we are not
+	actually compiling glibc.
+	(HAVE_ASM_WEAKEXT_DIRECTIVE): Do not define it.
+	(HAVE_ASM_SET_DIRECTIVE): Define it.
+	(HAVE_BUILTIN_EXPECT): Likewise.
+	(HAVE_GNU_LD): Likewise.
+	(HAVE_ELF): Likewise.
+	(HAVE_SECTION_QUOTES): Likewise.
+	(HAVE_VISIBILITY_ATTRIBUTE): Likewise.
+	(SHARED): Likewise.
+
+	* not-in-libc.h: New file.
+	* Makefile.am (AM_CPPFLAGS): Include not-in-libc.h implicitly.
+
+	* lockfile.c: New file.
+	* Makefile.am (SYSDEPS) [MACH]: Add lockfile.c.
+
+2002-08-22  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/hurd/bits/pthread.h: Removed.  Used the generic
+	version.
+
+2002-08-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* headers.m4: Fix typo.
+
+2002-08-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* include: Moved from libc/include except for include/sched.h and
+	include/time.h.
+	* pthread: Moved from libc/pthread.
+	* sysdeps: Moved from libc/sysdeps except for
+	sysdeps/i386/bits/atomic.h and sysdeps/hurd/hurd/threadvar.h.
+	* crt0.c: Moved from libc/crt0.c.
+
+	* sysdeps/generic/bits: Moved from include/bits except
+	include/bits/wordsize.h.
+	* include/pthread: Moved from include/pthread.
+	* include/lock-intern.h: Moved from include/lock-intern.h.
+	* include/pthread.h: Moved from include/pthread.h.
+	
+	* headers.m4: New file.
+
+2002-08-19  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/pt-start.c [WORKING_EXREGS]: Ideal implementation.
+
+2002-08-05  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pthread.h (PTHREAD_SPINLOCK_INITIALIZER): New
+	declaration.
+
+2002-08-03  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/hurd/pt-sysdep.h (PTHREAD_SYSDEP_MEMBERS): Add
+	my_errno.
+	* sysdeps/l4/hurd/pt-errno.c: New file.
+	* Makefile.am (libc_a_SOURCES): Added sysdeps/l4/hurd/pt-errno.c.
+
+2002-07-29  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (__pthread_save_self): New declaration.
+	Dual of _pthread_self ().
+	* sysdeps/l4/pt-save-self.c: New file.
+	* Makefile.am (libc_a_SOURCES): Added
+	sysdeps/l4/hurd/pt-save-self.c.
+
+	* pthread/pt-create.c (pthread_create): Save the new thread's
+	control block explicitly using __pthread_save_self.
+	* sysdeps/l4/hurd/pt-sysdep.c (init_routine): Replace Hurd's
+	threadvar code with __pthread_save_self.
+	* sysdeps/l4/hurd/pt-sysdep.h 	(_pthread_self): Likewise.
+	(_HURD_THREADVAR_THREAD): Removed macro.
+	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Remove Hurd's
+	threadvar code.  Mechanism is now in _pthread_save_self.
+
+2002-07-29  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h (struct __pthread): Add fields
+	cancel_state, cancel_type, cancel_pending and
+	cancelation_handlers to support cancelation.
+	* pthread/pt-alloc.c (__pthread_alloc): Initialize
+	NEW->cancel_state, NEW->cancel_type, NEW->cancel_pending and
+	NEW->cancelation_handlers.
+	* pthread/pt-exit.c (pthread_exit): Run registered cleanup
+	handlers.  If thread was canceled, set the status to
+	PTHREAD_CANCELED.
+	* pthread/pt-cleanup.c: New file.
+	* pthread/pt-setcancelstate.c: New file.
+	* pthread/pt-setcanceltype.c: New file.
+	* pthread/pt-testcancel.c: New file.
+	* sysdeps/l4/pt-docancel.c: New file.
+
+	* Makefile.am (libc_a_SOURCES): Add pthread/pt-cleanup.c,
+	pthread/pt-setcancelstate.c, pthread/pt-setcanceltype.c,
+	pthread/pt-testcancel.c and sysdeps/l4/pt-docancel.c.
+
+2002-07-29  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pthread.h (pthread_cleanup_push): Moved from here ...
+	* bits/cancelation.h: ... to here.
+	* pthread/pthread.h (pthread_cleanup_pop): Moved from here ...
+	* bits/cancelation.h: ... to here.
+	
+	* pthread/pthread.h (pthread_cleanup_push): New definition.
+	* pthread/pthread.h (pthread_cleanup_pop): New definition.
+
+	* bits/cancelation.h: Include <assert.h>.
+	* pthread/pthread.h: Do not include <assert.h>.
+
+2002-07-29  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* bits/condition.h (__PTHREAD_COND_INITIALIZER): Cast result.
+	* bits/mutex.h (__PTHREAD_MUTEX_INITIALIZER): Likewise.
+	* bits/spin-lock.h (__SPIN_LOCK_INITIALIZER): Likewise.
+
+2002-07-29  Neal H. Walfield  <neal@cs.uml.edu>
+	
+	* pthread/pthread.h: Include <bits/cancelation.h> and <assert.h>.
+	(PTHREAD_CANCEL_DISABLE): New macro.
+	(PTHREAD_CANCEL_ENABLE): New macro.
+	(PTHREAD_CANCEL_DEFERRED): New macro.
+	(PTHREAD_CANCEL_ASYNCHRONOUS): New macro.
+	(PTHREAD_CANCELED): New macro.
+	(pthread_setcancelstate): New definition.
+	(pthread_setcanceltype): New definition.
+	(pthread_cancel): New definition.
+	(pthread_testcancel): New definition.
+	(pthread_cleanup_push): New macro.
+	(pthread_cleanup_pop): New macro.
+	* bit/condition.h: New file.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/pt-block.c (__pthread_block): Receive from any local
+	thread, not any thread.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* crt0.c (exit): Print the exit value for debugging purposes.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-alloc.c (__pthread_alloc): Improve comments.  When
+	allocating a new pthread, really initialize it.
+	* pthread/pt-create.c (pthread_create): Reuse the old stacks when
+	possible.  If allocating the thread structure fails, do not try to
+	free anything.  Clear the thread id on failure.  Beautify and add
+	comments.
+
+	* pthread/pt-dealloc.c (__pthread_dealloc): Rewritten to be the
+	dual of __pthread_alloc rather than an all-in-one.
+	* pthread/pt-detach.c (pthread_detach): Factor out code that is in
+	__pthread_dealloc.  Unlock PTHREAD->state_lock before calling
+	__pthread_dealloc.
+	* pthread/pt-exit.c (pthread_exit): Likewise.
+	* pthread/pt-join.c (pthread_join): Likewise.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-internal.h: Beautify and fix comments.
+	(__pthread_setid): Get a write lock, not a read lock.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pt-alloc.c (__pthread_alloc): (alloc_init): Make it an
+	external, not static as RUN_HOOKS does not work yet.
+	* pthread/pt-initialize.c (__pthread_initialize): Call alloc_init
+	directly as RUN_HOOK does not yet work.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/hurd/pt-sysdep.c (init_routine): Be sure that
+	__hurd_threadvar_stack_mask and __hurd_threadvar_stack_offset are
+	set before calling __pthread_setup.
+	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Elide hack and
+	use __hurd_threadvar_location_from-sp.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/generic/pt-cond-wait.c (pthread_cond_wait): Add
+	comment about a race condition.
+	* sysdeps/generic/pt-mutex-lock.c (__pthread_mutex_lock):
+	Likewise.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/pt-start.c (send_startup_ipc): Use task_server (which
+	is now also the thread_server).  Do smarter casting.
+	* sysdeps/l4/hurd/pt-sysdep.h (__pthread_halt): Likewise.
+
+2002-07-25  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/l4/pt-wakeup.c: Fix comment.
+
+2002-07-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/Makefile: New file.  Imported from Mark's pthread
+	package with local modifications.
+	* pthread/Versions: Likewise.
+	* pthread/cthreads-compat.c: Likewise.
+	* pthread/pt-alloc.c: Likewise.
+	* pthread/pt-attr.c: Likewise.
+	* pthread/pt-create.c: Likewise.
+	* pthread/pt-dealloc.c: Likewise.
+	* pthread/pt-detach.c: Likewise.
+	* pthread/pt-exit.c: Likewise.
+	* pthread/pt-initialize.c: Likewise.
+	* pthread/pt-internal.h: Likewise.
+	* pthread/pt-join.c: Likewise.
+	* pthread/pt-self.c: Likewise.
+	* pthread/pt-spin-inlines.c: Likewise.
+	* pthread/pthread.patch: Likewise.
+	* sysdeps/generic/pt-cond-brdcast.c: Likewise.
+	* sysdeps/generic/pt-cond-signal.c: Likewise.
+	* sysdeps/generic/pt-cond-wait.c: Likewise.
+	* sysdeps/generic/pt-mutex-lock.c: Likewise.
+	* sysdeps/generic/pt-mutex-unlock.c: Likewise.
+	* sysdeps/hurd/hurd/threadvar.h: Likewise.
+	* sysdeps/i386/machine-sp.h: Likewise.
+	* sysdeps/i386/pt-machdep.h: Likewise.
+	* sysdeps/i386/bits/atomic.h: Likewise.
+	* sysdeps/l4/pt-block.c: Likewise.
+	* sysdeps/l4/pt-stack.c: Likewise.
+	* sysdeps/l4/pt-start.c: Likewise.
+	* sysdeps/l4/pt-wakeup.c: Likewise.
+	* sysdeps/l4/hurd/pt-sysdep.c: Likewise.
+	* sysdeps/l4/hurd/pt-sysdep.h: Likewise.
+	* sysdeps/l4/hurd/i386/pt-machdep.c: Likewise.
+	* sysdeps/l4/hurd/i386/pt-setup.c: Likewise.
+	* sysdeps/mach/pt-block.c: Likewise.
+	* sysdeps/mach/pt-stack.c: Likewise.
+	* sysdeps/mach/pt-start.c: Likewise.
+	* sysdeps/mach/pt-wakeup.c: Likewise.
+	* sysdeps/mach/hurd/pt-sysdep.c: Likewise.
+	* sysdeps/mach/hurd/pt-sysdep.h: Likewise.
+	* sysdeps/mach/hurd/bits/pthread.h: Likewise.
+	* sysdeps/mach/hurd/i386/pt-machdep.c: Likewise.
+	* sysdeps/mach/hurd/i386/pt-setup.c: Likewise.
+	* sysdeps/posix/pt-spin.c: Likewise.
+
+	* include/libc-symbols.h: Imported from glibc with local
+	modifications for pthread port.
+	* include/set-hooks.h: Likewise.
+
+	* include/sched.h: Glue code for pthread port until a real
+	implementation is available.
+	* include/time.h: Likewise.
+
+	* Makefile.am (libc_a_SOURCES): Added most of the above c files.
+	(CFLAGS): Build up the include paths the way that glibc does.
+
+	* TODO: New file.
+
+	* crt0.c: Rewritten to include support for initializing pthreads
+	and dealing with the new stack layout.
+
+2002-07-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pthread.h: Define pthread_spinlock_t.
+	(pthread_spin_destroy): Use it, not __pthread_spinlock_t.
+	(pthread_spin_init): Likewise.
+	(pthread_spin_lock): Likewise.
+	(pthread_spin_trylock): Likewise.
+	(pthread_spin_unlock): Likewise.
+
+	* features.h (__USE_XOPEN2K): Define it.
+
+2002-07-24  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* pthread/pthread.h: New file imported from Mark's pthead package.
+	
+2002-07-24  Neal H. Walfield  <neal@cs.uml.edu>
+	
+	* bits/condition.h: New file imported from Mark's pthead package.
+	* bits/mutex.h: Likewise.
+	* bits/pthread.h: Likewise.
+	* bits/spin-lock.h: Likewise.
+
+2002-07-23  Jeff Bailey  <jbailey@outpost.dnsalias.org>
+
+	* .cvsignore: New File
+
+2002-07-21  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* crt0.c (_start): Put in .START section, not in the text.
+
+2002-07-17  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* Makefile.am (AM_CFLAGS): Library is no longer called libcrt0 but
+	libc.  Adjust accordingly.
+
