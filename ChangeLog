@@ -1,3 +1,9 @@
+2002-11-02  Alfred M. Szmidt  <ams@kemisten.nu>
+
+	* sysdeps/generic/pt-key-delete.c, sysdeps/hurd/pt-key-delete.c
+	(pthread_key_delete): Renamed from pthread_key_destroy.  Reported
+	by Michael Koch <konqueror@gmx.de>
+
 2002-10-12  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* sysdeps/hurd/pt-destroy-specific.c (__pthread_destroy_specific):

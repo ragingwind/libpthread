@@ -21,7 +21,7 @@
 #include <pt-internal.h>
 
 int
-pthread_key_destory (pthread_key_t key)
+pthread_key_delete (pthread_key_t key)
 {
   return ENOSYS;
 }
