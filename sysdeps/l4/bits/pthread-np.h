@@ -35,4 +35,10 @@ extern int pthread_create_from_l4_tid_np (pthread_t *thread,
 					  void *(*start_routine)(void *), 
 					  void *arg);
 
+/* Add the thread TID to the internal kernel thread pool.  */
+int pthread_pool_add_np (l4_thread_id_t tid);
+
+/* Get the first thread from the pool.  */
+l4_thread_id_t pthread_pool_get_np (void);
+
 #endif /* bits/pthread-np.h */

@@ -1,3 +1,14 @@
+2004-03-19  Marcus Brinkmann  <marcus@gnu.org>
+
+	* sysdeps/l4/bits/pthread-np.h (pthread_pool_add_np,
+	pthread_pool_get_np): New prototypes.
+	* sysdeps/l4/pt-pool-np.c: New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-pool-np.c.
+	* sysdeps/l4/pt-thread-alloc.c (__pthread_thread_alloc): Try to
+	allocate thread from pool.
+	* sysdeps/l4/pt-thread-halt.c (__pthread_thread_halt): Add thread
+	to pool after stopping it.
+
 2004-03-17  Marcus Brinkmann  <marcus@gnu.org>
 
 	* sysdeps/l4/pt-thread-start.c (__pthread_thread_start): Use L4
