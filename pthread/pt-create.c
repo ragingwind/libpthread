@@ -33,7 +33,7 @@
 /* The total number of pthreads currently active.  This is defined
    here since it would be really stupid to have a threads-using
    program that doesn't call `pthread_create'.  */
-uatomic_max_t __pthread_total;
+uatomic32_t __pthread_total;
 
 
 /* The entry-point for new threads.  */

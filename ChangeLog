@@ -1,5 +1,8 @@
 2004-11-01  Marcus Brinkmann  <marcus@gnu.org>
 
+	* pthread/pt-create.c (__pthread_total): Change type to uatomic32_t.
+	* pthread/pt-internal.h (__pthread_total): Likewise in declaration.
+	
 	* pthread/pt-internal.h: Include <atomic.h>, not <bits/atomic.h>.
 	(__pthread_total): Change type of declaration to uatomic_max_t.
 	* pthread/pt-alloc.c: Include <atomic.h>, not <bits/atomic.h>.

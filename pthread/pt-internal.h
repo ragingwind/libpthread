@@ -126,7 +126,7 @@ __pthread_dequeue (struct __pthread *thread)
 	     element = element->next)
 
 /* The total number of threads currently active.  */
-extern uatomic_max_t __pthread_total;
+extern uatomic32_t __pthread_total;
 
 /* The total number of thread IDs currently in use, or on the list of
    available thread IDs.  */
