@@ -1,3 +1,31 @@
+2002-11-18  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/mach/pt-wakeup.c (__pthread_wakeup): Use the size of
+	THREAD->wakeupmsg which may not be a mach_msg_header_t.
+
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal): Really test for equality.
+	* sysdeps/generic/pt-rwlock-timedrdlock.c
+	(__pthread_rwlock_timedrdlock_internal): Likewise.
+	* sysdeps/generic/pt-rwlock-timedwrlock.c
+	(__pthread_rwlock_timedwrlock_internal): Likewise.
+
+	* sysdeps/generic/pt-cond-timedwait.c
+	(__pthread_cond_timedwait_internal): On timeout, remove our thread
+	structure from the wait queue if necessary.
+
+	* sysdeps/l4/pt-start.c (__pthread_start): Call L4_Myself, not
+	__mach_thread_self.
+
+	* sysdeps/mach/hurd/i386/pt-setup.c: Include <mach.h>.
+	(__pthread_setup): Do not leak references from __mach_thread_self.
+	* sysdeps/mach/hurd/pt-docancel.c (__pthread_do_cancel): Likewise.
+	* sysdeps/mach/hurd/pt-sysdep.h (_pthread_self): Likewise.
+	* sysdeps/mach/pt-thread-alloc.c (__pthread_thread_alloc): Likewise.
+	* sysdeps/mach/pt-thread-start.c (__pthread_thread_start): Likewise.
+
+	* sysdeps/mach/pt-start.c: Remove dead file.
+
 2002-11-09  Roland McGrath  <roland@frob.com>
 
 	* include/pthread/pthread.h: Avoid `__thread' as an identifier,
@@ -6,8 +34,8 @@
 2002-11-02  Alfred M. Szmidt  <ams@kemisten.nu>
 
 	* sysdeps/generic/pt-key-delete.c, sysdeps/hurd/pt-key-delete.c
-	(pthread_key_delete): Renamed from pthread_key_destroy.  Reported
-	by Michael Koch <konqueror@gmx.de>
+	(pthread_key_delete): Renamed from pthread_key_destroy.
+	Reported by Michael Koch <konqueror@gmx.de>
 
 2002-10-12  Neal H. Walfield  <neal@cs.uml.edu>
 

@@ -72,7 +72,7 @@ __pthread_rwlock_timedwrlock_internal (struct __pthread_rwlock *rwlock,
 	   disconnect ourself?  It may remain until the next time we
 	   block.  */
 	{
-	  assert (err = ETIMEDOUT);
+	  assert (err == ETIMEDOUT);
 
 	  __pthread_spin_lock (&rwlock->__lock);
 	  if (self->prevp)

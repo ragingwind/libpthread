@@ -69,7 +69,7 @@ __pthread_start (struct __pthread *thread)
     /* The main thread is already running: do nothing.  */
     {
       assert (__pthread_total == 1);
-      thread->threadid = __mach_thread_self ();
+      thread->threadid = L4_Myself ();
     }
   else
     {

@@ -1,5 +1,5 @@
 /* Wakeup a thread.  Mach version.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ __pthread_wakeup (struct __pthread *thread)
   error_t err;
   
   err = __mach_msg (&thread->wakeupmsg, MACH_SEND_MSG,
-		    sizeof (mach_msg_header_t), 0, MACH_PORT_NULL,
+		    sizeof (thread->wakeupmsg), 0, MACH_PORT_NULL,
 		    MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
   assert_perror (err);
 }

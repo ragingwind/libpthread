@@ -114,7 +114,7 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
 	   disconnect ourself?  It may remain until the next time we
 	   block.  */
 	{
-	  assert (err = ETIMEDOUT);
+	  assert (err == ETIMEDOUT);
 
 	  __pthread_spin_lock (&mutex->__lock);
 	  if (self->prevp)

@@ -73,7 +73,28 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
   pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, &canceltype);
 
   if (abstime)
-    err = __pthread_timedblock (self, abstime);
+    {
+      error_t err;
+
+      err = __pthread_timedblock (self, abstime);
+      if (err)
+	/* We timed out.  We may need to disconnect ourself from the
+	   waiter queue.
+
+	   FIXME: What do we do if we get a wakeup message before we
+	   disconnect ourself?  It may remain until the next time we
+	   block.  */
+	{
+	  assert (err == ETIMEDOUT);
+
+	  __pthread_spin_lock (&mutex->__lock);
+	  if (self->prevp)
+	    __pthread_dequeue (self);
+	  __pthread_spin_unlock (&mutex->__lock);
+
+	  return err;
+	}
+    }
   else
     {
       err = 0;

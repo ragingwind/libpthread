@@ -86,6 +86,8 @@ __pthread_thread_alloc (struct __pthread *thread)
     {
       assert (__pthread_total == 0);
       thread->kernel_thread = __mach_thread_self ();
+      /* We implicitly hold a reference.  */
+      __mach_port_deallocate (__mach_task_self (), thread->kernel_thread);
     }
   else
     {

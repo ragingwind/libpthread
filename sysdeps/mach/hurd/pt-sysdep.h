@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -45,7 +45,10 @@
 	    __hurd_threadvar_location (_HURD_THREADVAR_THREAD);    \
 	                                                           \
 	  assert (thread);                                         \
-	  assert (thread->kernel_thread == __mach_thread_self ()); \
+	  assert (({ mach_port_t ktid = __mach_thread_self ();     \
+                     int ok = thread->kernel_thread == ktid;       \
+                     __mach_port_deallocate (__mach_task_self (), ktid);\
+                     ok; }));                                      \
           thread;                                                  \
          })
 
