@@ -179,7 +179,8 @@ extern int pthread_attr_setstacksize (pthread_attr_t *attr,
 
 /* Create a thread with attributes given by ATTR, executing
    START_ROUTINE with argument ARG.  */
-extern int pthread_create (pthread_t *__thread, __const pthread_attr_t *__attr,
+extern int pthread_create (pthread_t *__threadp,
+			   __const pthread_attr_t *__attr,
 			   void *(*__start_routine)(void *), void *__arg);
 
 /* Terminate the current thread and make STATUS available to any
@@ -188,11 +189,11 @@ extern void pthread_exit (void *__status);
 
 /* Make calling thread wait for termination of thread THREAD.  Return
    the exit status of the thread in *STATUS.  */
-extern int pthread_join (pthread_t __thread, void **__status);
+extern int pthread_join (pthread_t __threadp, void **__status);
 
 /* Indicate that the storage for THREAD can be reclaimed when it
    terminates.  */
-extern int pthread_detach (pthread_t __thread);
+extern int pthread_detach (pthread_t __threadp);
 
 /* Compare thread IDs T1 and T2.  Return nonzero if they are equal, 0
    if they are not.  */
