@@ -1,3 +1,8 @@
+2002-10-12  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* sysdeps/hurd/pt-destroy-specific.c (__pthread_destroy_specific):
+	Only call the destructor if there is one set.
+
 2002-10-10  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* libpthread.a: It is _cthread_init_routine, not _cthread_init.

@@ -53,12 +53,14 @@ __pthread_destroy_specific (struct __pthread *thread)
 	  value = ihash_find (thread->thread_specifics, i);
 	  if (value)
 	    {
-	      seen_one = 1;
-
 	      err = ihash_remove (thread->thread_specifics, i);
 	      assert (err == 1);
 
-	      __pthread_key_destructors[i] (value);
+	      if (__pthread_key_destructors[i])
+		{
+		  seen_one = 1;
+		  __pthread_key_destructors[i] (value);
+		}
 	    }
 	}
 
