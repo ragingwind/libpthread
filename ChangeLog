@@ -1,3 +1,10 @@
+2005-04-20  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-setschedparam.c: policy's type is int, not
+	int *.
+	* include/pthread/pthread.h: Likewise.
+	Reported by Christopher `Physicman' Bodenstein <cb@physicman.net>.
+
 2005-01-21  Michael Banck  <mbanck@debian.org>
 
 	* Makefile ($(libdir)/libpthread2.a): Install linker script

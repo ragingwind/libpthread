@@ -680,7 +680,7 @@ extern int pthread_getschedparam (pthread_t thread, int *policy,
 				  struct sched_param *param);
 
 /* Set thread THREAD's scheduling paramters.  */
-extern int pthread_setschedparam (pthread_t thread, int *policy,
+extern int pthread_setschedparam (pthread_t thread, int policy,
 				  const struct sched_param *param);
 
 /* Set thread THREAD's scheduling priority.  */
