@@ -1,5 +1,5 @@
 /* Thread creation.
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -168,7 +168,7 @@ __pthread_create_internal (struct __pthread **thread,
      other thread should be using this entry (we also assume that the
      store is atomic).  */
   pthread_rwlock_rdlock (&__pthread_threads_lock);
-  __pthread_threads[pthread->thread] = pthread;
+  __pthread_threads[pthread->thread - 1] = pthread;
   pthread_rwlock_unlock (&__pthread_threads_lock);
 
   /* At this point it is possible to guess our pthread ID.  We have to

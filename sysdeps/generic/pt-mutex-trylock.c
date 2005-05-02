@@ -1,5 +1,5 @@
 /* Try to Lock a mutex.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
 
 #define LOSE do { * (int *) 0 = 0; } while (1)
 
-/* Lock MUTEX, block if we can't get it.  */
+/* Lock MUTEX, return EBUSY if we can't get it.  */
 int
 __pthread_mutex_trylock (struct __pthread_mutex *mutex)
 {
@@ -81,6 +81,8 @@ __pthread_mutex_trylock (struct __pthread_mutex *mutex)
 	  LOSE;
 	}
     }
+
+  __pthread_spin_unlock (&mutex->__lock);
 
   return err;
 }

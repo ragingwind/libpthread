@@ -1,3 +1,15 @@
+2005-05-02  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-alloc.c (__pthread_alloc): Set the thread id to the
+	table index plus one.
+	* pthread/pt-internal.h (__pthread_getid): Index __pthread_threads
+	using THREAD - 1, not THREAD.
+	(__pthread_setid): Likewise.
+	* pthread/pt-create.c (__pthread_create_internal): Likewise.
+
+	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock):
+	When returning EBUSY, don't forget to first unlock MUTEX->__HELD.
+
 2005-04-20  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/generic/pt-setschedparam.c: policy's type is int, not

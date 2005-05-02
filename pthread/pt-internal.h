@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -134,20 +134,23 @@ extern int __pthread_num_threads;
 /* Concurrency hint.  */
 extern int __pthread_concurrency;
 
-/* Array of __pthread structures and its lock.  */
+/* Array of __pthread structures and its lock.  Indexed by the pthread
+   id minus one.  (Why not just use the pthread id?  Because some
+   brain-dead users of the pthread interface incorrectly assume that 0
+   is an invalid pthread id.)  */
 extern struct __pthread **__pthread_threads;
 extern pthread_rwlock_t __pthread_threads_lock;
 
 #define __pthread_getid(thread) \
   ({ struct __pthread *__t;                                                  \
      pthread_rwlock_rdlock (&__pthread_threads_lock);                        \
-     __t = __pthread_threads[thread];                                        \
+     __t = __pthread_threads[thread - 1];                                    \
      pthread_rwlock_unlock (&__pthread_threads_lock);                        \
      __t; })
 
 #define __pthread_setid(thread, pthread) \
   pthread_rwlock_wrlock (&__pthread_threads_lock);                           \
-  __pthread_threads[thread] = pthread;                                       \
+  __pthread_threads[thread - 1] = pthread;                                   \
   pthread_rwlock_unlock (&__pthread_threads_lock);
 
 /* Similar to pthread_self, but returns the thread descriptor instead

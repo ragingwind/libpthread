@@ -1,5 +1,5 @@
 /* Allocate a new thread structure.
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -139,10 +139,10 @@ __pthread_alloc (struct __pthread **pthread)
 
   if (__pthread_num_threads < __pthread_max_threads)
     {
-      /* We have a free slot.  Use the slot number as
-         the thread ID for the new thread.  */
-      new->thread = __pthread_num_threads++;
-      __pthread_threads[new->thread] = NULL;
+      /* We have a free slot.  Use the slot number plus one as the
+         thread ID for the new thread.  */
+      new->thread = 1 + __pthread_num_threads++;
+      __pthread_threads[new->thread - 1] = NULL;
 
       pthread_rwlock_unlock (&__pthread_threads_lock);
 
@@ -203,8 +203,8 @@ __pthread_alloc (struct __pthread **pthread)
   __pthread_threads = threads;
 
   /* And allocate ourselves one of the newly created slots.  */
-  new->thread = __pthread_num_threads++;
-  __pthread_threads[new->thread] = NULL;
+  new->thread = 1 + __pthread_num_threads++;
+  __pthread_threads[new->thread - 1] = NULL;
 
   pthread_rwlock_unlock (&__pthread_threads_lock);
 
