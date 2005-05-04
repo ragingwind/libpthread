@@ -1,3 +1,31 @@
+2005-05-04  Neal H. Walfield  <neal@gnu.org>
+
+	* Makefile (SRCS): Add pt-thread_dealloc.c.
+	* sysdeps/mach/pt-thread-dealloc.c: New file.
+	* pthread/pt-internal.h (__pthread_thread_dealloc): New
+	declaration.
+	(__pthread_thread_halt): Add parameter NEED_DEALLOC.  Update
+	callers.
+	* sysdeps/mach/pt-thread-halt.c (__pthread_thread_halt): Respect
+	new NEED_DEALLOC parameter.  Move code which deallocates kernel
+	resources from here ...
+	* sysdeps/mach/pt-thread-dealloc.c (__pthread_thread_dealloc):
+	...to here.
+	* pthread/pt-create.c (__pthread_create_internal): Call
+	__pthread_thread_dealloc on failure.
+	* pthread/pt-exit.c (pthread_exit): Call __pthread_thread_dealloc.
+
+	* sysdeps/mach/pt-thread-alloc.c (create_wakeupmsg): Call
+	__mach_port_destroy to deallocate the receive right.
+	__mach_port_deallocate won't do it.
+
+	* pthread/pt-detach.c (pthread_detach): Don't call
+	__pthread_thread_halt a second time.
+
+	* sysdeps/mach/hurd/pt-sysdep.c (_cthread_init_routine): Fix
+	declaration.
+	(init_routine): Update declaration and remove gratuitous cast.
+
 2005-05-02  Neal H. Walfield  <neal@gnu.org>
 
 	* pthread/pt-alloc.c (__pthread_alloc): Set the thread id to the

@@ -1,5 +1,5 @@
 /* Detach a thread.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -57,8 +57,6 @@ pthread_detach (pthread_t thread)
          reference it anymore, and mark it as terminated.  */
 
       __pthread_mutex_unlock (&pthread->state_lock);
-
-      __pthread_thread_halt (pthread);
 
       assert (pthread->stack);
       __pthread_stack_dealloc (pthread->stackaddr, pthread->stacksize);

@@ -195,16 +195,26 @@ extern int __pthread_setup (struct __pthread *thread,
 				  void *(*start_routine)(void *), void *arg);
 
 
-/* Allocate a kernel thread for THREAD; it must not be placed on the
-   run queue.  */
+/* Allocate a kernel thread (and any miscellaneous system dependent
+   resources) for THREAD; it must not be placed on the run queue.  */
 extern int __pthread_thread_alloc (struct __pthread *thread);
+
+/* Deallocate any kernel resources associated with THREAD except don't
+   halt the thread itself.  On return, the thread will be marked as
+   dead and __pthread_halt will be called.  */
+extern void __pthread_thread_dealloc (struct __pthread *thread);
 
 /* Start THREAD making it eligible to run.  */
 extern int __pthread_thread_start (struct __pthread *thread);
 
-/* Stop thread thread and deallocate any kernel resources associated
-   with THREAD.  */
-extern void __pthread_thread_halt (struct __pthread *thread);
+/* Stop the kernel thread associated with THREAD.  If NEED_DEALLOC is
+   true, the function must call __pthread_dealloc on THREAD.
+
+   NB: The thread executing this function may be the thread which is
+   being halted, thus the last action should be halting the thread
+   itself.  */
+extern void __pthread_thread_halt (struct __pthread *thread,
+				   int need_dealloc);
 
 
 /* Block THREAD.  */

@@ -1,5 +1,5 @@
 /* Deallocate the kernel thread resources.  Mach version.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,21 +23,19 @@
 
 #include <pt-internal.h>
 
-/* Stop the kernel thread associated with THREAD.  If NEED_DEALLOC is
-   true, the function must call __pthread_dealloc on THREAD.
-
-   NB: The thread executing this function may be the thread which is
-   being halted, thus the last action should be halting the thread
-   itself.  */
+/* Deallocate any kernel resources associated with THREAD except don't
+   halt the thread itself.  On return, the thread will be marked as
+   dead and __pthread_halt will be called.  */
 void
-__pthread_thread_halt (struct __pthread *thread, int need_dealloc)
+__pthread_thread_dealloc (struct __pthread *thread)
 {
-  error_t err;
-  thread_t tid = thread->kernel_thread;
-
-  if (need_dealloc)
-    __pthread_dealloc (thread);
-
-  err = __thread_terminate (tid);
-  assert_perror (err);
+  /* Why no assert?  Easy.  When Mach kills a task, it starts by
+     invalidating the task port and then terminating the threads one
+     by one.  But while it is terminating them, they are still
+     eligible to be scheduled.  Imagine we have two threads, one calls
+     exit, one calls pthread_exit.  The second one may run this after
+     the mask port can been destroyed thus gratuitously triggering the
+     assert.  */
+  __mach_port_destroy (__mach_task_self (),
+		       thread->wakeupmsg.msgh_remote_port);
 }

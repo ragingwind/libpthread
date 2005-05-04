@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 1994,95,96,97,2000,02, 2004 Free Software Foundation, Inc.
+#   Copyright (C) 1994,95,96,97,2000,02, 2004, 2005 Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License as
@@ -96,6 +96,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 									    \
 	pt-stack-alloc.c						    \
 	pt-thread-alloc.c						    \
+	pt-thread-dealloc.c						    \
 	pt-thread-start.c						    \
 	pt-thread-halt.c						    \
 									    \
