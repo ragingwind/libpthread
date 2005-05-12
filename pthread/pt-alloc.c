@@ -69,8 +69,8 @@ initialize_pthread (struct __pthread *new, int recycling)
 
   new->stack = 0;
 
-  new->state_lock = PTHREAD_MUTEX_INITIALIZER;
-  new->state_cond = PTHREAD_COND_INITIALIZER;
+  new->state_lock = (pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
+  new->state_cond = (pthread_cond_t) PTHREAD_COND_INITIALIZER;
 
   new->cancelation_handlers = 0;
 

@@ -1,5 +1,5 @@
 /* Mutex type.  Generic version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -52,9 +52,7 @@ struct __pthread_mutex
 /* Initializer for a mutex.  N.B.  this also happens to be compatible
    with the cthread mutex initializer.  */
 #  define __PTHREAD_MUTEX_INITIALIZER \
-    ((struct __pthread_mutex) \
-      { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, NULL, NULL, NULL, \
-	NULL, 0, 0 })
+    { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0, 0 }
 
 # endif
 #endif /* Not __pthread_mutex_defined.  */
@@ -74,13 +72,15 @@ _EXTERN_INLINE int
 pthread_mutex_init (struct __pthread_mutex *__mutex,
 		    const pthread_mutexattr_t *attr)
 {
+  struct __pthread_mutex initialized_mutex = __PTHREAD_MUTEX_INITIALIZER;
+
   extern int _pthread_mutex_init (struct __pthread_mutex *,
 				  const pthread_mutexattr_t *);
 
   if (attr)
     return _pthread_mutex_init (__mutex, attr);
 
-  *__mutex = __PTHREAD_MUTEX_INITIALIZER;
+  *__mutex = initialized_mutex;
   return 0;
 }
 

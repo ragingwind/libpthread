@@ -39,6 +39,12 @@ __sem_timedwait_internal (sem_t *restrict sem,
       return 0;
     }
 
+  if (timeout && (timeout->tv_nsec < 0 || timeout->tv_nsec >= 1000000000))
+    {
+      errno = EINVAL;
+      return -1;
+    }
+
   /* Add ourselves to the queue.  */
   self = _pthread_self ();
 
@@ -49,12 +55,6 @@ __sem_timedwait_internal (sem_t *restrict sem,
   if (timeout)
     {
       error_t err;
-
-      if (timeout->tv_nsec < 0 || timeout->tv_nsec >= 1000000000)
-	{
-	  errno = EINVAL;
-	  return -1;
-	}
 
       err = __pthread_timedblock (self, timeout);
       if (err)

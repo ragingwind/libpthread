@@ -65,8 +65,9 @@ __pthread_mutex_trylock (struct __pthread_mutex *mutex)
 	  break;
 
 	case PTHREAD_MUTEX_ERRORCHECK:
-	  if (mutex->owner == self)
-	    err = EDEADLK;
+	  /* We could check if MUTEX->OWNER is SELF, however, POSIX
+	     does not permit pthread_mutex_trylock to return EDEADLK
+	     instead of EBUSY, only pthread_mutex_lock.  */
 	  break;
 
 	case PTHREAD_MUTEX_RECURSIVE:

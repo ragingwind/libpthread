@@ -1,5 +1,5 @@
 /* Acquire a rwlock for reading.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,13 +21,6 @@
 #include <assert.h>
 
 #include <pt-internal.h>
-
-int
-pthread_rwlock_timedrdlock (struct __pthread_rwlock *rwlock,
-			    const struct timespec *abstime)
-{
-  return __pthread_rwlock_timedrdlock_internal (rwlock, abstime);
-}
 
 /* Acquire the rwlock *RWLOCK for reading blocking until *ABSTIME if
    it is already held.  As a GNU extension, if TIMESPEC is NULL then
@@ -65,6 +58,9 @@ __pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *rwlock,
 
   /* Better be blocked by a writer.  */
   assert (rwlock->readers == 0);
+
+  if (abstime && (abstime->tv_nsec < 0 || abstime->tv_nsec >= 1000000000))
+    return EINVAL;
 
   self = _pthread_self ();
 
@@ -107,4 +103,11 @@ __pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *rwlock,
   assert (rwlock->readers > 0);
 
   return 0;
+}
+
+int
+pthread_rwlock_timedrdlock (struct __pthread_rwlock *rwlock,
+			    const struct timespec *abstime)
+{
+  return __pthread_rwlock_timedrdlock_internal (rwlock, abstime);
 }

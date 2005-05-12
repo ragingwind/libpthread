@@ -27,7 +27,7 @@ main (int argc, char **argv)
 
   for (i = 0; i < THREADS; i ++)
     {
-      mutex[i] = PTHREAD_MUTEX_INITIALIZER;
+      pthread_mutex_init (&mutex[i], 0);
       pthread_mutex_lock (&mutex[i]);
       err = pthread_create (&tid[i], 0, foo, &mutex[i]);
       if (err)

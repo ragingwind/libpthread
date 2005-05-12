@@ -1,9 +1,75 @@
 2005-05-12  Neal H. Walfield  <neal@gnu.org>
 
-	* Makefile (SRCS): Add sem-close.c sem-destroy.c sem-getvalue.c
-	sem-init.c sem-open.c sem-post.c sem-timedwait.c sem-trywait.c
+	* include/pthread/pthread.h (pthread_exit): Add noreturn
+	attribute.
+
+	* sysdeps/generic/bits/condition.h (__PTHREAD_COND_INITIALIZER):
+	Don't create a compound literal.
+	* sysdeps/generic/bits/mutex.h (__PTHREAD_MUTEX_INITIALIZER):
+	Don't create a compound literal.
+	(pthread_mutex_init): Don't assign to *__MUTEX directly.
+	Initialize an intermediate local variable and then copy the
+	result.
+	* sysdeps/generic/bits/rwlock.h (__PTHREAD_RWLOCK_INITIALIZER):
+	Don't create a compound literal.
+	(pthread_rwlock_init): Don't assign to *__RWLOCK directly.
+	Initialize an intermediate local variable and then copy the
+	result.
+	* sysdeps/i386/bits/spin-lock.h (__SPIN_LOCK_INITIALIZER): 
+	Don't create a compound literal.
+
+	* pthread/pt-alloc.c (initialize_pthread): Cast
+	PTHREAD_MUTEX_INITIALIZER and PTHREAD_COND_INITIALIZER to create a
+	compound literal.
+	* tests/test-1.c (main): Use pthread_mutex_init, not
+	PTHREAD_MUTEX_INIT for mutex initialization
+
+	* sysdeps/generic/pt-barrier-init.c (pthread_barrier_init): Remove
+	assert.  Copy ATTR if non-defaults are used.
+	* sysdeps/generic/pt-cond-init.c (pthread_cond_init): Include
+	<string.h>.  Remove assert.  Copy ATTR if non-defaults are used.
+	* sysdeps/generic/pt-mutex-init.c (_pthread_mutex_init): Cast
+	PTHREAD_MUTEX_INITIALIZER to create a compound literal.
+	* sysdeps/generic/pt-rwlock-init.c: Include <string.h>.
+	(_pthread_rwlock_init): Cast __PTHREAD_RWLOCK_INITIALIZER to
+	create a compound literal.  Copy ATTR if non-defaults are used.
+
+	* sysdeps/generic/pt-cond-timedwait.c
+	(__pthread_cond_timedwait_internal): Check that ABSTIME->TV_NSEC
+	is valid.  Don't shadow ERR.  Don't return before cleaning up.
+	* sysdeps/generic/pt-mutex-timedlock.c (pthread_mutex_timedlock):
+	Move after __pthread_mutex_timedlock_internal.  Check that
+	ABSTIME->TV_NSEC is valid.
+	* sysdeps/generic/pt-rwlock-timedrdlock.c
+	(pthread_rwlock_timedrdlock): Move after.
+	__pthread_rwlock_timedrdlock_internal.
+	(__pthread_rwlock_timedrdlock_internal): Check that
+	ABSTIME->TV_NSEC is valid.
+	* sysdeps/generic/pt-rwlock-timedwrlock.c
+	(pthread_rwlock_timedwrlock): Move after
+	__pthread_rwlock_timedwrlock_internal.
+	(__pthread_rwlock_timedwrlock_internal): Check that
+	ABSTIME->TV_NSEC is valid.
+	* sysdeps/generic/sem-timedwait.c (__sem_timedwait_internal):
+	Check that TIMEOUT->TV_NSEC is valid before enqueuing the thread.
+
+	* sysdeps/generic/pt-rwlock-rdlock.c
+	(__pthread_rwlock_timedrdlock_internal): Fix declaration.
+
+	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock):
+	Don't return EDEADLK.  POSIX does not allow it.
+
+	* sysdeps/mach/pt-timedblock.c (__pthread_timedblock): Calculate
+	the relative timeout without overflowing.
+
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Cast THREAD.
+
+2005-05-12  Neal H. Walfield  <neal@gnu.org>
+
+	* Makefile (SRCS): Add sem-close.c, sem-destroy.c, sem-getvalue.c,
+	sem-init.c, sem-open.c, sem-post.c, sem-timedwait.c, sem-trywait.c,
 	sem-unlink.c and sem-wait.c.
-	(sysdeps_headers): Add semaphore.h bits/semaphore.h.
+	(sysdeps_headers): Add semaphore.h and bits/semaphore.h.
 	* include/semaphore.h: New file.
 	* sysdeps/generic/sem-close.c: New file.
 	* sysdeps/generic/sem-destroy.c: New file.

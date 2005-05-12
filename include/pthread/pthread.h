@@ -1,4 +1,4 @@
-/* Copyright (C) 2000,02 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -185,7 +185,7 @@ extern int pthread_create (pthread_t *__threadp,
 
 /* Terminate the current thread and make STATUS available to any
    thread that might join us.  */
-extern void pthread_exit (void *__status);
+extern void pthread_exit (void *__status) __attribute__ ((noreturn));
 
 /* Make calling thread wait for termination of thread THREAD.  Return
    the exit status of the thread in *STATUS.  */

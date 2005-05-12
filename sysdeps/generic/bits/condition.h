@@ -1,5 +1,5 @@
 /* Condition type.  Generic version.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -34,7 +34,6 @@ struct __pthread_cond
 
 /* Initializer for a condition variable.  */
 #define __PTHREAD_COND_INITIALIZER \
-  ((struct __pthread_cond) \
-    { __SPIN_LOCK_INITIALIZER, NULL, NULL, NULL, NULL })
+  { __SPIN_LOCK_INITIALIZER, NULL, NULL, NULL, NULL }
 
 #endif /* bits/condition.h */
