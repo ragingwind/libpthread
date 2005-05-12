@@ -121,6 +121,10 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 									    \
 	pt-getschedparam.c pt-setschedparam.c pt-setschedprio.c		    \
 									    \
+	sem-close.c sem-destroy.c sem-getvalue.c sem-init.c sem-open.c	    \
+	sem-post.c sem-timedwait.c sem-trywait.c sem-unlink.c		    \
+	sem-wait.c							    \
+									    \
 	cthreads-compat.c						    \
 	$(SYSDEPS)
 
@@ -133,6 +137,7 @@ libname = libpthread
 sysdeps_headers =				\
               pthread.h				\
               pthread/pthread.h			\
+	      semaphore.h			\
 						\
               bits/pthread.h			\
               bits/mutex.h			\
@@ -147,7 +152,8 @@ sysdeps_headers =				\
               bits/once.h			\
               bits/mutex-attr.h			\
               bits/rwlock.h			\
-              bits/rwlock-attr.h
+              bits/rwlock-attr.h		\
+	      bits/semaphore.h
 
 SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/i386	\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/i386			\

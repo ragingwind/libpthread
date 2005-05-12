@@ -1,3 +1,22 @@
+2005-05-12  Neal H. Walfield  <neal@gnu.org>
+
+	* Makefile (SRCS): Add sem-close.c sem-destroy.c sem-getvalue.c
+	sem-init.c sem-open.c sem-post.c sem-timedwait.c sem-trywait.c
+	sem-unlink.c and sem-wait.c.
+	(sysdeps_headers): Add semaphore.h bits/semaphore.h.
+	* include/semaphore.h: New file.
+	* sysdeps/generic/sem-close.c: New file.
+	* sysdeps/generic/sem-destroy.c: New file.
+	* sysdeps/generic/sem-getvalue.c: New file.
+	* sysdeps/generic/sem-init.c: New file.
+	* sysdeps/generic/sem-open.c: New file.
+	* sysdeps/generic/sem-post.c: New file.
+	* sysdeps/generic/sem-timedwait.c: New file.
+	* sysdeps/generic/sem-trywait.c: New file.
+	* sysdeps/generic/sem-unlink.c: New file.
+	* sysdeps/generic/sem-wait.c: New file.
+	* sysdeps/generic/bits/semaphore.h: New file.
+
 2005-05-04  Neal H. Walfield  <neal@gnu.org>
 
 	* Makefile (SRCS): Add pt-thread_dealloc.c.
