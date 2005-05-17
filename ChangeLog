@@ -1,3 +1,8 @@
+2005-05-17  Neal H. Walfield  <neal@gnu.org>
+
+	* include/pthread/pthread.h: Define __need_clockid_t before
+	including <time.h>.
+
 2005-05-12  Neal H. Walfield  <neal@gnu.org>
 
 	* include/pthread/pthread.h (pthread_exit): Add noreturn

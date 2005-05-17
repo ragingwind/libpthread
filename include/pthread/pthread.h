@@ -26,6 +26,7 @@
 #include <features.h>
 
 #include <sched.h>
+#define __need_clockid_t
 #include <time.h>
 
 __BEGIN_DECLS
