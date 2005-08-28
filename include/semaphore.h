@@ -36,7 +36,7 @@ extern int sem_init (sem_t *sem, int pshared, unsigned value);
 extern int sem_destroy (sem_t *sem);
 
 /* Store the value of semaphore *SEM in *VALUE.  */
-extern int sem_getvalue (sem_t *restrict sem, int *restrict value);
+extern int sem_getvalue (sem_t *__restrict sem, int *__restrict value);
 
 /* Perform a down operation on semaphore *SEM.  */
 extern int sem_wait (sem_t *sem);
@@ -47,8 +47,8 @@ extern int sem_trywait (sem_t *sem);
 
 /* Perform a down operation on semaphore *SEM but don't wait longer
    than TIMEOUT.  */
-extern int sem_timedwait (sem_t *restrict sem,
-			  const struct timespec *restrict timeout);
+extern int sem_timedwait (sem_t *__restrict sem,
+			  const struct timespec *__restrict timeout);
 
 /* Perform an up operation on semaphore *SEM.  */
 extern int sem_post (sem_t *sem);

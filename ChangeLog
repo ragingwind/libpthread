@@ -1,3 +1,7 @@
+2005-08-28  Neal H. Walfield  <neal@gnu.org>
+
+	* include/semaphore.h: Use __restrict, not restrict.
+
 2005-05-31  Neal H. Walfield  <neal@gnu.org>
 
 	* include/pthread/pthread.h: If clockid_t is still not defined
