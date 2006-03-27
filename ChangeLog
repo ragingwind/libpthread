@@ -1,3 +1,8 @@
+2006-03-27  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile (SRCS): Don't define two times and only list	`pt-attr.c'
+	once.  Reported by Jeff Bailey <jbailey@gnu.org>.
+
 2005-08-28  Neal H. Walfield  <neal@gnu.org>
 
 	* include/semaphore.h: Use __restrict, not restrict.

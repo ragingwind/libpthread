@@ -1,5 +1,6 @@
 #
-#   Copyright (C) 1994,95,96,97,2000,02, 2004, 2005 Free Software Foundation, Inc.
+#   Copyright (C) 1994,95,96,97,2000,02, 2004, 2005, 2006
+#     Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License as
@@ -21,8 +22,6 @@ makemode := library
 MICROKERNEL := mach
 SYSDEPS := lockfile.c
 
-SRCS := 
-
 LCLHDRS := 
 
 SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
@@ -32,7 +31,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 	pt-attr-init.c pt-attr-setdetachstate.c pt-attr-setguardsize.c	    \
 	pt-attr-setinheritsched.c pt-attr-setschedparam.c		    \
 	pt-attr-setschedpolicy.c pt-attr-setscope.c pt-attr-setstack.c	    \
-	pt-attr-setstackaddr.c pt-attr-setstacksize.c pt-attr.c		    \
+	pt-attr-setstackaddr.c pt-attr-setstacksize.c			    \
 									    \
 	pt-barrier-destroy.c pt-barrier-init.c pt-barrier-wait.c	    \
 	pt-barrier.c pt-barrierattr-destroy.c pt-barrierattr-init.c	    \
