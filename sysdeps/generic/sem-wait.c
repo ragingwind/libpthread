@@ -29,4 +29,4 @@ __sem_wait (sem_t *sem)
   return __sem_timedwait_internal (sem, 0);
 }
 
-weak_alias (__sem_wait, sem_wait);
+strong_alias (__sem_wait, sem_wait);

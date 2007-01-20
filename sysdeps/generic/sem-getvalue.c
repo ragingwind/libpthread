@@ -30,4 +30,4 @@ __sem_getvalue (sem_t *restrict sem, int *restrict value)
   return 0;
 }
 
-weak_alias (__sem_getvalue, sem_getvalue);
+strong_alias (__sem_getvalue, sem_getvalue);

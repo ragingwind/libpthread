@@ -43,4 +43,4 @@ __sem_init (sem_t *sem, int pshared, unsigned value)
   return 0;
 }
 
-weak_alias (__sem_init, sem_init);
+strong_alias (__sem_init, sem_init);

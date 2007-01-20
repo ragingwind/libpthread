@@ -29,4 +29,4 @@ __sem_open (const char *name, int open_flags, ...)
   return SEM_FAILED;
 }
 
-weak_alias (__sem_open, sem_open);
+strong_alias (__sem_open, sem_open);

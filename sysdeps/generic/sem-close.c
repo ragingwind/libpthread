@@ -29,4 +29,4 @@ __sem_close (sem_t *sem)
   return -1;
 }
 
-weak_alias (__sem_close, sem_close);
+strong_alias (__sem_close, sem_close);

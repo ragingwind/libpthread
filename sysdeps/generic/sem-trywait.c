@@ -39,4 +39,4 @@ __sem_trywait (sem_t *sem)
   return -1;
 }
 
-weak_alias (__sem_trywait, sem_trywait);
+strong_alias (__sem_trywait, sem_trywait);

@@ -88,5 +88,5 @@ __pthread_mutex_trylock (struct __pthread_mutex *mutex)
   return err;
 }
 
-weak_alias (__pthread_mutex_trylock, _pthread_mutex_trylock);
-weak_alias (__pthread_mutex_trylock, pthread_mutex_trylock);
+strong_alias (__pthread_mutex_trylock, _pthread_mutex_trylock);
+strong_alias (__pthread_mutex_trylock, pthread_mutex_trylock);

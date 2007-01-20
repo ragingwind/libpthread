@@ -42,4 +42,4 @@ _pthread_rwlock_init (pthread_rwlock_t *rwlock,
   return 0;
 }
 
-weak_alias (_pthread_rwlock_init, pthread_rwlock_init);
+strong_alias (_pthread_rwlock_init, pthread_rwlock_init);

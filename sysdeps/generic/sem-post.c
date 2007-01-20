@@ -59,4 +59,4 @@ __sem_post (sem_t *sem)
   return 0;
 }
 
-weak_alias (__sem_post, sem_post);
+strong_alias (__sem_post, sem_post);

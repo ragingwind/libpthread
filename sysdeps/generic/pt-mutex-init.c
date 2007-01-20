@@ -45,4 +45,4 @@ _pthread_mutex_init (pthread_mutex_t *mutex,
   return 0;
 }
 
-weak_alias (_pthread_mutex_init, pthread_mutex_init);
+strong_alias (_pthread_mutex_init, pthread_mutex_init);

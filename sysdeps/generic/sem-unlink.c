@@ -29,4 +29,4 @@ __sem_unlink (const char *name)
   return -1;
 }
 
-weak_alias (__sem_unlink, sem_unlink);
+strong_alias (__sem_unlink, sem_unlink);

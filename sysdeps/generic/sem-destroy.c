@@ -35,4 +35,4 @@ __sem_destroy (sem_t *sem)
   return 0;
 }
 
-weak_alias (__sem_destroy, sem_destroy);
+strong_alias (__sem_destroy, sem_destroy);
