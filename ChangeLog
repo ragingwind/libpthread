@@ -1,3 +1,43 @@
+2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/i386/machine-sp.h (thread_stack_pointer):
+	Optimize esp read.
+	* i386/cthreads.h (cthread_sp): Likewise.
+	* include/pthread/pthread.h: Add the restrict keyword where
+	appropriate for full compliance.
+	* pthread/pt-internal.h: Likewise.
+	* sysdeps/generic/bits/mutex.h: Likewise.
+	* sysdeps/generic/bits/rwlock.h: Likewise.
+	* TODO: Drop that TODO item.
+
+2006-01-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Do not let other libraries (like libX11) override libpthread's
+	pthread_mutex_*, pthread_rwlock_* and sem_* dynamic symbols.
+	* sysdeps/generic/pt-mutex-destroy.c
+	(pthread_mutex_destroy): Make the alias strong.
+	* sysdeps/generic/pt-mutex-init.c
+	(pthread_mutex_init): Likewise.
+	* sysdeps/generic/pt-mutex-lock.c
+	(_pthread_mutex_lock, pthread_mutex_lock): Likewise.
+	* sysdeps/generic/pt-mutex-trylock.c
+	(_pthread_mutex_trylock, pthread_mutex_trylock): Likewise.
+	* sysdeps/generic/pt-mutex-unlock.c
+	(_pthread_mutex_lock, pthread_mutex_unlock): Likewise.
+	* sysdeps/generic/pt-rwlock-destroy.c
+	(pthread_rwlock_destroy): Likewise.
+	* sysdeps/generic/pt-rwlock-init.c
+	(pthread_rwlock_init): Likewise.
+	* sysdeps/generic/sem-destroy.c (sem_destroy): Likewise.
+	* sysdeps/generic/sem-getvalue.c (sem_getvalue): Likewise.
+	* sysdeps/generic/sem-init.c (sem_init): Likewise.
+	* sysdeps/generic/sem-open.c (sem_open): Likewise.
+	* sysdeps/generic/sem-post.c (sem_post): Likewise.
+	* sysdeps/generic/sem-timedwait.c (sem_timedwait): Likewise.
+	* sysdeps/generic/sem-trywait.c (sem_trywait): Likewise.
+	* sysdeps/generic/sem-unlink.c (sem_unlink): Likewise.
+	* sysdeps/generic/sem-wait.c (sem_wait): Likewise.
+
 2006-03-27  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile (SRCS): Don't define two times and only list	`pt-attr.c'
