@@ -44,8 +44,8 @@ struct __pthread_rwlock
 
 
 _EXTERN_INLINE int
-pthread_rwlock_init (struct __pthread_rwlock *__rwlock,
-		     const struct __pthread_rwlockattr *__attr)
+pthread_rwlock_init (struct __pthread_rwlock *__restrict __rwlock,
+		     const struct __pthread_rwlockattr *__restrict __attr)
 {
   struct __pthread_rwlock initialized_rwlock = __PTHREAD_RWLOCK_INITIALIZER;
   extern int _pthread_rwlock_init (struct __pthread_rwlock *,

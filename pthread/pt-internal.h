@@ -165,10 +165,10 @@ extern void __pthread_initialize (void);
 
 /* Internal version of pthread_create.  Rather than return the new
    tid, we return the whole __pthread structure in *PTHREAD.  */
-extern int __pthread_create_internal (struct __pthread **pthread,
-				      const pthread_attr_t *attr,
+extern int __pthread_create_internal (struct __pthread **__restrict pthread,
+				      const pthread_attr_t *__restrict attr,
 				      void *(*start_routine)(void *),
-				      void *arg);
+				      void *__restrict arg);
 
 /* Allocate a new thread structure and a pthread thread ID (but not a
    kernel thread or a stack).  */
@@ -189,10 +189,11 @@ extern void __pthread_stack_dealloc (void *stackaddr, size_t stacksize);
 
 
 /* Setup thread THREAD's context.  */
-extern int __pthread_setup (struct __pthread *thread,
+extern int __pthread_setup (struct __pthread *__restrict thread,
 				  void (*entry_point)(void *(*)(void *),
 						      void *),
-				  void *(*start_routine)(void *), void *arg);
+				  void *(*start_routine)(void *),
+				  void *__restrict arg);
 
 
 /* Allocate a kernel thread (and any miscellaneous system dependent
@@ -221,8 +222,8 @@ extern void __pthread_thread_halt (struct __pthread *thread,
 extern void __pthread_block (struct __pthread *thread);
 
 /* Block THREAD until *ABSTIME is reached.  */
-extern error_t __pthread_timedblock (struct __pthread *thread,
-				     const struct timespec *abstime);
+extern error_t __pthread_timedblock (struct __pthread *__restrict thread,
+				     const struct timespec *__restrict abstime);
 
 /* Wakeup THREAD.  */
 extern void __pthread_wakeup (struct __pthread *thread);
@@ -250,8 +251,9 @@ extern error_t __pthread_sigstate_init (struct __pthread *thread);
 extern void __pthread_sigstate_destroy (struct __pthread *thread);
 
 /* Modify thread *THREAD's signal state.  */
-extern error_t __pthread_sigstate (struct __pthread *thread, int how,
-				   const sigset_t *set, sigset_t *oset,
+extern error_t __pthread_sigstate (struct __pthread *__restrict thread, int how,
+				   const sigset_t *__restrict set,
+				   sigset_t *__restrict oset,
 				   int clear_pending);
 
 

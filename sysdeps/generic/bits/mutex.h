@@ -69,8 +69,8 @@ struct __pthread_mutex
 # endif
 
 _EXTERN_INLINE int
-pthread_mutex_init (struct __pthread_mutex *__mutex,
-		    const pthread_mutexattr_t *attr)
+pthread_mutex_init (struct __pthread_mutex *__restrict __mutex,
+		    const pthread_mutexattr_t *__restrict attr)
 {
   struct __pthread_mutex initialized_mutex = __PTHREAD_MUTEX_INITIALIZER;
 
