@@ -1,5 +1,5 @@
 /* Thread creation.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -127,6 +127,13 @@ __pthread_create_internal (struct __pthread **thread,
   if (err)
     goto failed_thread_alloc;
 
+#ifdef ENABLE_TLS
+  pthread->tcb = _dl_allocate_tls (NULL);
+  if (!pthread->tcb)
+    goto failed_thread_tls_alloc;
+  pthread->tcb->tcb = pthread->tcb;
+#endif /* ENABLE_TLS */
+
   /* And initialize the rest of the machine context.  This may include
      additional machine- and system-specific initializations that
      prove convenient.  */
@@ -192,6 +199,10 @@ __pthread_create_internal (struct __pthread **thread,
  failed_sigstate:
   __pthread_sigstate_destroy (pthread);
  failed_setup:
+#ifdef ENABLE_TLS
+  _dl_deallocate_tls (pthread->tcb, 1);
+ failed_thread_tls_alloc:
+#endif /* ENABLE_TLS */
   __pthread_thread_dealloc (pthread);
   __pthread_thread_halt (pthread, 0);
  failed_thread_alloc:

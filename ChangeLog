@@ -1,3 +1,24 @@
+2007-06-13  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	TLS support for libpthread, Mach/Hurd (x86).
+
+	* Makefile (CFLAGS): Define ENABLE_TLS.
+	* pthread/pt-create.c (__pthread_create_internal) [ENABLE_TLS]: Call
+	into glibc to allocate static TLS block.
+	* pthread/pt-exit.c (pthread_exit) [ENABLE_TLS]: Call into glibc to
+	deallocate static TLS block.
+	* pthread/pt-internal.h [ENABLE_TLS] (tcbhead_t): New structure; as in
+	glibc.
+	(__pthread) [ENABLE_TLS]: Add TCB member.
+	[ENABLE_TLS] (_dl_allocate_tls, _dl_deallocate_tls): Declare; from
+	glibc.
+	* sysdeps/mach/hurd/pt-sysdep.h (__thread_set_pcsp): Rename to
+	__thread_set_pcsptp.  Add SET_TP and TP parameters.  Change all
+	callers.
+	* sysdeps/mach/hurd/i386/pt-machdep.c (__thread_set_pcsptp): Imlement
+	TLS support.
+	* sysdeps/mach/hurd/i386/pt-setup.c (__pthread_setup): Likewise.
+
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/i386/machine-sp.h (thread_stack_pointer):

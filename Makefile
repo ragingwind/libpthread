@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 1994,95,96,97,2000,02, 2004, 2005, 2006
+#   Copyright (C) 1994,95,96,97,2000,02, 2004, 2005, 2006, 2007
 #     Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
@@ -170,6 +170,7 @@ VPATH += $(SYSDEP_PATH)
 HURDLIBS = ihash
 
 CFLAGS := -D_IO_MTSAFE_IO				\
+	  -DENABLE_TLS					\
 	   $(addprefix -I, $(SYSDEP_PATH))		\
 	  -imacros $(srcdir)/include/libc-symbols.h	\
 	  -imacros $(srcdir)/not-in-libc.h
