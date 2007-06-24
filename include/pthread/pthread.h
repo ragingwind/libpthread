@@ -144,6 +144,7 @@ extern int pthread_attr_setstackaddr (pthread_attr_t *attr,
 				      void *stackaddr);
 
 
+#ifdef __USE_XOPEN2K
 /* Return the value of the stackaddr and stacksize attributes in *ATTR
    in *STACKADDR and *STACKSIZE respectively.  */
 extern int pthread_attr_getstack (const pthread_attr_t *__restrict attr,
@@ -155,6 +156,7 @@ extern int pthread_attr_getstack (const pthread_attr_t *__restrict attr,
 extern int pthread_attr_setstack (pthread_attr_t *attr,
 				  void *stackaddr,
 				  size_t stacksize);
+#endif
 
 
 /* Return the value of the detachstate attribute in *ATTR in
@@ -219,23 +221,33 @@ extern pthread_t pthread_self (void);
 
 enum __pthread_mutex_protocol
   {
-    PTHREAD_PRIO_NONE = 0,
-#define PTHREAD_PRIO_NONE 0
-    PTHREAD_PRIO_INHERIT,
-#define PTHREAD_PRIO_INHERIT 1
-    PTHREAD_PRIO_PROTECT
-#define PTHREAD_PRIO_PROTECT 2
+    PTHREAD_PRIO_NONE_NP = 0,
+    PTHREAD_PRIO_INHERIT_NP,
+    PTHREAD_PRIO_PROTECT_NP
+#ifdef __USE_UNIX98
+    ,
+    PTHREAD_PRIO_NONE = PTHREAD_PRIO_NONE_NP,
+    PTHREAD_PRIO_INHERIT = PTHREAD_PRIO_INHERIT_NP,
+    PTHREAD_PRIO_PROTECT = PTHREAD_PRIO_PROTECT_NP
+#endif
   };
 
 enum __pthread_mutex_type
   {
-    PTHREAD_MUTEX_NORMAL = 0,
-#define PTHREAD_MUTEX_NORMAL 0
-#define PTHREAD_MUTEX_DEFAULT 0
-    PTHREAD_MUTEX_ERRORCHECK,
-#define PTHREAD_MUTEX_ERRORCHECK 1
-    PTHREAD_MUTEX_RECURSIVE,
-#define PTHREAD_MUTEX_RECURSIVE 2
+    PTHREAD_MUTEX_TIMED_NP = 0,
+    PTHREAD_MUTEX_ERRORCHECK_NP,
+    PTHREAD_MUTEX_RECURSIVE_NP
+#ifdef __USE_UNIX98
+    ,
+    PTHREAD_MUTEX_NORMAL = PTHREAD_MUTEX_TIMED_NP,
+    PTHREAD_MUTEX_ERRORCHECK = PTHREAD_MUTEX_ERRORCHECK_NP,
+    PTHREAD_MUTEX_RECURSIVE = PTHREAD_MUTEX_RECURSIVE_NP,
+    PTHREAD_MUTEX_DEFAULT = PTHREAD_MUTEX_NORMAL
+#endif
+#ifdef __USE_GNU
+    /* For compatibility.  */
+    , PTHREAD_MUTEX_FAST_NP = PTHREAD_MUTEX_TIMED_NP
+#endif
   };
 
 #include <bits/mutex-attr.h>
@@ -250,6 +262,7 @@ extern int pthread_mutexattr_init(pthread_mutexattr_t *attr);
 extern int pthread_mutexattr_destroy(pthread_mutexattr_t *attr);
 
 
+#ifdef __USE_UNIX98
 /* Return the value of the prioceiling attribute in *ATTR in
    *PRIOCEILING.  */
 extern int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *__restrict attr,
@@ -269,6 +282,7 @@ extern int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *__restrict a
 /* Set the value of the protocol attribute in *ATTR to PROTOCOL.  */
 extern int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
 					 int protocol);
+#endif
 
 
 /* Return the value of the process shared attribute in *ATTR in
@@ -282,6 +296,7 @@ extern int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 					int pshared);
 
 
+#ifdef __USE_UNIX98
 /* Return the value of the type attribute in *ATTR in *TYPE.  */
 extern int pthread_mutexattr_gettype(const pthread_mutexattr_t *__restrict attr,
 				     int *__restrict type);
@@ -289,6 +304,7 @@ extern int pthread_mutexattr_gettype(const pthread_mutexattr_t *__restrict attr,
 /* Set the value of the type attribute in *ATTR to TYPE.  */
 extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr,
 				     int type);
+#endif
 
 
 /* Mutexes.  */
@@ -313,14 +329,17 @@ extern int pthread_mutex_lock (pthread_mutex_t *__mutex);
 /* Try to lock MUTEX.  */
 extern int pthread_mutex_trylock (pthread_mutex_t *__mutex);
 
+#ifdef __USE_XOPEN2K
 /* Try to lock MUTEX, block until *ABSTIME if it is already held.  */
 extern int pthread_mutex_timedlock (struct __pthread_mutex *__restrict mutex,
 				    const struct timespec *__restrict abstime);
+#endif
 
 /* Unlock MUTEX.  */
 extern int pthread_mutex_unlock (pthread_mutex_t *__mutex);
 
 
+#ifdef __USE_UNIX98
 /* Return the priority ceiling of mutex *MUTEX in *PRIOCEILING.  */
 extern int pthread_mutex_getprioceiling (const pthread_mutex_t *__restrict mutex,
 					 int *__restrict prioceiling);
@@ -330,6 +349,7 @@ extern int pthread_mutex_getprioceiling (const pthread_mutex_t *__restrict mutex
    release the mutex.  */
 extern int pthread_mutex_setprioceiling (pthread_mutex_t *__restrict mutex,
 					 int prio, int *__restrict oldprio);
+#endif
 
 
 
@@ -347,6 +367,7 @@ extern int pthread_condattr_init (pthread_condattr_t *attr);
 extern int pthread_condattr_destroy (pthread_condattr_t *attr);
 
 
+#ifdef __USE_XOPEN2K
 /* Return the value of the clock attribute in *ATTR in *CLOCK_ID.  */
 extern int pthread_condattr_getclock (const pthread_condattr_t *__restrict attr,
 				      clockid_t *__restrict clock_id);
@@ -354,6 +375,7 @@ extern int pthread_condattr_getclock (const pthread_condattr_t *__restrict attr,
 /* Set the value of the clock attribute in *ATTR to CLOCK_ID.  */
 extern int pthread_condattr_setclock (pthread_condattr_t *attr,
 				      clockid_t clock_id);
+#endif
 
 
 /* Return the value of the process shared attribute in *ATTR in
@@ -469,6 +491,8 @@ pthread_spin_unlock (pthread_spinlock_t *__lock)
 
 /* rwlock attributes.  */
 
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K
+
 #include <bits/rwlock-attr.h>
 
 typedef struct __pthread_rwlockattr pthread_rwlockattr_t;
@@ -512,10 +536,12 @@ extern int pthread_rwlock_rdlock (pthread_rwlock_t *rwlock);
 /* Acquire the rwlock *RWLOCK for reading.  */
 extern int pthread_rwlock_tryrdlock (pthread_rwlock_t *rwlock);
 
+# ifdef __USE_XOPEN2K
 /* Acquire the rwlock *RWLOCK for reading blocking until *ABSTIME if
    it is already held.  */
 extern int pthread_rwlock_timedrdlock (struct __pthread_rwlock *__restrict rwlock,
 				       const struct timespec *__restrict abstime);
+# endif
 
 /* Acquire the rwlock *RWLOCK for writing.  */
 extern int pthread_rwlock_wrlock (pthread_rwlock_t *rwlock);
@@ -523,13 +549,18 @@ extern int pthread_rwlock_wrlock (pthread_rwlock_t *rwlock);
 /* Try to acquire the rwlock *RWLOCK for writing.  */
 extern int pthread_rwlock_trywrlock (pthread_rwlock_t *rwlock);
 
+# ifdef __USE_XOPEN2K
 /* Acquire the rwlock *RWLOCK for writing blocking until *ABSTIME if
    it is already held.  */
 extern int pthread_rwlock_timedwrlock (struct __pthread_rwlock *__restrict rwlock,
 				       const struct timespec *__restrict abstime);
+# endif
 
 /* Release the lock held by the current thread on *RWLOCK.  */
 extern int pthread_rwlock_unlock (pthread_rwlock_t *rwlock);
+
+#endif /* __USE_UNIX98 || __USE_XOPEN2K */
+
 
 
 /* Cancelation.  */
@@ -568,6 +599,8 @@ extern void pthread_testcancel (void);
 
 
 /* Barriers attributes.  */
+
+#ifdef __USE_XOPEN2K
 
 #include <bits/barrier-attr.h>
 
@@ -612,6 +645,9 @@ extern int pthread_barrier_destroy (pthread_barrier_t *barrier);
 
 /* Wait on barrier BARRIER.  */
 extern int pthread_barrier_wait (pthread_barrier_t *barrier);
+
+#endif /* __USE_XOPEN2K */
+
 
 
 /* Thread specific data.  */
@@ -653,11 +689,13 @@ extern int pthread_once (pthread_once_t *once_control,
 
 /* Concurrency.  */
 
+#ifdef __USE_UNIX98
 /* Set the desired concurrency level to NEW_LEVEL.  */
 extern int pthread_setconcurrency (int new_level);
 
 /* Get the current concurrency level.  */
 extern int pthread_getconcurrency (void);
+#endif
 
 
 /* Forking.  */
@@ -681,8 +719,10 @@ extern int pthread_kill (pthread_t thread, int signo);
 
 /* Time.  */
 
+#ifdef __USE_XOPEN2K
 /* Return the thread cpu clock.  */
 extern int pthread_getcpuclockid (pthread_t thread, clockid_t *clock);
+#endif
 
 
 /* Scheduling.  */

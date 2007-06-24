@@ -43,6 +43,7 @@ struct __pthread_rwlock
     { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0 }
 
 
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K
 _EXTERN_INLINE int
 pthread_rwlock_init (struct __pthread_rwlock *__restrict __rwlock,
 		     const struct __pthread_rwlockattr *__restrict __attr)
@@ -69,5 +70,6 @@ pthread_rwlock_destroy (struct __pthread_rwlock *__rwlock)
 
   return 0;
 }
+#endif
 
 #endif /* bits/rwlock.h */

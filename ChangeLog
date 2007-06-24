@@ -1,3 +1,41 @@
+2007-06-24  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/semaphore.h (sem_timedwait): Declare only if __USE_XOPEN2K
+	is defined.
+	* include/pthread/pthread.h (pthread_attr_getstack)
+	(pthread_attr_setstack, pthread_mutex_timedlock)
+	(pthread_condattr_getclock, pthread_condattr_setclock)
+	(pthread_rwlock_timedrdlock, pthread_rwlock_timedwrlock)
+	(pthread_barrierattr_t, pthread_barrierattr_init)
+	(pthread_barrierattr_destroy, pthread_barrierattr_getpshared)
+	(pthread_barrierattr_setpshared, pthread_barrier_t)
+	(PTHREAD_BARRIER_SERIAL_THREAD, pthread_barrier_init)
+	(pthread_barrier_destroy, pthread_barrier_wait)
+	(pthread_getcpuclockid): Declare only if __USE_XOPEN2K is defined.
+	(pthread_mutexattr_getprioceiling, pthread_mutexattr_setprioceiling)
+	(pthread_mutexattr_getprotocol, pthread_mutexattr_setprotocol)
+	(pthread_mutexattr_gettype, pthread_mutexattr_settype)
+	(pthread_mutex_getprioceiling, pthread_mutex_setprioceiling)
+	(pthread_setconcurrency, pthread_getconcurrency): Declare only if
+	__USE_UNIX98 is defined.
+	(pthread_rwlockattr_t, pthread_rwlockattr_init)
+	(pthread_rwlockattr_destroy, pthread_rwlockattr_getpshared)
+	(pthread_rwlockattr_setpshared, pthread_rwlock_t, pthread_rwlock_init)
+	(pthread_rwlock_destroy, pthread_rwlock_rdlock)
+	(pthread_rwlock_tryrdlock, pthread_rwlock_wrlock)
+	(pthread_rwlock_trywrlock, pthread_rwlock_unlock): Declare only if
+	__USE_UNIX98 or __USE_XOPEN2K are defined.
+	(PTHREAD_PRIO_NONE, PTHREAD_PRIO_INHERIT, PTHREAD_PRIO_PROTECT)
+	(PTHREAD_MUTEX_NORMAL, PTHREAD_MUTEX_ERRORCHECK)
+	(PTHREAD_MUTEX_RECURSIVE, PTHREAD_MUTEX_DEFAULT):
+	Define only if __USE_UNIX98 is defined.
+	(PTHREAD_MUTEX_FAST_NP): Define for compatibility when __USE_GNU is
+	defined.
+	* sysdeps/generic/bits/rwlock.h (pthread_rwlock_init)
+	(pthread_rwlock_destroy): Declare only if __USE_UNIX98 or
+	__USE_XOPEN2K are defined.
+	* TODO: Drop that TODO item.
+
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/i386/machine-sp.h (thread_stack_pointer):
