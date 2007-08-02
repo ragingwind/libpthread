@@ -43,33 +43,4 @@ struct __pthread_rwlock
     { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0 }
 
 
-#if defined __USE_UNIX98 || defined __USE_XOPEN2K
-_EXTERN_INLINE int
-pthread_rwlock_init (struct __pthread_rwlock *__restrict __rwlock,
-		     const struct __pthread_rwlockattr *__restrict __attr)
-{
-  struct __pthread_rwlock initialized_rwlock = __PTHREAD_RWLOCK_INITIALIZER;
-  extern int _pthread_rwlock_init (struct __pthread_rwlock *,
-				   const struct __pthread_rwlockattr *);
-
-  if (__attr)
-    return _pthread_rwlock_init (__rwlock, __attr);
-
-  *__rwlock = initialized_rwlock;
-  return 0;
-}
-
-_EXTERN_INLINE int
-pthread_rwlock_destroy (struct __pthread_rwlock *__rwlock)
-{
-  extern int _pthread_rwlock_destroy (struct __pthread_rwlock *);
-
-  if (__rwlock->__attr
-      || __rwlock->__data)
-    return _pthread_rwlock_destroy (__rwlock);
-
-  return 0;
-}
-#endif
-
 #endif /* bits/rwlock.h */
