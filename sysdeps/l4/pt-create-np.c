@@ -1,5 +1,5 @@
 /* Thread creation from provided L4 thread.
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@
 int
 pthread_create_from_l4_tid_np (pthread_t *thread, 
 			       const pthread_attr_t *attr,
-			       l4_thread_id_t tid, 
+			       _L4_thread_id_t tid, 
 			       void *(*start_routine)(void *), void *arg)
 {
   int err;

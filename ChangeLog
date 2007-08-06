@@ -1,3 +1,15 @@
+2007-08-06  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/bits/pthread-np.h (pthread_create_from_l4_tid_np):
+	Don't require the GNU interface: use _L4_thread_id_t, not
+	l4_thread_id_t.
+	(pthread_pool_add_np): Likewise.
+	(pthread_pool_get_np): Likewise.
+	* sysdeps/l4/pt-create-np.c (pthread_create_from_l4_tid_np): Likewise.
+	* sysdeps/l4/pt-pool-np.c (pool_list): Likewise.
+	(pthread_pool_add_np): Likewise.
+	(pthread_pool_get_np): Likewise.
+
 2005-02-08  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/posix/pt-spin.c (__pthread_spin_lock): Make a weak alias
