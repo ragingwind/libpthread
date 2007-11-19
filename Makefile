@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 1994,95,96,97,2000,02, 2004, 2005, 2006
+#   Copyright (C) 1994, 1995, 1996, 1997, 2000, 2002, 2004, 2005, 2006, 2007
 #     Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
@@ -169,15 +169,16 @@ VPATH += $(SYSDEP_PATH)
 
 HURDLIBS = ihash
 
-CFLAGS := -D_IO_MTSAFE_IO				\
-	   $(addprefix -I, $(SYSDEP_PATH))		\
+installhdrs :=
+installhdrsubdir := .
+
+include ../Makeconf
+
+CPPFLAGS += \
+	  $(addprefix -I, $(SYSDEP_PATH))		\
 	  -imacros $(srcdir)/include/libc-symbols.h	\
 	  -imacros $(srcdir)/not-in-libc.h
 
-installhdrs :=
-installhdrsubdir = .
-
-include ../Makeconf
 
 install: install-headers $(libdir)/libpthread2.a $(libdir)/libpthread2_pic.a
 install-headers: $(addprefix $(includedir)/, $(sysdeps_headers))

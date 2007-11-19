@@ -1,3 +1,8 @@
+2007-11-19  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile (CFLAGS): Don't set and instead...
+	(CPPFLAGS): ... append the inclusion stuff to these.
+
 2007-08-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/generic/bits/mutex.h (pthread_mutex_init)
