@@ -1,5 +1,18 @@
 2007-11-20  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/l4/pt-thread-dealloc.c: New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-thread-dealloc.c.
+
+	* sysdeps/l4/hurd/pt-sysdep.h (PTHREAD_STACK_DEFAULT): Change to
+	2MB.
+
+	* sysdeps/l4/hurd/pt-sysdep.c (sched_yield): New function.
+	(sigprocmask): Likewise.
+	(init_routine): Only call __pthread_initialize once.  Update
+	comments.
+
+2007-11-20  Neal H. Walfield  <neal@gnu.org>
+
 	* Makefile.am (libpthread_a_SOURCES): Remove pt-create-np.c.
 	* sysdeps/l4/pt-create-np.c: Remove file.
 	* sysdeps/l4/pt-pool-np.c (pthread_pool_add_np): Change tid from

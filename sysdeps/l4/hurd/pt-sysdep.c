@@ -23,6 +23,20 @@
 
 #include <pt-internal.h>
 
+int
+sched_yield (void)
+{
+  l4_yield ();
+  return 0;
+}
+
+int
+sigprocmask (int HOW, const sigset_t *restrict SET, sigset_t *restrict OLDSET)
+{
+  /* Just ignore for now.  */
+  return 0;
+}
+
 /* Forward.  */
 static void *init_routine (void);
 
@@ -36,23 +50,15 @@ void *(*_pthread_init_routine)(void) = &init_routine;
 static void * 
 init_routine (void)
 {
-  struct __pthread *thread;
-  int err;
-
   /* Initialize the library.  */
   __pthread_initialize ();
+
+  struct __pthread *thread;
+  int err;
 
   /* Create the pthread structure for the main thread (i.e. us).  */
   err = __pthread_create_internal (&thread, 0, 0, 0);
   assert_perror (err);
-
-  __pthread_initialize ();
-
-  /* Decrease the number of threads, to take into account that the
-     signal thread (which will be created by the startup code when we
-     return from here) shouldn't be seen as a user thread.  */
-#warning Need to implement the signal thread.
-  // __pthread_total--;
 
   return (void *) thread->mcontext.sp;
 }

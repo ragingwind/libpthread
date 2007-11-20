@@ -1,5 +1,5 @@
-/* Start thread.  L4 version.
-   Copyright (C) 2003, 2004, 2007 Free Software Foundation, Inc.
+/* Deallocate the kernel thread resources.  L4 version.
+   Copyright (C) 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -19,22 +19,14 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <string.h>
+#include <l4.h>
 
 #include <pt-internal.h>
 
-/* Start THREAD.  Get the kernel thread scheduled and running.  */
-int
-__pthread_thread_start (struct __pthread *thread)
+/* Deallocate any kernel resources associated with THREAD except don't
+   halt the thread itself.  On return, the thread will be marked as
+   dead and __pthread_halt will be called.  */
+void
+__pthread_thread_dealloc (struct __pthread *thread)
 {
-  if (__pthread_num_threads == 1)
-    /* The main thread is already running of course.  */
-    {
-      assert (__pthread_total == 1);
-      assert (l4_is_thread_equal (l4_myself (), thread->threadid));
-    }
-  else
-    l4_start_sp_ip (thread->threadid, (l4_word_t) thread->mcontext.sp,
-		    (l4_word_t) thread->mcontext.pc);
-  return 0;
 }

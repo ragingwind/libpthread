@@ -25,8 +25,8 @@
 /* XXX */
 #define _POSIX_THREAD_THREADS_MAX	64
 
-/* The default stack size.  */
-#define PTHREAD_STACK_DEFAULT	4096
+/* The default stack size: 2MB.  */
+#define PTHREAD_STACK_DEFAULT	(2 * 1024 * 1024)
 
 #define PTHREAD_SYSDEP_MEMBERS \
   l4_thread_id_t threadid; \
