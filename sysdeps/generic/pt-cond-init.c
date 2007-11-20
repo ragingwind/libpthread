@@ -19,6 +19,7 @@
 
 #include <pthread.h>
 #include <assert.h>
+#include <string.h>
 
 #include <pt-internal.h>
 
@@ -26,9 +27,19 @@ int
 pthread_cond_init (pthread_cond_t *cond,
 		   const pthread_condattr_t *attr)
 {
-  if (attr)
-    assert (attr->pshared == PTHREAD_PROCESS_PRIVATE);
+  *cond = (pthread_cond_t) __PTHREAD_COND_INITIALIZER;
 
-  *cond = (struct __pthread_cond) __PTHREAD_COND_INITIALIZER;
+  if (! attr
+      || memcmp (attr, &__pthread_default_condattr, sizeof (*attr) == 0))
+    /* Use the default attributes.  */
+    return 0;
+
+  /* Non-default attributes.  */
+
+  cond->__attr = malloc (sizeof *attr);
+  if (! cond->__attr)
+    return ENOMEM;
+
+  *cond->__attr = *attr;
   return 0;
 }

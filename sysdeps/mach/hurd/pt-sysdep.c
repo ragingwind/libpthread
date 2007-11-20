@@ -1,5 +1,5 @@
 /* System dependent pthreads code.  Hurd version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -29,16 +29,16 @@
 #include <pt-internal.h>
 
 /* Forward.  */
-static int init_routine (void);
+static void *init_routine (void);
 
 /* OK, the name of this variable isn't really appropriate, but I don't
    want to change it yet.  */
-int (*_cthread_init_routine)(void) = &init_routine;
+void *(*_cthread_init_routine)(void) = &init_routine;
 
 /* This function is called from the Hurd-specific startup code.  It
    should return a new stack pointer for the main thread.  The caller
    will switch to this new stack before doing anything serious.  */
-static int
+static void *
 init_routine (void)
 {
   struct __pthread *thread;
@@ -68,5 +68,5 @@ init_routine (void)
     = (__pthread_default_attr.stacksize
        - __hurd_threadvar_max * sizeof (uintptr_t));
 
-  return (int) thread->mcontext.sp;
+  return thread->mcontext.sp;
 }

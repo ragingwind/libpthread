@@ -1,5 +1,6 @@
 #
-#   Copyright (C) 1994,95,96,97,2000,02 Free Software Foundation, Inc.
+#   Copyright (C) 1994, 1995, 1996, 1997, 2000, 2002, 2004, 2005, 2006, 2007
+#     Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License as
@@ -21,8 +22,6 @@ makemode := library
 MICROKERNEL := mach
 SYSDEPS := lockfile.c
 
-SRCS := 
-
 LCLHDRS := 
 
 SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
@@ -32,7 +31,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 	pt-attr-init.c pt-attr-setdetachstate.c pt-attr-setguardsize.c	    \
 	pt-attr-setinheritsched.c pt-attr-setschedparam.c		    \
 	pt-attr-setschedpolicy.c pt-attr-setscope.c pt-attr-setstack.c	    \
-	pt-attr-setstackaddr.c pt-attr-setstacksize.c pt-attr.c		    \
+	pt-attr-setstackaddr.c pt-attr-setstacksize.c			    \
 									    \
 	pt-barrier-destroy.c pt-barrier-init.c pt-barrier-wait.c	    \
 	pt-barrier.c pt-barrierattr-destroy.c pt-barrierattr-init.c	    \
@@ -96,6 +95,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 									    \
 	pt-stack-alloc.c						    \
 	pt-thread-alloc.c						    \
+	pt-thread-dealloc.c						    \
 	pt-thread-start.c						    \
 	pt-thread-halt.c						    \
 									    \
@@ -120,6 +120,10 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 									    \
 	pt-getschedparam.c pt-setschedparam.c pt-setschedprio.c		    \
 									    \
+	sem-close.c sem-destroy.c sem-getvalue.c sem-init.c sem-open.c	    \
+	sem-post.c sem-timedwait.c sem-trywait.c sem-unlink.c		    \
+	sem-wait.c							    \
+									    \
 	cthreads-compat.c						    \
 	$(SYSDEPS)
 
@@ -132,6 +136,7 @@ libname = libpthread
 sysdeps_headers =				\
               pthread.h				\
               pthread/pthread.h			\
+	      semaphore.h			\
 						\
               bits/pthread.h			\
               bits/mutex.h			\
@@ -146,7 +151,8 @@ sysdeps_headers =				\
               bits/once.h			\
               bits/mutex-attr.h			\
               bits/rwlock.h			\
-              bits/rwlock-attr.h
+              bits/rwlock-attr.h		\
+	      bits/semaphore.h
 
 SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/ia32	\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/ia32			\
@@ -163,15 +169,16 @@ VPATH += $(SYSDEP_PATH)
 
 HURDLIBS = ihash
 
-CFLAGS := -D_IO_MTSAFE_IO				\
-	   $(addprefix -I, $(SYSDEP_PATH))		\
+installhdrs :=
+installhdrsubdir := .
+
+include ../Makeconf
+
+CPPFLAGS += \
+	  $(addprefix -I, $(SYSDEP_PATH))		\
 	  -imacros $(srcdir)/include/libc-symbols.h	\
 	  -imacros $(srcdir)/not-in-libc.h
 
-installhdrs :=
-installhdrsubdir = .
-
-include ../Makeconf
 
 install: install-headers $(libdir)/libpthread2.a $(libdir)/libpthread2_pic.a
 install-headers: $(addprefix $(includedir)/, $(sysdeps_headers))
@@ -181,14 +188,16 @@ install-headers: $(addprefix $(includedir)/, $(sysdeps_headers))
 .PHONY: $(libdir)/libpthread.a $(libdir)/libpthread_pic.a
 
 # XXX: These rules are a hack.  But it is better than messing with
-# ../Makeconf at the moment.
+# ../Makeconf at the moment.  Note that the linker scripts
+# $(srcdir)/libpthread.a and $(srcdir)/libpthread_pic.a get overwritten
+# when building in $(srcdir) and not a seperate build directory.
 $(libdir)/libpthread2.a: $(libdir)/libpthread.a
 	mv $< $@
-	$(INSTALL_DATA) libpthread.a $<
+	$(INSTALL_DATA) $(srcdir)/libpthread.a $<
 
 $(libdir)/libpthread2_pic.a: $(libdir)/libpthread_pic.a
 	mv $< $@
-	$(INSTALL_DATA) libpthread_pic.a $<
+	$(INSTALL_DATA) $(srcdir)/libpthread_pic.a $<
 
 .PHONY: $(addprefix $(includedir)/, $(sysdeps_headers))
 

@@ -71,10 +71,9 @@ __pthread_destroy_specific (struct __pthread *thread)
 
       /* This may take a very long time.  Let those blocking on
 	 pthread_key_create or pthread_key_delete make progress.  */
-      /* FIXME what should we do with this one? */
-      /* sched_yield (); */
+      sched_yield ();
     }
-  
+
   hurd_ihash_free (thread->thread_specifics);
   thread->thread_specifics = 0;
 }

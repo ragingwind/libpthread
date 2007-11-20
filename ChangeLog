@@ -1,3 +1,339 @@
+2007-11-20  Neal H. Walfield  <neal@gnu.org>
+
+	Also merge semaphore changes from mainline Hurd.
+
+2007-11-20  Neal H. Walfield  <neal@gnu.org>
+
+	Merge changes from mainline Hurd.  Update L4 bits to compile with
+	those changes.
+
+	* sysdeps/l4/pt-block.c (__pthread_block): Call l4_receive, not
+	L4_Receive.
+	* sysdeps/l4/pt-create-np.c (pthread_create_from_l4_tid_np): Don't
+	pass TID to __pthread_create_internal.  Emit a warning.
+	* sysdeps/l4/pt-stack-alloc.c (allocate_page): Remove function.
+	(__pthread_stack_alloc): Don't require that STACKSIZE is equal to
+	__pthread_stacksize.  Call mmap.
+	* sysdeps/l4/pt-thread-halt.c (__pthread_thread_halt): Take
+	additional argument, need_dealloc.  Call __pthread_dealloc.  Stop
+	the thread.
+	* sysdeps/l4/hurd/pt-sysdep.c (init_routine): When calling
+	__pthread_create_internal, don't pass the tid.
+	* tests/test-1.c (main): Use pthread_mutex_init, not
+	PTHREAD_MUTEX_INITIALIZER.
+
+	* pthread/pt-alloc.c: Don't include <bits/atomic.h>.  Include
+	<atomic.h>.
+	(__pthread_free_threads): Make it an atomicptr_t, not an
+	__atomicptr_t.
+	(__pthread_alloc): Don't use __atomicptr_compare_and_swap, use
+	atomic_compare_and_exchange_val_acq.
+	* pthread/pt-create.c: Don't include <bits/atomic.h>.  Include
+	<atomic.h>.
+	(__pthread_total): Make it an atomic_fast32_t, not an __atomic_t.
+	(__pthread_create_internal): Use atomic_increment and
+	atomic_decrement, not __atomic_inc and __atomic_dec.
+	* pthread/pt-dealloc.c: Don't include <bits/atomic.h>.  Include
+	<atomic.h>.
+	(__pthread_free_threads): Make it an atomicptr_t, not an
+	__atomicptr_t.
+	(__pthread_dealloc): Use atomic_compare_and_exchange_val_acq, not
+	__atomicptr_compare_and_swap.
+	* pthread/pt-exit.c: Don't include <bits/atomic.h>.  Include
+	<atomic.h>.
+	(pthread_exit): Use atomic_decrement_and_test, not
+	__atomic_dec_and_test.
+	* pthread/pt-internal.h: Don't include <bits/atomic.h>.  Include
+	<atomic.h>.
+	(__pthread_total): Make it an atomic_fast32_t, not an __atomic_t.
+	* sysdeps/powerpc/bits/atomic.h: Remove file.
+	* sysdeps/ia32/bits/atomic.h: Likewise.
+	
+2007-11-19  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile (CFLAGS): Don't set and instead...
+	(CPPFLAGS): ... append the inclusion stuff to these.
+
+2007-08-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/generic/bits/mutex.h (pthread_mutex_init)
+	(pthread_mutex_destroy, __pthread_mutex_lock, __pthread_mutex_trylock)
+	(pthread_mutex_lock, pthread_mutex_trylock): Remove inline
+	definitions.
+	* sysdeps/generic/bits/rwlock.h (pthread_rwlock_init)
+	(pthread_rwlock_destroy): Likewise.
+
+2007-06-24  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/semaphore.h (sem_timedwait): Declare only if __USE_XOPEN2K
+	is defined.
+	* include/pthread/pthread.h (pthread_attr_getstack)
+	(pthread_attr_setstack, pthread_mutex_timedlock)
+	(pthread_condattr_getclock, pthread_condattr_setclock)
+	(pthread_rwlock_timedrdlock, pthread_rwlock_timedwrlock)
+	(pthread_barrierattr_t, pthread_barrierattr_init)
+	(pthread_barrierattr_destroy, pthread_barrierattr_getpshared)
+	(pthread_barrierattr_setpshared, pthread_barrier_t)
+	(PTHREAD_BARRIER_SERIAL_THREAD, pthread_barrier_init)
+	(pthread_barrier_destroy, pthread_barrier_wait)
+	(pthread_getcpuclockid): Declare only if __USE_XOPEN2K is defined.
+	(pthread_mutexattr_getprioceiling, pthread_mutexattr_setprioceiling)
+	(pthread_mutexattr_getprotocol, pthread_mutexattr_setprotocol)
+	(pthread_mutexattr_gettype, pthread_mutexattr_settype)
+	(pthread_mutex_getprioceiling, pthread_mutex_setprioceiling)
+	(pthread_setconcurrency, pthread_getconcurrency): Declare only if
+	__USE_UNIX98 is defined.
+	(pthread_rwlockattr_t, pthread_rwlockattr_init)
+	(pthread_rwlockattr_destroy, pthread_rwlockattr_getpshared)
+	(pthread_rwlockattr_setpshared, pthread_rwlock_t, pthread_rwlock_init)
+	(pthread_rwlock_destroy, pthread_rwlock_rdlock)
+	(pthread_rwlock_tryrdlock, pthread_rwlock_wrlock)
+	(pthread_rwlock_trywrlock, pthread_rwlock_unlock): Declare only if
+	__USE_UNIX98 or __USE_XOPEN2K are defined.
+	(PTHREAD_PRIO_NONE, PTHREAD_PRIO_INHERIT, PTHREAD_PRIO_PROTECT)
+	(PTHREAD_MUTEX_NORMAL, PTHREAD_MUTEX_ERRORCHECK)
+	(PTHREAD_MUTEX_RECURSIVE, PTHREAD_MUTEX_DEFAULT):
+	Define only if __USE_UNIX98 is defined.
+	(PTHREAD_MUTEX_FAST_NP): Define for compatibility when __USE_GNU is
+	defined.
+	* sysdeps/generic/bits/rwlock.h (pthread_rwlock_init)
+	(pthread_rwlock_destroy): Declare only if __USE_UNIX98 or
+	__USE_XOPEN2K are defined.
+	* TODO: Drop that TODO item.
+
+2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/i386/machine-sp.h (thread_stack_pointer):
+	Optimize esp read.
+	* i386/cthreads.h (cthread_sp): Likewise.
+	* include/pthread/pthread.h: Add the restrict keyword where
+	appropriate for full compliance.
+	* pthread/pt-internal.h: Likewise.
+	* sysdeps/generic/bits/mutex.h: Likewise.
+	* sysdeps/generic/bits/rwlock.h: Likewise.
+	* TODO: Drop that TODO item.
+
+2006-01-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Do not let other libraries (like libX11) override libpthread's
+	pthread_mutex_*, pthread_rwlock_* and sem_* dynamic symbols.
+	* sysdeps/generic/pt-mutex-destroy.c
+	(pthread_mutex_destroy): Make the alias strong.
+	* sysdeps/generic/pt-mutex-init.c
+	(pthread_mutex_init): Likewise.
+	* sysdeps/generic/pt-mutex-lock.c
+	(_pthread_mutex_lock, pthread_mutex_lock): Likewise.
+	* sysdeps/generic/pt-mutex-trylock.c
+	(_pthread_mutex_trylock, pthread_mutex_trylock): Likewise.
+	* sysdeps/generic/pt-mutex-unlock.c
+	(_pthread_mutex_lock, pthread_mutex_unlock): Likewise.
+	* sysdeps/generic/pt-rwlock-destroy.c
+	(pthread_rwlock_destroy): Likewise.
+	* sysdeps/generic/pt-rwlock-init.c
+	(pthread_rwlock_init): Likewise.
+	* sysdeps/generic/sem-destroy.c (sem_destroy): Likewise.
+	* sysdeps/generic/sem-getvalue.c (sem_getvalue): Likewise.
+	* sysdeps/generic/sem-init.c (sem_init): Likewise.
+	* sysdeps/generic/sem-open.c (sem_open): Likewise.
+	* sysdeps/generic/sem-post.c (sem_post): Likewise.
+	* sysdeps/generic/sem-timedwait.c (sem_timedwait): Likewise.
+	* sysdeps/generic/sem-trywait.c (sem_trywait): Likewise.
+	* sysdeps/generic/sem-unlink.c (sem_unlink): Likewise.
+	* sysdeps/generic/sem-wait.c (sem_wait): Likewise.
+
+2006-03-27  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile (SRCS): Don't define two times and only list	`pt-attr.c'
+	once.  Reported by Jeff Bailey <jbailey@gnu.org>.
+
+2005-08-28  Neal H. Walfield  <neal@gnu.org>
+
+	* include/semaphore.h: Use __restrict, not restrict.
+
+2005-05-31  Neal H. Walfield  <neal@gnu.org>
+
+	* include/pthread/pthread.h: If clockid_t is still not defined
+	after including <time.h>, define it manually.
+
+2005-05-17  Neal H. Walfield  <neal@gnu.org>
+
+	* include/pthread/pthread.h: Define __need_clockid_t before
+	including <time.h>.
+
+2005-05-12  Neal H. Walfield  <neal@gnu.org>
+
+	* include/pthread/pthread.h (pthread_exit): Add noreturn
+	attribute.
+
+	* sysdeps/generic/bits/condition.h (__PTHREAD_COND_INITIALIZER):
+	Don't create a compound literal.
+	* sysdeps/generic/bits/mutex.h (__PTHREAD_MUTEX_INITIALIZER):
+	Don't create a compound literal.
+	(pthread_mutex_init): Don't assign to *__MUTEX directly.
+	Initialize an intermediate local variable and then copy the
+	result.
+	* sysdeps/generic/bits/rwlock.h (__PTHREAD_RWLOCK_INITIALIZER):
+	Don't create a compound literal.
+	(pthread_rwlock_init): Don't assign to *__RWLOCK directly.
+	Initialize an intermediate local variable and then copy the
+	result.
+	* sysdeps/i386/bits/spin-lock.h (__SPIN_LOCK_INITIALIZER): 
+	Don't create a compound literal.
+
+	* pthread/pt-alloc.c (initialize_pthread): Cast
+	PTHREAD_MUTEX_INITIALIZER and PTHREAD_COND_INITIALIZER to create a
+	compound literal.
+	* tests/test-1.c (main): Use pthread_mutex_init, not
+	PTHREAD_MUTEX_INIT for mutex initialization
+
+	* sysdeps/generic/pt-barrier-init.c (pthread_barrier_init): Remove
+	assert.  Copy ATTR if non-defaults are used.
+	* sysdeps/generic/pt-cond-init.c (pthread_cond_init): Include
+	<string.h>.  Remove assert.  Copy ATTR if non-defaults are used.
+	* sysdeps/generic/pt-mutex-init.c (_pthread_mutex_init): Cast
+	PTHREAD_MUTEX_INITIALIZER to create a compound literal.
+	* sysdeps/generic/pt-rwlock-init.c: Include <string.h>.
+	(_pthread_rwlock_init): Cast __PTHREAD_RWLOCK_INITIALIZER to
+	create a compound literal.  Copy ATTR if non-defaults are used.
+
+	* sysdeps/generic/pt-cond-timedwait.c
+	(__pthread_cond_timedwait_internal): Check that ABSTIME->TV_NSEC
+	is valid.  Don't shadow ERR.  Don't return before cleaning up.
+	* sysdeps/generic/pt-mutex-timedlock.c (pthread_mutex_timedlock):
+	Move after __pthread_mutex_timedlock_internal.  Check that
+	ABSTIME->TV_NSEC is valid.
+	* sysdeps/generic/pt-rwlock-timedrdlock.c
+	(pthread_rwlock_timedrdlock): Move after.
+	__pthread_rwlock_timedrdlock_internal.
+	(__pthread_rwlock_timedrdlock_internal): Check that
+	ABSTIME->TV_NSEC is valid.
+	* sysdeps/generic/pt-rwlock-timedwrlock.c
+	(pthread_rwlock_timedwrlock): Move after
+	__pthread_rwlock_timedwrlock_internal.
+	(__pthread_rwlock_timedwrlock_internal): Check that
+	ABSTIME->TV_NSEC is valid.
+	* sysdeps/generic/sem-timedwait.c (__sem_timedwait_internal):
+	Check that TIMEOUT->TV_NSEC is valid before enqueuing the thread.
+
+	* sysdeps/generic/pt-rwlock-rdlock.c
+	(__pthread_rwlock_timedrdlock_internal): Fix declaration.
+
+	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock):
+	Don't return EDEADLK.  POSIX does not allow it.
+
+	* sysdeps/mach/pt-timedblock.c (__pthread_timedblock): Calculate
+	the relative timeout without overflowing.
+
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Cast THREAD.
+
+2005-05-12  Neal H. Walfield  <neal@gnu.org>
+
+	* Makefile (SRCS): Add sem-close.c, sem-destroy.c, sem-getvalue.c,
+	sem-init.c, sem-open.c, sem-post.c, sem-timedwait.c, sem-trywait.c,
+	sem-unlink.c and sem-wait.c.
+	(sysdeps_headers): Add semaphore.h and bits/semaphore.h.
+	* include/semaphore.h: New file.
+	* sysdeps/generic/sem-close.c: New file.
+	* sysdeps/generic/sem-destroy.c: New file.
+	* sysdeps/generic/sem-getvalue.c: New file.
+	* sysdeps/generic/sem-init.c: New file.
+	* sysdeps/generic/sem-open.c: New file.
+	* sysdeps/generic/sem-post.c: New file.
+	* sysdeps/generic/sem-timedwait.c: New file.
+	* sysdeps/generic/sem-trywait.c: New file.
+	* sysdeps/generic/sem-unlink.c: New file.
+	* sysdeps/generic/sem-wait.c: New file.
+	* sysdeps/generic/bits/semaphore.h: New file.
+
+2005-05-04  Neal H. Walfield  <neal@gnu.org>
+
+	* Makefile (SRCS): Add pt-thread_dealloc.c.
+	* sysdeps/mach/pt-thread-dealloc.c: New file.
+	* pthread/pt-internal.h (__pthread_thread_dealloc): New
+	declaration.
+	(__pthread_thread_halt): Add parameter NEED_DEALLOC.  Update
+	callers.
+	* sysdeps/mach/pt-thread-halt.c (__pthread_thread_halt): Respect
+	new NEED_DEALLOC parameter.  Move code which deallocates kernel
+	resources from here ...
+	* sysdeps/mach/pt-thread-dealloc.c (__pthread_thread_dealloc):
+	...to here.
+	* pthread/pt-create.c (__pthread_create_internal): Call
+	__pthread_thread_dealloc on failure.
+	* pthread/pt-exit.c (pthread_exit): Call __pthread_thread_dealloc.
+
+	* sysdeps/mach/pt-thread-alloc.c (create_wakeupmsg): Call
+	__mach_port_destroy to deallocate the receive right.
+	__mach_port_deallocate won't do it.
+
+	* pthread/pt-detach.c (pthread_detach): Don't call
+	__pthread_thread_halt a second time.
+
+	* sysdeps/mach/hurd/pt-sysdep.c (_cthread_init_routine): Fix
+	declaration.
+	(init_routine): Update declaration and remove gratuitous cast.
+
+2005-05-02  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-alloc.c (__pthread_alloc): Set the thread id to the
+	table index plus one.
+	* pthread/pt-internal.h (__pthread_getid): Index __pthread_threads
+	using THREAD - 1, not THREAD.
+	(__pthread_setid): Likewise.
+	* pthread/pt-create.c (__pthread_create_internal): Likewise.
+
+	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock):
+	When returning EBUSY, don't forget to first unlock MUTEX->__HELD.
+
+2005-04-20  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-setschedparam.c: policy's type is int, not
+	int *.
+	* include/pthread/pthread.h: Likewise.
+	Reported by Christopher `Physicman' Bodenstein <cb@physicman.net>.
+
+2005-01-21  Michael Banck  <mbanck@debian.org>
+
+	* Makefile ($(libdir)/libpthread2.a): Install linker script
+	from $(srcdir) instead of current directory.
+	($(libdir)/libpthread2_pic.a): Likewise.
+	
+2005-02-08  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/mach/pt-spin.c (__pthread_spin_lock): Make a weak alias
+	to _pthread_spin_lock.
+	* sysdeps/posix/pt-spin.c (__pthread_spin_lock): Likewise.
+
+2005-01-18  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/mach/hurd/pt-sysdep.h (__pthread_stack_dealloc): Add
+	__always_inline__ attribute.
+	* sysdeps/l4/hurd/pt-sysdep.h (_pthread_self): Likewise.
+	(__pthread_stack_dealloc): Likewise.
+
+2005-01-12  Pietro Ferrari  <pietro@bastardi.net>
+
+	* include/pthread/pthread.h (pthread_spin_destroy): Replace extern
+	inline with extern __inline.
+	(pthread_spin_init): Likewise.
+	(pthread_spin_lock): Likewise.
+	(pthread_spin_trylock): Likewise.
+	(pthread_spin_unlock): Likewise.
+	* sysdeps/mach/bits/spin-lock.h (__pthread_spin_lock): Likewise.
+	* sysdeps/i386/bits/spin-lock.h (__pthread_spin_lock): Likewise.
+	* sysdeps/generic/bits/mutex.h (__pthread_mutex_trylock):
+	Likewise.
+	(pthread_mutex_lock): Likewise.
+	(pthread_mutex_trylock): Likewise.
+	* sysdeps/generic/bits/pthread.h (pthread_equal): Likewise.
+
+2003-08-17  Marcus Brinkmann  <marcus@gnu.org>
+
+	* sysdeps/hurd/pt-key.h (PTHREAD_KEY_MEMBERS): Change type of
+	THREAD_SPECIFICS to hurd_ihash_t.
+	* sysdeps/hurd/pt-setspecific.c (pthread_setspecific): Call
+	hurd_ihash_create instead ihash_create, and hurd_ihash_add instead
+
 2007-08-06  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/bits/pthread-np.h (pthread_create_from_l4_tid_np):

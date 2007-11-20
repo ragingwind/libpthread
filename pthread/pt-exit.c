@@ -1,5 +1,5 @@
 /* Thread termination.
-   Copyright (C) 2000, 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@ pthread_exit (void *status)
   struct __pthread *self = _pthread_self ();
   struct __pthread_cancelation_handler **handlers;
   int oldstate;
+  int need_dealloc;
 
   /* Run any cancelation handlers.  According to POSIX, the
      cancellation cleanup handlers should be called with cancellation
@@ -69,10 +70,13 @@ pthread_exit (void *status)
   if (self->cancel_state == PTHREAD_CANCEL_ENABLE && self->cancel_pending)
     status = PTHREAD_CANCELED;
 
+  __pthread_thread_dealloc (self);
+
   switch (self->state)
     {
     default:
-      assert (! "This cannot happen!");
+      assert (! "Consistency error: unexpected self->state");
+      abort ();
       break;
 
     case PTHREAD_DETACHED:
@@ -82,7 +86,7 @@ pthread_exit (void *status)
          deallocate our own stack.  However, it will eventually be
          reused when this thread structure is recycled.  */
       __pthread_mutex_unlock (&self->state_lock);
-      __pthread_dealloc (self);
+      need_dealloc = 1;
 
       break;
 
@@ -99,6 +103,7 @@ pthread_exit (void *status)
          waiting to join us.  */
       pthread_cond_broadcast (&self->state_cond);
       __pthread_mutex_unlock (&self->state_lock);
+      need_dealloc = 0;
 
       break;
     }
@@ -108,7 +113,7 @@ pthread_exit (void *status)
      This means that before freeing any resources, such a thread
      should make sure that this thread is really halted.  */
   
-  __pthread_thread_halt (self);
+  __pthread_thread_halt (self, need_dealloc);
 
   /* NOTREACHED */
   abort ();

@@ -33,5 +33,5 @@ __pthread_mutex_lock (struct __pthread_mutex *mutex)
   return __pthread_mutex_timedlock_internal (mutex, 0);
 }
 
-weak_alias (__pthread_mutex_lock, _pthread_mutex_lock);
-weak_alias (__pthread_mutex_lock, pthread_mutex_lock);
+strong_alias (__pthread_mutex_lock, _pthread_mutex_lock);
+strong_alias (__pthread_mutex_lock, pthread_mutex_lock);

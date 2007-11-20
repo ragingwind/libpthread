@@ -1,5 +1,5 @@
 /* Deallocate the kernel thread resources.  Mach version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,17 +23,21 @@
 
 #include <pt-internal.h>
 
+/* Stop the kernel thread associated with THREAD.  If NEED_DEALLOC is
+   true, the function must call __pthread_dealloc on THREAD.
 
-/* Deallocate the kernel thread resources associated with THREAD.  */
+   NB: The thread executing this function may be the thread which is
+   being halted, thus the last action should be halting the thread
+   itself.  */
 void
-__pthread_thread_halt (struct __pthread *thread)
+__pthread_thread_halt (struct __pthread *thread, int need_dealloc)
 {
   error_t err;
+  thread_t tid = thread->kernel_thread;
 
-  err = __mach_port_deallocate (__mach_task_self (),
-				thread->wakeupmsg.msgh_remote_port);
-  assert_perror (err);
+  if (need_dealloc)
+    __pthread_dealloc (thread);
 
-  err = __thread_terminate (thread->kernel_thread);
+  err = __thread_terminate (tid);
   assert_perror (err);
 }

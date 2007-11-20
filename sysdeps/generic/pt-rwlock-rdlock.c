@@ -1,5 +1,5 @@
 /* Acquire a rwlock for reading.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 #include <pt-internal.h>
 
 /* Implemented in pt-rwlock-timedrdlock.c.  */
-extern int __pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *mutex,
+extern int __pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *rwlock,
 						  const struct timespec *abstime);
 
 /* Acquire RWLOCK for reading, block if we can't get it.  */

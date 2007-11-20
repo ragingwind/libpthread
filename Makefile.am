@@ -126,5 +126,7 @@ libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	pt-atfork.c							    \
 	pt-kill.c							    \
 	pt-getcpuclockid.c						    \
-	pt-getschedparam.c pt-setschedparam.c pt-setschedprio.c
-
+	pt-getschedparam.c pt-setschedparam.c pt-setschedprio.c		    \
+	sem-close.c sem-init.c sem-timedwait.c sem-wait.c		    \
+	sem-destroy.c sem-open.c sem-trywait.c sem-getvalue.c		    \
+	sem-post.c sem-unlink.c

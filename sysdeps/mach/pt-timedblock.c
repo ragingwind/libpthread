@@ -1,5 +1,5 @@
 /* Block a thread with a timeout.  Mach version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ __pthread_timedblock (struct __pthread *thread,
 {
   error_t err;
   mach_msg_header_t msg;
-  mach_msg_timeout_t ms;
+  mach_msg_timeout_t timeout;
   struct timeval now;
 
   /* We have an absolute time and now we have to convert it to a
@@ -43,15 +43,23 @@ __pthread_timedblock (struct __pthread *thread,
   err = gettimeofday(&now, NULL);
   assert (! err);
 
-  ms = abstime->tv_sec * 1000 + (abstime->tv_nsec + 999999) / 1000000
-    - now.tv_sec * 1000 - (now.tv_usec + 999) / 1000;
-
-  if (ms <= 0)
+  if (now.tv_sec > abstime->tv_sec
+      || (now.tv_sec == abstime->tv_sec
+	  && now.tv_usec > ((abstime->tv_nsec + 999) / 1000)))
     return ETIMEDOUT;
+
+  timeout = (abstime->tv_sec - now.tv_sec) * 1000;
+
+  if (((abstime->tv_nsec + 999) / 1000) >= now.tv_usec)
+    timeout -= (((abstime->tv_nsec + 999) / 1000) - now.tv_usec + 999) / 1000;
+  else
+    /* Need to do a carry.  */
+    timeout -= 1000 + ((abstime->tv_nsec + 999999) / 1000000)
+      - (now.tv_usec + 999) / 1000;
 
   err = __mach_msg (&msg, MACH_RCV_MSG | MACH_RCV_TIMEOUT, 0,
 		    sizeof msg, thread->wakeupmsg.msgh_remote_port,
-		    ms, MACH_PORT_NULL);
+		    timeout, MACH_PORT_NULL);
   if (err == EMACH_RCV_TIMED_OUT)
     return ETIMEDOUT;
 

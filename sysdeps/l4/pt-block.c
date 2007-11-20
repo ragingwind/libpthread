@@ -25,5 +25,5 @@
 void
 __pthread_block (struct __pthread *thread)
 {
-  l4_receive (l4_anylocalthread);
+  L4_Receive (L4_anylocalthread);
 }

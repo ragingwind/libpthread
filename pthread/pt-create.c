@@ -1,5 +1,5 @@
 /* Thread creation.
-   Copyright (C) 2000, 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@
 /* The total number of pthreads currently active.  This is defined
    here since it would be really stupid to have a threads-using
    program that doesn't call `pthread_create'.  */
-uatomic32_t __pthread_total;
+atomic_fast32_t __pthread_total;
 
 
 /* The entry-point for new threads.  */
@@ -57,7 +57,7 @@ pthread_create (pthread_t *thread, const pthread_attr_t *attr,
   int err;
   struct __pthread *pthread;
 
-  err = __pthread_create_internal (&pthread, attr, 0, start_routine, arg);
+  err = __pthread_create_internal (&pthread, attr, start_routine, arg);
   if (! err)
     *thread = pthread->thread;
 
@@ -69,7 +69,6 @@ pthread_create (pthread_t *thread, const pthread_attr_t *attr,
 int
 __pthread_create_internal (struct __pthread **thread,
 			   const pthread_attr_t *attr,
-			   void *provided_thread,
 			   void *(*start_routine)(void *), void *arg)
 {
   int err;
@@ -123,20 +122,10 @@ __pthread_create_internal (struct __pthread **thread,
       pthread->stack = 1;
     }
 
-  /* Allocate the kernel thread and other required resources
-     if they were not provided with this call.  */
-  if (!provided_thread)
-    {
-      err = __pthread_thread_alloc (pthread);
-      if (err)
-	goto failed_thread_alloc;
-    }
-  else
-    {
-      err = __pthread_init_provided_thread (pthread, provided_thread);
-      if (err)
-	goto failed_thread_alloc;
-    }
+  /* Allocate the kernel thread and other required resources.  */
+  err = __pthread_thread_alloc (pthread);
+  if (err)
+    goto failed_thread_alloc;
 
   /* And initialize the rest of the machine context.  This may include
      additional machine- and system-specific initializations that
@@ -157,8 +146,7 @@ __pthread_create_internal (struct __pthread **thread,
      shall be empty."  If the currnet thread is not a pthread then we
      just inherit the process' sigmask.  */
   if (__pthread_num_threads == 1)
-    /* FIXME no sigprocmask yet */
-    err = 0; /* sigprocmask (0, 0, &sigset); */
+    err = sigprocmask (0, 0, &sigset);
   else
     err = __pthread_sigstate (_pthread_self (), 0, 0, &sigset, 0);
   assert_perror (err);
@@ -180,7 +168,7 @@ __pthread_create_internal (struct __pthread **thread,
      other thread should be using this entry (we also assume that the
      store is atomic).  */
   pthread_rwlock_rdlock (&__pthread_threads_lock);
-  __pthread_threads[pthread->thread] = pthread;
+  __pthread_threads[pthread->thread - 1] = pthread;
   pthread_rwlock_unlock (&__pthread_threads_lock);
 
   /* At this point it is possible to guess our pthread ID.  We have to
@@ -204,7 +192,8 @@ __pthread_create_internal (struct __pthread **thread,
  failed_sigstate:
   __pthread_sigstate_destroy (pthread);
  failed_setup:
-  __pthread_thread_halt (pthread);
+  __pthread_thread_dealloc (pthread);
+  __pthread_thread_halt (pthread, 0);
  failed_thread_alloc:
   __pthread_stack_dealloc (pthread->stackaddr, pthread->stacksize);
   pthread->stack = 0;

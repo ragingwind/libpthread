@@ -43,7 +43,7 @@ init_routine (void)
   __pthread_initialize ();
 
   /* Create the pthread structure for the main thread (i.e. us).  */
-  err = __pthread_create_internal (&thread, 0, 0, 0, 0);
+  err = __pthread_create_internal (&thread, 0, 0, 0);
   assert_perror (err);
 
   __pthread_initialize ();

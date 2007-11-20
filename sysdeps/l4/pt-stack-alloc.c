@@ -1,5 +1,5 @@
 /* Allocate a new stack.  L4 Hurd version.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -19,22 +19,12 @@
 
 #include <l4.h>
 #include <errno.h>
-#include <sys/mman.h>
 
 #include <pt-internal.h>
 
-#define __pthread_stacksize __pthread_default_attr.stacksize
+#include <sys/mman.h>
 
-
-static void *
-allocate_page (void)
-{
-  return mmap 
-    (NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
-}
-
-
-/* Allocate a new stack of size STACKSIZE.  If successfull, store the
+/* Allocate a new stack of size STACKSIZE.  If successful, store the
    address of the newly allocated stack in *STACKADDR and return 0.
    Otherwise return an error code (EINVAL for an invalid stack size,
    EAGAIN if the system lacked the necessary resources to allocate a
@@ -42,12 +32,11 @@ allocate_page (void)
 int
 __pthread_stack_alloc (void **stackaddr, size_t stacksize)
 {
-  if (stacksize != __pthread_stacksize)
-    return EINVAL;
-
-  *stackaddr = allocate_page ();
-  if (! *stackaddr)
+  void *buffer = mmap (0, stacksize, PROT_READ | PROT_WRITE,
+		       MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  if (buffer == MAP_FAILED)
     return EAGAIN;
-  
+
+  *stackaddr = buffer;
   return 0;
 }

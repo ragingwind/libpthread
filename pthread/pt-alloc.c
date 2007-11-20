@@ -1,5 +1,5 @@
 /* Allocate a new thread structure.
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ pthread_rwlock_t __pthread_threads_lock;
 
 
 /* List of thread structures corresponding to free thread IDs.  */
-uatomicptr_t __pthread_free_threads;
+atomicptr_t __pthread_free_threads;
 
 static inline error_t
 initialize_pthread (struct __pthread *new, int recycling)
@@ -69,8 +69,8 @@ initialize_pthread (struct __pthread *new, int recycling)
 
   new->stack = 0;
 
-  new->state_lock = (struct __pthread_mutex) PTHREAD_MUTEX_INITIALIZER;
-  new->state_cond = (struct __pthread_cond) PTHREAD_COND_INITIALIZER;
+  new->state_lock = (pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
+  new->state_cond = (pthread_cond_t) PTHREAD_COND_INITIALIZER;
 
   new->cancelation_handlers = 0;
 
@@ -98,7 +98,9 @@ __pthread_alloc (struct __pthread **pthread)
   while ((new = (struct __pthread *)__pthread_free_threads))
     {
       if (atomic_compare_and_exchange_val_acq (&__pthread_free_threads,
-					       new, new->next))
+					       (uintptr_t) new->next,
+					       (uintptr_t) new)
+	  == (uintptr_t) new)
 	{
 	  /* Yes, we managed to get one.  The thread number in the
              thread structure still refers to the correct slot.  */
@@ -111,7 +113,9 @@ __pthread_alloc (struct __pthread **pthread)
 	      {
 		new->next = (struct __pthread *)__pthread_free_threads;
 		if (atomic_compare_and_exchange_val_acq
-		    (&__pthread_free_threads, new->next, new))
+		    (&__pthread_free_threads,
+		     (uintptr_t) new, (uintptr_t) new->next)
+		    == (uintptr_t) new->next)
 		  break;
 	      }
 
@@ -139,10 +143,10 @@ __pthread_alloc (struct __pthread **pthread)
 
   if (__pthread_num_threads < __pthread_max_threads)
     {
-      /* We have a free slot.  Use the slot number as
-         the thread ID for the new thread.  */
-      new->thread = __pthread_num_threads++;
-      __pthread_threads[new->thread] = NULL;
+      /* We have a free slot.  Use the slot number plus one as the
+         thread ID for the new thread.  */
+      new->thread = 1 + __pthread_num_threads++;
+      __pthread_threads[new->thread - 1] = NULL;
 
       pthread_rwlock_unlock (&__pthread_threads_lock);
 
@@ -203,8 +207,8 @@ __pthread_alloc (struct __pthread **pthread)
   __pthread_threads = threads;
 
   /* And allocate ourselves one of the newly created slots.  */
-  new->thread = __pthread_num_threads++;
-  __pthread_threads[new->thread] = NULL;
+  new->thread = 1 + __pthread_num_threads++;
+  __pthread_threads[new->thread - 1] = NULL;
 
   pthread_rwlock_unlock (&__pthread_threads_lock);
 

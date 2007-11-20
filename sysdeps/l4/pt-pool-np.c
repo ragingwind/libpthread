@@ -26,13 +26,14 @@ _L4_thread_id_t pool_list = l4_nilthread;
 
 /* Add the thread TID to the pthread kernel thread pool.  */
 int
-pthread_pool_add_np (_L4_thread_id_t tid)
+pthread_pool_add_np (_L4_thread_id_t tid, bool stop)
 {
   __pthread_mutex_lock (&pool_lock);
   /* FIXME: Do error checking.  */
   l4_set_user_defined_handle_of (tid, pool_list);
   pool_list = tid;
   __pthread_mutex_unlock (&pool_lock);
+
   return 0;
 }
 

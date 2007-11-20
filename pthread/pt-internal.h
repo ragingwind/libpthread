@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,12 +21,11 @@
 #define _PT_INTERNAL_H	1
 
 #include <pthread.h>
-#if 0
 #include <stddef.h>
 #include <sched.h>
 #include <signal.h>
 #include <assert.h>
-#endif
+
 #include <atomic.h>
 
 #include <pt-key.h>
@@ -126,7 +125,7 @@ __pthread_dequeue (struct __pthread *thread)
 	     element = element->next)
 
 /* The total number of threads currently active.  */
-extern uatomic32_t __pthread_total;
+extern atomic_fast32_t __pthread_total;
 
 /* The total number of thread IDs currently in use, or on the list of
    available thread IDs.  */
@@ -135,20 +134,23 @@ extern int __pthread_num_threads;
 /* Concurrency hint.  */
 extern int __pthread_concurrency;
 
-/* Array of __pthread structures and its lock.  */
+/* Array of __pthread structures and its lock.  Indexed by the pthread
+   id minus one.  (Why not just use the pthread id?  Because some
+   brain-dead users of the pthread interface incorrectly assume that 0
+   is an invalid pthread id.)  */
 extern struct __pthread **__pthread_threads;
 extern pthread_rwlock_t __pthread_threads_lock;
 
 #define __pthread_getid(thread) \
   ({ struct __pthread *__t;                                                  \
      pthread_rwlock_rdlock (&__pthread_threads_lock);                        \
-     __t = __pthread_threads[thread];                                        \
+     __t = __pthread_threads[thread - 1];                                    \
      pthread_rwlock_unlock (&__pthread_threads_lock);                        \
      __t; })
 
 #define __pthread_setid(thread, pthread) \
   pthread_rwlock_wrlock (&__pthread_threads_lock);                           \
-  __pthread_threads[thread] = pthread;                                       \
+  __pthread_threads[thread - 1] = pthread;                                   \
   pthread_rwlock_unlock (&__pthread_threads_lock);
 
 /* Similar to pthread_self, but returns the thread descriptor instead
@@ -163,11 +165,10 @@ extern void __pthread_initialize (void);
 
 /* Internal version of pthread_create.  Rather than return the new
    tid, we return the whole __pthread structure in *PTHREAD.  */
-extern int __pthread_create_internal (struct __pthread **pthread,
-				      const pthread_attr_t *attr,
-				      void *provided_thread,
+extern int __pthread_create_internal (struct __pthread **__restrict pthread,
+				      const pthread_attr_t *__restrict attr,
 				      void *(*start_routine)(void *),
-				      void *arg);
+				      void *__restrict arg);
 
 /* Allocate a new thread structure and a pthread thread ID (but not a
    kernel thread or a stack).  */
@@ -188,33 +189,41 @@ extern void __pthread_stack_dealloc (void *stackaddr, size_t stacksize);
 
 
 /* Setup thread THREAD's context.  */
-extern int __pthread_setup (struct __pthread *thread,
+extern int __pthread_setup (struct __pthread *__restrict thread,
 				  void (*entry_point)(void *(*)(void *),
 						      void *),
-				  void *(*start_routine)(void *), void *arg);
+				  void *(*start_routine)(void *),
+				  void *__restrict arg);
 
 
-/* Allocate a kernel thread for THREAD; it must not be placed on the
-   run queue.  */
+/* Allocate a kernel thread (and any miscellaneous system dependent
+   resources) for THREAD; it must not be placed on the run queue.  */
 extern int __pthread_thread_alloc (struct __pthread *thread);
+
+/* Deallocate any kernel resources associated with THREAD except don't
+   halt the thread itself.  On return, the thread will be marked as
+   dead and __pthread_halt will be called.  */
+extern void __pthread_thread_dealloc (struct __pthread *thread);
 
 /* Start THREAD making it eligible to run.  */
 extern int __pthread_thread_start (struct __pthread *thread);
 
-/* Stop thread thread and deallocate any kernel resources associated
-   with THREAD.  */
-extern void __pthread_thread_halt (struct __pthread *thread);
+/* Stop the kernel thread associated with THREAD.  If NEED_DEALLOC is
+   true, the function must call __pthread_dealloc on THREAD.
 
-/* Initialize provided kernel thread.  */
-extern int __pthread_init_provided_thread (struct __pthread *thread,
-					   void *p);
+   NB: The thread executing this function may be the thread which is
+   being halted, thus the last action should be halting the thread
+   itself.  */
+extern void __pthread_thread_halt (struct __pthread *thread,
+				   int need_dealloc);
+
 
 /* Block THREAD.  */
 extern void __pthread_block (struct __pthread *thread);
 
 /* Block THREAD until *ABSTIME is reached.  */
-extern error_t __pthread_timedblock (struct __pthread *thread,
-				     const struct timespec *abstime);
+extern error_t __pthread_timedblock (struct __pthread *__restrict thread,
+				     const struct timespec *__restrict abstime);
 
 /* Wakeup THREAD.  */
 extern void __pthread_wakeup (struct __pthread *thread);
@@ -242,8 +251,9 @@ extern error_t __pthread_sigstate_init (struct __pthread *thread);
 extern void __pthread_sigstate_destroy (struct __pthread *thread);
 
 /* Modify thread *THREAD's signal state.  */
-extern error_t __pthread_sigstate (struct __pthread *thread, int how,
-				   const sigset_t *set, sigset_t *oset,
+extern error_t __pthread_sigstate (struct __pthread *__restrict thread, int how,
+				   const sigset_t *__restrict set,
+				   sigset_t *__restrict oset,
 				   int clear_pending);
 
 

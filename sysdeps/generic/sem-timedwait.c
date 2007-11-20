@@ -1,5 +1,5 @@
-/* Acquire a rwlock for writing.  Generic version.
-   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
+/* Wait on a semaphore with a timeout.  Generic version.
+   Copyright (C) 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,49 +17,46 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <pthread.h>
+#include <semaphore.h>
+#include <error.h>
+#include <errno.h>
 #include <assert.h>
 
 #include <pt-internal.h>
 
-/* Acquire RWLOCK for writing blocking until *ABSTIME if we cannot get
-   it.  As a special GNU extension, if ABSTIME is NULL then the wait
-   shall not time out.  */
 int
-__pthread_rwlock_timedwrlock_internal (struct __pthread_rwlock *rwlock,
-				       const struct timespec *abstime)
+__sem_timedwait_internal (sem_t *restrict sem,
+			  const struct timespec *restrict timeout)
 {
   struct __pthread *self;
 
-  __pthread_spin_lock (&rwlock->__lock);
-  if (__pthread_spin_trylock (&rwlock->__held) == 0)
-    /* Successfully acquired the lock.  */
+  __pthread_spin_lock (&sem->__lock);
+  if (sem->__value > 0)
+    /* Successful down.  */
     {
-      assert (rwlock->readerqueue == 0);
-      assert (rwlock->writerqueue == 0);
-      assert (rwlock->readers == 0);
-
-      __pthread_spin_unlock (&rwlock->__lock);
+      sem->__value --;
+      __pthread_spin_unlock (&sem->__lock);
       return 0;
     }
 
-  /* The lock is busy.  */
-
-  if (abstime && (abstime->tv_nsec < 0 || abstime->tv_nsec >= 1000000000))
-    return EINVAL;
-
-  self = _pthread_self ();
+  if (timeout && (timeout->tv_nsec < 0 || timeout->tv_nsec >= 1000000000))
+    {
+      errno = EINVAL;
+      return -1;
+    }
 
   /* Add ourselves to the queue.  */
-  __pthread_enqueue (&rwlock->writerqueue, self);
-  __pthread_spin_unlock (&rwlock->__lock);
+  self = _pthread_self ();
+
+  __pthread_enqueue (&sem->__queue, self);
+  __pthread_spin_unlock (&sem->__lock);
 
   /* Block the thread.  */
-  if (abstime)
+  if (timeout)
     {
       error_t err;
 
-      err = __pthread_timedblock (self, abstime);
+      err = __pthread_timedblock (self, timeout);
       if (err)
 	/* We timed out.  We may need to disconnect ourself from the
 	   waiter queue.
@@ -70,26 +67,26 @@ __pthread_rwlock_timedwrlock_internal (struct __pthread_rwlock *rwlock,
 	{
 	  assert (err == ETIMEDOUT);
 
-	  __pthread_spin_lock (&rwlock->__lock);
+	  __pthread_spin_lock (&sem->__lock);
 	  if (self->prevp)
-	    /* Disconnect ourself.  */
 	    __pthread_dequeue (self);
-	  __pthread_spin_unlock (&rwlock->__lock);
+	  __pthread_spin_unlock (&sem->__lock);
 
-	  return err;
+	  errno = err;
+	  return -1;
 	}
     }
   else
     __pthread_block (self);
 
-  assert (rwlock->readers == 0);
-
   return 0;
 }
 
 int
-pthread_rwlock_timedwrlock (struct __pthread_rwlock *rwlock,
-			    const struct timespec *abstime)
+__sem_timedwait (sem_t *restrict sem,
+		 const struct timespec *restrict timeout)
 {
-  return __pthread_rwlock_timedwrlock_internal (rwlock, abstime);
+  return __sem_timedwait_internal (sem, timeout);
 }
+
+strong_alias (__sem_timedwait, sem_timedwait);

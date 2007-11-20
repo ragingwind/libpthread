@@ -1,5 +1,5 @@
 /* Lock a mutex with a timeout.  Generic version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,13 +23,6 @@
 #include <pt-internal.h>
 
 #define LOSE do { * (int *) 0 = 0; } while (1)
-
-int
-pthread_mutex_timedlock (struct __pthread_mutex *mutex,
-			 const struct timespec *abstime)
-{
-  return __pthread_mutex_timedlock_internal (mutex, abstime);
-}
 
 /* Try to lock MUTEX, block until *ABSTIME if it is already held.  As
    a GNU extension, if TIMESPEC is NULL then wait forever.  */
@@ -96,6 +89,9 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
 	}
     }
 
+  if (abstime && (abstime->tv_nsec < 0 || abstime->tv_nsec >= 1000000000))
+    return EINVAL;
+
   /* Add ourselves to the queue.  */
   __pthread_enqueue (&mutex->__queue, self);
   __pthread_spin_unlock (&mutex->__lock);
@@ -145,4 +141,11 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
       }
 
   return 0;
+}
+
+int
+pthread_mutex_timedlock (struct __pthread_mutex *mutex,
+			 const struct timespec *abstime)
+{
+  return __pthread_mutex_timedlock_internal (mutex, abstime);
 }

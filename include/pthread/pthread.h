@@ -1,4 +1,4 @@
-/* Copyright (C) 2000,02 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -26,7 +26,18 @@
 #include <features.h>
 
 #include <sched.h>
+#define __need_clockid_t
 #include <time.h>
+
+/* If we are in a mode where clockid_t is not automatically defined
+   and another header has already included <time.h> then defining
+   __need_clockid_t was not enough.  */
+#ifndef __clockid_t_defined
+# define __clockid_t_defined    1
+# include <bits/types.h>
+/* Clock ID used in clock and timer functions.  */
+typedef __clockid_t clockid_t;
+#endif
 
 __BEGIN_DECLS
 
@@ -85,8 +96,8 @@ extern int pthread_attr_destroy (pthread_attr_t *attr);
 
 /* Return the value of the inheritsched attribute in *ATTR in
    *INHERITSCHED.  */
-extern int pthread_attr_getinheritsched (const pthread_attr_t *attr,
-					 int *inheritsched);
+extern int pthread_attr_getinheritsched (const pthread_attr_t *__restrict attr,
+					 int *__restrict inheritsched);
 
 /* Set the value of the inheritsched attribute in *ATTR to
    INHERITSCHED.  */
@@ -95,17 +106,17 @@ extern int pthread_attr_setinheritsched (pthread_attr_t *attr,
 
 
 /* Return the value of the schedparam attribute in *ATTR in *PARAM.  */
-extern int pthread_attr_getschedparam (const pthread_attr_t *attr,
-				       struct sched_param *param);
+extern int pthread_attr_getschedparam (const pthread_attr_t *__restrict attr,
+				       struct sched_param *__restrict param);
 
 /* Set the value of the schedparam attribute in *ATTR to PARAM.  */
-extern int pthread_attr_setschedparam (pthread_attr_t *attr,
-				       const struct sched_param *param);
+extern int pthread_attr_setschedparam (pthread_attr_t *__restrict attr,
+				       const struct sched_param *__restrict param);
 
 
 /* Return the value of the schedpolicy attribute in *ATTR to *POLICY.  */
-extern int pthread_attr_getschedpolicy (const pthread_attr_t *attr,
-					int *policy);
+extern int pthread_attr_getschedpolicy (const pthread_attr_t *__restrict attr,
+					int *__restrict policy);
 
 /* Set the value of the schedpolicy attribute in *ATTR to POLICY.  */
 extern int pthread_attr_setschedpolicy (pthread_attr_t *attr,
@@ -114,8 +125,8 @@ extern int pthread_attr_setschedpolicy (pthread_attr_t *attr,
 
 /* Return the value of the contentionscope attribute in *ATTR in
    *CONTENTIONSCOPE.  */
-extern int pthread_attr_getscope (const pthread_attr_t *attr,
-				  int *contentionscope);
+extern int pthread_attr_getscope (const pthread_attr_t *__restrict attr,
+				  int *__restrict contentionscope);
 
 /* Set the value of the contentionscope attribute in *ATTR to
    CONTENTIONSCOPE.  */
@@ -125,25 +136,27 @@ extern int pthread_attr_setscope (pthread_attr_t *attr,
 
 /* Return the value of the stackaddr attribute in *ATTR in
    *STACKADDR.  */
-extern int pthread_attr_getstackaddr (const pthread_attr_t *attr,
-				      void **stackaddr);
+extern int pthread_attr_getstackaddr (const pthread_attr_t *__restrict attr,
+				      void **__restrict stackaddr);
 
 /* Set the value of the stackaddr attribute in *ATTR to STACKADDR.  */
 extern int pthread_attr_setstackaddr (pthread_attr_t *attr,
 				      void *stackaddr);
 
 
+#ifdef __USE_XOPEN2K
 /* Return the value of the stackaddr and stacksize attributes in *ATTR
    in *STACKADDR and *STACKSIZE respectively.  */
-extern int pthread_attr_getstack (const pthread_attr_t *attr,
-				  void **stackaddr,
-				  size_t *stacksize);
+extern int pthread_attr_getstack (const pthread_attr_t *__restrict attr,
+				  void **__restrict stackaddr,
+				  size_t *__restrict stacksize);
 
 /* Set the value of the stackaddr and stacksize attributes in *ATTR to
    STACKADDR and STACKSIZE respectively.  */
 extern int pthread_attr_setstack (pthread_attr_t *attr,
 				  void *stackaddr,
 				  size_t stacksize);
+#endif
 
 
 /* Return the value of the detachstate attribute in *ATTR in
@@ -159,8 +172,8 @@ extern int pthread_attr_setdetachstate (pthread_attr_t *attr,
 
 /* Return the value of the guardsize attribute in *ATTR in
    *GUARDSIZE.  */
-extern int pthread_attr_getguardsize (const pthread_attr_t *attr,
-				      size_t *guardsize);
+extern int pthread_attr_getguardsize (const pthread_attr_t *__restrict attr,
+				      size_t *__restrict guardsize);
 
 /* Set the value of the guardsize attribute in *ATTR to GUARDSIZE.  */
 extern int pthread_attr_setguardsize (pthread_attr_t *attr,
@@ -169,8 +182,8 @@ extern int pthread_attr_setguardsize (pthread_attr_t *attr,
 
 /* Return the value of the stacksize attribute in *ATTR in
    *STACKSIZE.  */
-extern int pthread_attr_getstacksize (const pthread_attr_t *attr,
-				      size_t *stacksize);
+extern int pthread_attr_getstacksize (const pthread_attr_t *__restrict attr,
+				      size_t *__restrict stacksize);
 
 /* Set the value of the stacksize attribute in *ATTR to STACKSIZE.  */
 extern int pthread_attr_setstacksize (pthread_attr_t *attr,
@@ -179,13 +192,14 @@ extern int pthread_attr_setstacksize (pthread_attr_t *attr,
 
 /* Create a thread with attributes given by ATTR, executing
    START_ROUTINE with argument ARG.  */
-extern int pthread_create (pthread_t *__threadp,
-			   __const pthread_attr_t *__attr,
-			   void *(*__start_routine)(void *), void *__arg);
+extern int pthread_create (pthread_t *__restrict __threadp,
+			   __const pthread_attr_t *__restrict __attr,
+			   void *(*__start_routine)(void *),
+			   void *__restrict __arg);
 
 /* Terminate the current thread and make STATUS available to any
    thread that might join us.  */
-extern void pthread_exit (void *__status);
+extern void pthread_exit (void *__status) __attribute__ ((noreturn));
 
 /* Make calling thread wait for termination of thread THREAD.  Return
    the exit status of the thread in *STATUS.  */
@@ -207,23 +221,33 @@ extern pthread_t pthread_self (void);
 
 enum __pthread_mutex_protocol
   {
-    PTHREAD_PRIO_NONE = 0,
-#define PTHREAD_PRIO_NONE 0
-    PTHREAD_PRIO_INHERIT,
-#define PTHREAD_PRIO_INHERIT 1
-    PTHREAD_PRIO_PROTECT
-#define PTHREAD_PRIO_PROTECT 2
+    PTHREAD_PRIO_NONE_NP = 0,
+    PTHREAD_PRIO_INHERIT_NP,
+    PTHREAD_PRIO_PROTECT_NP
+#ifdef __USE_UNIX98
+    ,
+    PTHREAD_PRIO_NONE = PTHREAD_PRIO_NONE_NP,
+    PTHREAD_PRIO_INHERIT = PTHREAD_PRIO_INHERIT_NP,
+    PTHREAD_PRIO_PROTECT = PTHREAD_PRIO_PROTECT_NP
+#endif
   };
 
 enum __pthread_mutex_type
   {
-    PTHREAD_MUTEX_NORMAL = 0,
-#define PTHREAD_MUTEX_NORMAL 0
-#define PTHREAD_MUTEX_DEFAULT 0
-    PTHREAD_MUTEX_ERRORCHECK,
-#define PTHREAD_MUTEX_ERRORCHECK 1
-    PTHREAD_MUTEX_RECURSIVE,
-#define PTHREAD_MUTEX_RECURSIVE 2
+    PTHREAD_MUTEX_TIMED_NP = 0,
+    PTHREAD_MUTEX_ERRORCHECK_NP,
+    PTHREAD_MUTEX_RECURSIVE_NP
+#ifdef __USE_UNIX98
+    ,
+    PTHREAD_MUTEX_NORMAL = PTHREAD_MUTEX_TIMED_NP,
+    PTHREAD_MUTEX_ERRORCHECK = PTHREAD_MUTEX_ERRORCHECK_NP,
+    PTHREAD_MUTEX_RECURSIVE = PTHREAD_MUTEX_RECURSIVE_NP,
+    PTHREAD_MUTEX_DEFAULT = PTHREAD_MUTEX_NORMAL
+#endif
+#ifdef __USE_GNU
+    /* For compatibility.  */
+    , PTHREAD_MUTEX_FAST_NP = PTHREAD_MUTEX_TIMED_NP
+#endif
   };
 
 #include <bits/mutex-attr.h>
@@ -238,10 +262,11 @@ extern int pthread_mutexattr_init(pthread_mutexattr_t *attr);
 extern int pthread_mutexattr_destroy(pthread_mutexattr_t *attr);
 
 
+#ifdef __USE_UNIX98
 /* Return the value of the prioceiling attribute in *ATTR in
    *PRIOCEILING.  */
-extern int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *attr,
-					    int *prioceiling);
+extern int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *__restrict attr,
+					    int *__restrict prioceiling);
 
 /* Set the value of the prioceiling attribute in *ATTR to
    PRIOCEILING.  */
@@ -251,18 +276,19 @@ extern int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *attr,
 
 /* Return the value of the protocol attribute in *ATTR in
    *PROTOCOL.  */
-extern int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
-					 int *protocol);
+extern int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *__restrict attr,
+					 int *__restrict protocol);
 
 /* Set the value of the protocol attribute in *ATTR to PROTOCOL.  */
 extern int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
 					 int protocol);
+#endif
 
 
 /* Return the value of the process shared attribute in *ATTR in
    *PSHARED.  */
-extern int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr,
-					int *pshared);
+extern int pthread_mutexattr_getpshared(const pthread_mutexattr_t *__restrict attr,
+					int *__restrict pshared);
 
 /* Set the value of the process shared attribute in *ATTR to
    PSHARED.  */
@@ -270,13 +296,15 @@ extern int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 					int pshared);
 
 
+#ifdef __USE_UNIX98
 /* Return the value of the type attribute in *ATTR in *TYPE.  */
-extern int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr,
-				     int *type);
+extern int pthread_mutexattr_gettype(const pthread_mutexattr_t *__restrict attr,
+				     int *__restrict type);
 
 /* Set the value of the type attribute in *ATTR to TYPE.  */
 extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr,
 				     int type);
+#endif
 
 
 /* Mutexes.  */
@@ -289,8 +317,8 @@ typedef struct __pthread_mutex pthread_mutex_t;
 
 /* Create a mutex with attributes given by ATTR and store it in
    *__MUTEX.  */
-extern int pthread_mutex_init (struct __pthread_mutex *__mutex,
-			       const pthread_mutexattr_t *attr);
+extern int pthread_mutex_init (struct __pthread_mutex *__restrict __mutex,
+			       const pthread_mutexattr_t *__restrict attr);
 
 /* Destroy the mutex __MUTEX.  */
 extern int pthread_mutex_destroy (struct __pthread_mutex *__mutex);
@@ -301,23 +329,27 @@ extern int pthread_mutex_lock (pthread_mutex_t *__mutex);
 /* Try to lock MUTEX.  */
 extern int pthread_mutex_trylock (pthread_mutex_t *__mutex);
 
+#ifdef __USE_XOPEN2K
 /* Try to lock MUTEX, block until *ABSTIME if it is already held.  */
-extern int pthread_mutex_timedlock (struct __pthread_mutex *mutex,
-				    const struct timespec *abstime);
+extern int pthread_mutex_timedlock (struct __pthread_mutex *__restrict mutex,
+				    const struct timespec *__restrict abstime);
+#endif
 
 /* Unlock MUTEX.  */
 extern int pthread_mutex_unlock (pthread_mutex_t *__mutex);
 
 
+#ifdef __USE_UNIX98
 /* Return the priority ceiling of mutex *MUTEX in *PRIOCEILING.  */
-extern int pthread_mutex_getprioceiling (const pthread_mutex_t *mutex,
-					 int *prioceiling);
+extern int pthread_mutex_getprioceiling (const pthread_mutex_t *__restrict mutex,
+					 int *__restrict prioceiling);
 
 /* After acquiring the mutex *MUTEX, set its priority ceiling to PRIO
    and return the old priority ceiling in *OLDPRIO.  Before returning,
    release the mutex.  */
-extern int pthread_mutex_setprioceiling (pthread_mutex_t *mutex, int prio,
-					 int *oldprio);
+extern int pthread_mutex_setprioceiling (pthread_mutex_t *__restrict mutex,
+					 int prio, int *__restrict oldprio);
+#endif
 
 
 
@@ -335,19 +367,21 @@ extern int pthread_condattr_init (pthread_condattr_t *attr);
 extern int pthread_condattr_destroy (pthread_condattr_t *attr);
 
 
+#ifdef __USE_XOPEN2K
 /* Return the value of the clock attribute in *ATTR in *CLOCK_ID.  */
-extern int pthread_condattr_getclock (const pthread_condattr_t *attr,
-				      clockid_t *clock_id);
+extern int pthread_condattr_getclock (const pthread_condattr_t *__restrict attr,
+				      clockid_t *__restrict clock_id);
 
 /* Set the value of the clock attribute in *ATTR to CLOCK_ID.  */
 extern int pthread_condattr_setclock (pthread_condattr_t *attr,
 				      clockid_t clock_id);
+#endif
 
 
 /* Return the value of the process shared attribute in *ATTR in
    *PSHARED.  */
-extern int pthread_condattr_getpshared (const pthread_condattr_t *attr,
-					int *pshared);
+extern int pthread_condattr_getpshared (const pthread_condattr_t *__restrict attr,
+					int *__restrict pshared);
 
 /* Set the value of the process shared attribute in *ATTR to
    PSHARED.  */
@@ -363,8 +397,8 @@ typedef struct __pthread_cond pthread_cond_t;
 
 #define PTHREAD_COND_INITIALIZER __PTHREAD_COND_INITIALIZER
 
-extern int pthread_cond_init (pthread_cond_t *cond,
-			      const pthread_condattr_t *attr);
+extern int pthread_cond_init (pthread_cond_t *__restrict cond,
+			      const pthread_condattr_t *__restrict attr);
 
 extern int pthread_cond_destroy (pthread_cond_t *cond);
 
@@ -378,16 +412,16 @@ extern int pthread_cond_broadcast (pthread_cond_t *__cond);
 /* Block on condition variable COND.  MUTEX should be held by the
    calling thread.  On success, MUTEX will be held by the calling
    thread.  */
-extern int pthread_cond_wait (pthread_cond_t *__cond,
-			      pthread_mutex_t *__mutex);
+extern int pthread_cond_wait (pthread_cond_t *__restrict __cond,
+			      pthread_mutex_t *__restrict __mutex);
 
 /* Block on condition variable COND.  MUTEX should be held by the
    calling thread. On success, MUTEX will be held by the calling
    thread.  If the time specified by ABSTIME passes, ETIMEDOUT is
    returned, and MUTEX will nevertheless be held.  */
-extern int pthread_cond_timedwait (pthread_cond_t *__cond,
-				   pthread_mutex_t *__mutex,
-				   __const struct timespec *__abstime);
+extern int pthread_cond_timedwait (pthread_cond_t *__restrict __cond,
+				   pthread_mutex_t *__restrict __mutex,
+				   __const struct timespec *__restrict __abstime);
 
 
 /* Spin locks.  */
@@ -420,31 +454,31 @@ extern int pthread_spin_unlock (pthread_spinlock_t *__lock);
 
 # ifdef __USE_EXTERN_INLINES
 
-extern inline int
+extern __inline int
 pthread_spin_destroy (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_destroy (__lock);
 }
 
-extern inline int
+extern __inline int
 pthread_spin_init (pthread_spinlock_t *__lock, int __pshared)
 {
   return __pthread_spin_init (__lock, __pshared);
 }
 
-extern inline int
+extern __inline int
 pthread_spin_lock (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_lock (__lock);
 }
 
-extern inline int
+extern __inline int
 pthread_spin_trylock (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_trylock (__lock);
 }
 
-extern inline int
+extern __inline int
 pthread_spin_unlock (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_unlock (__lock);
@@ -456,6 +490,8 @@ pthread_spin_unlock (pthread_spinlock_t *__lock)
 
 
 /* rwlock attributes.  */
+
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K
 
 #include <bits/rwlock-attr.h>
 
@@ -471,8 +507,8 @@ extern int pthread_rwlockattr_destroy (pthread_rwlockattr_t *attr);
 
 /* Return the value of the process shared attribute in *ATTR in
    *PSHARED.  */
-extern int pthread_rwlockattr_getpshared (const pthread_rwlockattr_t *attr,
-					  int *pshared);
+extern int pthread_rwlockattr_getpshared (const pthread_rwlockattr_t *__restrict attr,
+					  int *__restrict pshared);
 
 /* Set the value of the process shared atrribute in *ATTR to
    PSHARED.  */
@@ -488,8 +524,8 @@ typedef struct __pthread_rwlock pthread_rwlock_t;
 
 /* Create a rwlock object with attributes given by ATTR and strore the
    result in *RWLOCK.  */
-extern int pthread_rwlock_init (pthread_rwlock_t *rwlock,
-				const pthread_rwlockattr_t *attr);
+extern int pthread_rwlock_init (pthread_rwlock_t *__restrict rwlock,
+				const pthread_rwlockattr_t *__restrict attr);
 
 /* Destroy the rwlock *RWLOCK.  */
 extern int pthread_rwlock_destroy (pthread_rwlock_t *rwlock);
@@ -500,10 +536,12 @@ extern int pthread_rwlock_rdlock (pthread_rwlock_t *rwlock);
 /* Acquire the rwlock *RWLOCK for reading.  */
 extern int pthread_rwlock_tryrdlock (pthread_rwlock_t *rwlock);
 
+# ifdef __USE_XOPEN2K
 /* Acquire the rwlock *RWLOCK for reading blocking until *ABSTIME if
    it is already held.  */
-extern int pthread_rwlock_timedrdlock (struct __pthread_rwlock *rwlock,
-				       const struct timespec *abstime);
+extern int pthread_rwlock_timedrdlock (struct __pthread_rwlock *__restrict rwlock,
+				       const struct timespec *__restrict abstime);
+# endif
 
 /* Acquire the rwlock *RWLOCK for writing.  */
 extern int pthread_rwlock_wrlock (pthread_rwlock_t *rwlock);
@@ -511,13 +549,18 @@ extern int pthread_rwlock_wrlock (pthread_rwlock_t *rwlock);
 /* Try to acquire the rwlock *RWLOCK for writing.  */
 extern int pthread_rwlock_trywrlock (pthread_rwlock_t *rwlock);
 
+# ifdef __USE_XOPEN2K
 /* Acquire the rwlock *RWLOCK for writing blocking until *ABSTIME if
    it is already held.  */
-extern int pthread_rwlock_timedwrlock (struct __pthread_rwlock *rwlock,
-				       const struct timespec *abstime);
+extern int pthread_rwlock_timedwrlock (struct __pthread_rwlock *__restrict rwlock,
+				       const struct timespec *__restrict abstime);
+# endif
 
 /* Release the lock held by the current thread on *RWLOCK.  */
 extern int pthread_rwlock_unlock (pthread_rwlock_t *rwlock);
+
+#endif /* __USE_UNIX98 || __USE_XOPEN2K */
+
 
 
 /* Cancelation.  */
@@ -557,6 +600,8 @@ extern void pthread_testcancel (void);
 
 /* Barriers attributes.  */
 
+#ifdef __USE_XOPEN2K
+
 #include <bits/barrier-attr.h>
 
 typedef struct __pthread_barrierattr pthread_barrierattr_t;
@@ -571,8 +616,8 @@ extern int pthread_barrierattr_destroy (pthread_barrierattr_t *attr);
 
 /* Return the value of the process shared attribute in *ATTR in
    *PSHARED.  */
-extern int pthread_barrierattr_getpshared (const pthread_barrierattr_t *attr,
-					   int *pshared);
+extern int pthread_barrierattr_getpshared (const pthread_barrierattr_t *__restrict attr,
+					   int *__restrict pshared);
 
 /* Set the value of the process shared atrribute in *ATTR to
    PSHARED.  */
@@ -591,8 +636,8 @@ typedef struct __pthread_barrier pthread_barrier_t;
 #define PTHREAD_BARRIER_SERIAL_THREAD -1
 
 /* Initialize barrier BARRIER.  */
-extern int pthread_barrier_init (pthread_barrier_t *barrier,
-				const pthread_barrierattr_t *attr,
+extern int pthread_barrier_init (pthread_barrier_t *__restrict barrier,
+				const pthread_barrierattr_t *__restrict attr,
 				unsigned count);
 
 /* Destroy barrier BARRIER.  */
@@ -600,6 +645,9 @@ extern int pthread_barrier_destroy (pthread_barrier_t *barrier);
 
 /* Wait on barrier BARRIER.  */
 extern int pthread_barrier_wait (pthread_barrier_t *barrier);
+
+#endif /* __USE_XOPEN2K */
+
 
 
 /* Thread specific data.  */
@@ -641,11 +689,13 @@ extern int pthread_once (pthread_once_t *once_control,
 
 /* Concurrency.  */
 
+#ifdef __USE_UNIX98
 /* Set the desired concurrency level to NEW_LEVEL.  */
 extern int pthread_setconcurrency (int new_level);
 
 /* Get the current concurrency level.  */
 extern int pthread_getconcurrency (void);
+#endif
 
 
 /* Forking.  */
@@ -669,25 +719,25 @@ extern int pthread_kill (pthread_t thread, int signo);
 
 /* Time.  */
 
+#ifdef __USE_XOPEN2K
 /* Return the thread cpu clock.  */
 extern int pthread_getcpuclockid (pthread_t thread, clockid_t *clock);
+#endif
 
 
 /* Scheduling.  */
 
 /* Return thread THREAD's scheduling paramters.  */
-extern int pthread_getschedparam (pthread_t thread, int *policy,
-				  struct sched_param *param);
+extern int pthread_getschedparam (pthread_t thread, int *__restrict policy,
+				  struct sched_param *__restrict param);
 
 /* Set thread THREAD's scheduling paramters.  */
-extern int pthread_setschedparam (pthread_t thread, int *policy,
+extern int pthread_setschedparam (pthread_t thread, int policy,
 				  const struct sched_param *param);
 
 /* Set thread THREAD's scheduling priority.  */
 extern int pthread_setschedprio (pthread_t thread, int prio);
 
-
-#include <bits/pthread-np.h>
 
 __END_DECLS
 

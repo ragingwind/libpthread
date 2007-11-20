@@ -24,7 +24,7 @@ typedef int pthread_t;
 
 /* Return true if __T1 and __T2 both name the same thread.  Otherwise,
    false.  */
-extern inline int
+extern __inline int
 pthread_equal (pthread_t __t1, pthread_t __t2)
 {
   return __t1 == __t2;

@@ -32,4 +32,4 @@ _pthread_mutex_destroy (pthread_mutex_t *mutex)
   return 0;
 }
 
-weak_alias (_pthread_mutex_destroy, pthread_mutex_destroy);
+strong_alias (_pthread_mutex_destroy, pthread_mutex_destroy);

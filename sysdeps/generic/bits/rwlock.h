@@ -1,5 +1,5 @@
 /* rwlock type.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -40,34 +40,7 @@ struct __pthread_rwlock
 
 /* Initializer for a rwlock.  */
 #define __PTHREAD_RWLOCK_INITIALIZER \
-    ((struct __pthread_rwlock) \
-      { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0 })
+    { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0 }
 
-
-_EXTERN_INLINE int
-pthread_rwlock_init (struct __pthread_rwlock *__rwlock,
-		     const struct __pthread_rwlockattr *__attr)
-{
-  extern int _pthread_rwlock_init (struct __pthread_rwlock *,
-				   const struct __pthread_rwlockattr *);
-
-  if (__attr)
-    return _pthread_rwlock_init (__rwlock, __attr);
-
-  *__rwlock = __PTHREAD_RWLOCK_INITIALIZER;
-  return 0;
-}
-
-_EXTERN_INLINE int
-pthread_rwlock_destroy (struct __pthread_rwlock *__rwlock)
-{
-  extern int _pthread_rwlock_destroy (struct __pthread_rwlock *);
-
-  if (__rwlock->__attr
-      || __rwlock->__data)
-    return _pthread_rwlock_destroy (__rwlock);
-
-  return 0;
-}
 
 #endif /* bits/rwlock.h */

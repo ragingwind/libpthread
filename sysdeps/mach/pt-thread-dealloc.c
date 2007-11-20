@@ -1,5 +1,5 @@
-/* Thread creation from provided L4 thread.
-   Copyright (C) 2003, 2007 Free Software Foundation, Inc.
+/* Deallocate the kernel thread resources.  Mach version.
+   Copyright (C) 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -19,28 +19,23 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <pthread.h>
-#include <signal.h>
+#include <mach.h>
 
 #include <pt-internal.h>
 
-/* Create a thread with attributes given by ATTR, executing
-   START_ROUTINE with argument ARG.  TID is the provided L4
-   kernel thread.  */
-int
-pthread_create_from_l4_tid_np (pthread_t *thread, 
-			       const pthread_attr_t *attr,
-			       _L4_thread_id_t tid, 
-			       void *(*start_routine)(void *), void *arg)
+/* Deallocate any kernel resources associated with THREAD except don't
+   halt the thread itself.  On return, the thread will be marked as
+   dead and __pthread_halt will be called.  */
+void
+__pthread_thread_dealloc (struct __pthread *thread)
 {
-  int err;
-  struct __pthread *pthread;
-
-#warning Does not use TID.
-  err = __pthread_create_internal (&pthread, attr,
-				   start_routine, arg);
-  if (! err)
-    *thread = pthread->thread;
-
-  return err;
+  /* Why no assert?  Easy.  When Mach kills a task, it starts by
+     invalidating the task port and then terminating the threads one
+     by one.  But while it is terminating them, they are still
+     eligible to be scheduled.  Imagine we have two threads, one calls
+     exit, one calls pthread_exit.  The second one may run this after
+     the mask port can been destroyed thus gratuitously triggering the
+     assert.  */
+  __mach_port_destroy (__mach_task_self (),
+		       thread->wakeupmsg.msgh_remote_port);
 }

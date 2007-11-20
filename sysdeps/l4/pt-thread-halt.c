@@ -24,8 +24,22 @@
 
 /* Deallocate the kernel thread resources associated with THREAD.  */
 void
-__pthread_thread_halt (struct __pthread *thread)
+__pthread_thread_halt (struct __pthread *thread, int need_dealloc)
 {
-  l4_stop (thread->threadid);
-  pthread_pool_add_np (thread->threadid);
+  l4_thread_id_t tid = thread->threadid;
+
+  if (need_dealloc)
+    __pthread_dealloc (thread);
+
+  /* There is potential race here: once if TID is the current thread,
+     then once we add TID to the pool, someone can reallocate it
+     before we call stop.  However, to start the thread, the caller
+     atomically starts and sets the sp and ip, thus, if the stop has
+     not yet executed at that point, it won't.  */
+
+  if (tid != l4_myself ())
+    l4_stop (tid);
+  pthread_pool_add_np (tid);
+  if (tid == l4_myself ())
+    l4_stop (tid);
 }

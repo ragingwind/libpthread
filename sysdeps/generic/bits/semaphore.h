@@ -1,5 +1,5 @@
-/* Destroy a rwlock.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* Semaphore type.  Generic version.
+   Copyright (C) 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,13 +17,27 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifndef _BITS_SEMAPHORE_H
+#define _BITS_SEMAPHORE_H	1
+
+#ifndef _SEMAPHORE_H
+#error Never include <bits/semaphore.h> directly.
+#endif
+
 #include <pthread.h>
-#include <pt-internal.h>
 
-int
-_pthread_rwlock_destroy (pthread_rwlock_t *rwlock)
-{
-  return 0;
-}
+/* User visible part of a semaphore.  */
+struct __semaphore
+  {
+    __pthread_spinlock_t __lock;
+    struct __pthread *__queue;
+    int __pshared;
+    int __value;
+    void *__data;
+  };
 
-strong_alias (_pthread_rwlock_destroy, pthread_rwlock_destroy);
+/* Initializer for a semaphore.  */
+#define __SEMAPHORE_INITIALIZER(pshared, value) \
+  { __SPIN_LOCK_INITIALIZER, NULL, (pshared), (value), NULL }
+
+#endif /* bits/mutex.h */

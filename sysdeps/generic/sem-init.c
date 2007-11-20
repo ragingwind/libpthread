@@ -1,5 +1,5 @@
-/* Destroy a rwlock.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* Initialize a semaphore.  Generic version.
+   Copyright (C) 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,13 +17,30 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <pthread.h>
+#include <semaphore.h>
+#include <errno.h>
+
 #include <pt-internal.h>
 
 int
-_pthread_rwlock_destroy (pthread_rwlock_t *rwlock)
+__sem_init (sem_t *sem, int pshared, unsigned value)
 {
+  if (pshared != 0)
+    {
+      errno = EOPNOTSUPP;
+      return -1;
+    }
+
+#ifdef SEM_VALUE_MAX
+  if (value > SEM_VALUE_MAX)
+    {
+      errno = EINVAL;
+      return -1;
+    }
+#endif
+
+  *sem = (sem_t) __SEMAPHORE_INITIALIZER (pshared, value);
   return 0;
 }
 
-strong_alias (_pthread_rwlock_destroy, pthread_rwlock_destroy);
+strong_alias (__sem_init, sem_init);

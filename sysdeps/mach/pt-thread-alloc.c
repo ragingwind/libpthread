@@ -1,5 +1,5 @@
 /* Start thread.  Mach version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -50,8 +50,8 @@ create_wakeupmsg (struct __pthread *thread)
 				  MACH_MSG_TYPE_MAKE_SEND);
   if (err)
     {
-      __mach_port_deallocate (__mach_task_self (),
-			      thread->wakeupmsg.msgh_remote_port);
+      __mach_port_destroy (__mach_task_self (),
+			   thread->wakeupmsg.msgh_remote_port);
       return EAGAIN;
     }
 
@@ -86,7 +86,8 @@ __pthread_thread_alloc (struct __pthread *thread)
     {
       assert (__pthread_total == 0);
       thread->kernel_thread = __mach_thread_self ();
-      /* We implicitly hold a reference.  */
+      /* We implicitly hold a reference drop the one that we just
+	 acquired.  */
       __mach_port_deallocate (__mach_task_self (), thread->kernel_thread);
     }
   else
