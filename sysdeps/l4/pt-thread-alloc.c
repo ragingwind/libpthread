@@ -30,33 +30,14 @@ __pthread_thread_alloc (struct __pthread *thread)
 
   /* The main thread is already running of course.  */
   if (__pthread_num_threads == 1)
-    {
-      /* XXX: The initialization code needs to make this consistent.
-	 Right now, we have none and this whole library is a hack
-	 anyways.  */
-#warning __pthread_total is inconsistent.
-#if 0
-      assert (__pthread_total == 1);
-#endif
-      thread->threadid = l4_myself ();
-    }
+    thread->threadid = l4_myself ();
   else
     {
       thread->threadid = pthread_pool_get_np ();
       if (thread->threadid != l4_nilthread)
 	return 0;
 
-#if 0
-      CORBA_Environment env;
-
-      env = idl4_default_environment;
-      err = thread_create (__task_server,
-			   L4_Version (L4_Myself ()),
-			   * (L4_Word_t *) &__system_pager,
-			   (L4_Word_t *) &thread->threadid, &env);
-      if (err)
-#endif
-	return EAGAIN;
+      return EAGAIN;
     }
   return 0;
 }

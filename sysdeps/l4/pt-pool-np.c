@@ -26,7 +26,7 @@ _L4_thread_id_t pool_list = l4_nilthread;
 
 /* Add the thread TID to the pthread kernel thread pool.  */
 int
-pthread_pool_add_np (_L4_thread_id_t tid, bool stop)
+pthread_pool_add_np (l4_thread_id_t tid)
 {
   __pthread_mutex_lock (&pool_lock);
   /* FIXME: Do error checking.  */
@@ -39,7 +39,7 @@ pthread_pool_add_np (_L4_thread_id_t tid, bool stop)
 
 
 /* Get the first thread from the pool.  */
-_L4_thread_id_t
+l4_thread_id_t
 pthread_pool_get_np (void)
 {
   _L4_thread_id_t tid;

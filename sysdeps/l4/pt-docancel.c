@@ -1,5 +1,5 @@
 /* Cancel a thread.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -30,23 +30,13 @@ call_exit (void)
 int
 __pthread_do_cancel (struct __pthread *p)
 {
-#if 0
-  assert (p->cancel_pending = 1);
+  assert (p->cancel_pending == 1);
   assert (p->cancel_state == PTHREAD_CANCEL_ENABLE);
 
-  if (L4_SameThreads (L4_Myself (), p->threadid))
+  if (l4_is_thread_equal (l4_myself (), p->threadid))
     call_exit ();
   else
-    {
-      L4_Word_t dummy;
-      L4_ThreadId_t dummy_id;
-
-      /* Change the ip of the target thread to make it exit.  */
-      L4_ExchangeRegisters (p->threadid, (1 << 4), 0, call_exit,
-			    0, 0, L4_nilthread,
-			    &dummy, &dummy, &dummy, &dummy, &dummy,
-			    &dummy_id);
-    }
-#endif
+    l4_start_sp_ip (p->threadid, (l4_word_t) p->mcontext.sp,
+		    (l4_word_t) call_exit);
   return 0;
 }

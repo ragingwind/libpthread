@@ -1,5 +1,38 @@
 2007-11-20  Neal H. Walfield  <neal@gnu.org>
 
+	* Makefile.am (libpthread_a_SOURCES): Remove pt-create-np.c.
+	* sysdeps/l4/pt-create-np.c: Remove file.
+	* sysdeps/l4/pt-pool-np.c (pthread_pool_add_np): Change tid from
+	an _L4_thread_id_t to an l4_thread_id_t.
+	(pthread_pool_get_np): Return an l4_thread_id_t, not a
+	_L4_thread_id_t.
+	* sysdeps/l4/bits/pthread-np.h (pthread_create_from_l4_tid_np):
+	Remove declaration.
+	(pthread_pool_add_np): Change tid from an _L4_thread_id_t to an
+	l4_thread_id_t.
+	(pthread_pool_get_np): Return an l4_thread_id_t, not a
+	_L4_thread_id_t.
+
+	* sysdeps/l4/pt-docancel.c (__pthread_do_cancel): Implement for
+	the case that the target thread is not the executing thread.
+
+	* sysdeps/l4/pt-thread-alloc.c (__pthread_thread_alloc): Return
+	EAGAIN if pthread_pool_get_np does not return a thread.  Update
+	comments.
+
+	* sysdeps/l4/pt-thread-start.c (__pthread_thread_start): Don't set
+	the thread's pager.  Assert that if this is the first thread, then
+	THREAD->THREADID is designates the running thread.
+
+	* sysdeps/l4/pt-timedblock.c (__pthread_timedblock): Add warning
+	about incomplete implementation.
+
+	* Makefile.am (libpthread_a_SOURCES): Remove pt-thread-init.c.
+	* sysdeps/l4/pt-thread-init.c: Remove dead file.
+	* sysdeps/l4/pt-start.c: Remove dead file.
+
+2007-11-20  Neal H. Walfield  <neal@gnu.org>
+
 	Also merge semaphore changes from mainline Hurd.
 
 2007-11-20  Neal H. Walfield  <neal@gnu.org>

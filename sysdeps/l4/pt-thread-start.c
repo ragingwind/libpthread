@@ -1,5 +1,5 @@
 /* Start thread.  L4 version.
-   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -29,12 +29,12 @@ __pthread_thread_start (struct __pthread *thread)
 {
   /* The main thread is already running of course.  */
   if (__pthread_num_threads == 1)
-    assert (__pthread_total == 1);
-  else
     {
-      l4_set_pager_of (thread->threadid, l4_pager ());
-      l4_start_sp_ip (thread->threadid, (l4_word_t) thread->mcontext.sp,
-		      (l4_word_t) thread->mcontext.pc);
+      assert (__pthread_total == 1);
+      assert (l4_is_thread_equal (l4_myself (), thread->threadid));
     }
+  else
+    l4_start_sp_ip (thread->threadid, (l4_word_t) thread->mcontext.sp,
+		    (l4_word_t) thread->mcontext.pc);
   return 0;
 }
