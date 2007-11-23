@@ -45,6 +45,8 @@ entry_point (void *(*start_routine)(void *), void *arg)
   uselocale (LC_GLOBAL_LOCALE);
 #endif
 
+  __pthread_startup ();
+
   pthread_exit (start_routine (arg));
 }
 

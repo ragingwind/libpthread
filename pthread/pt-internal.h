@@ -218,6 +218,10 @@ extern void __pthread_thread_halt (struct __pthread *thread,
 				   int need_dealloc);
 
 
+/* Called by a thread just before it calls the provided start
+   routine.  */
+extern void __pthread_startup (void);
+
 /* Block THREAD.  */
 extern void __pthread_block (struct __pthread *thread);
 

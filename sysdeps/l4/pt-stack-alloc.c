@@ -38,5 +38,6 @@ __pthread_stack_alloc (void **stackaddr, size_t stacksize)
     return EAGAIN;
 
   *stackaddr = buffer;
+
   return 0;
 }

@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,6 +21,8 @@
 #define _PT_SYSDEP_H	1
 
 #include <l4.h>
+#include <hurd/storage.h>
+#include <sys/mman.h>
 
 /* XXX */
 #define _POSIX_THREAD_THREADS_MAX	64
@@ -29,7 +31,10 @@
 #define PTHREAD_STACK_DEFAULT	(2 * 1024 * 1024)
 
 #define PTHREAD_SYSDEP_MEMBERS \
+  struct storage object; \
   l4_thread_id_t threadid; \
+  struct storage exception_handler_stack; \
+  l4_word_t exception_handler_sp; \
   l4_word_t my_errno;
 
 extern inline struct __pthread *
@@ -43,8 +48,7 @@ extern inline void
 __attribute__((__always_inline__))
 __pthread_stack_dealloc (void *stackaddr, size_t stacksize)
 {
-  /* XXX: can only implement this once we have a working memory manager.  */
-  return;
+  munmap (stackaddr, stacksize);
 }
 
 #endif /* pt-sysdep.h */

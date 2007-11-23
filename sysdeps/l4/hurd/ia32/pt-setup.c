@@ -63,10 +63,14 @@ __pthread_setup (struct __pthread *thread,
   thread->mcontext.pc = entry_point;
   thread->mcontext.sp = stack_setup (thread, start_routine, arg);
 
-  if (l4_same_threads (thread->threadid, l4_myself ()))
-    l4_set_user_defined_handle ((l4_word_t) thread);
-  else
-    l4_set_user_defined_handle_of (thread->threadid, 
-				   (l4_word_t) thread);
+
+  if (__pthread_num_threads != 1)
+    {
+      assert (! ADDR_IS_VOID (thread->exception_handler_stack.addr));
+      thread->exception_handler_sp
+	= ADDR_TO_PTR (addr_extend (thread->exception_handler_stack.addr,
+				    0, PAGESIZE_LOG2));
+    }
+
   return 0;
 }

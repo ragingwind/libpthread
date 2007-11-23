@@ -110,6 +110,7 @@ libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	pt-thread-dealloc.c						    \
 	pt-thread-start.c						    \
 	pt-thread-halt.c						    \
+	pt-startup.c							    \
 	pt-getconcurrency.c pt-setconcurrency.c				    \
 	pt-block.c							    \
 	pt-timedblock.c							    \

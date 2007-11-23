@@ -21,9 +21,24 @@
 
 #include <pt-internal.h>
 
+#include <hurd/stddef.h>
+
 /* Block THREAD.  */
 void
 __pthread_block (struct __pthread *thread)
 {
-  L4_Receive (L4_anylocalthread);
+  debug (5, "%x.%x blocking",
+	 l4_thread_no (thread->threadid), l4_version (thread->threadid));
+
+  l4_msg_tag_t tag = l4_receive (l4_anythread);
+  if (l4_ipc_failed (tag))
+    {
+      int err = l4_error_code ();
+      debug (1, "%x.%x failed to block: %s (%d)",
+	     l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
+	     l4_strerror (err), err);
+    }
+  else
+    debug (5, "%x.%x unblocked",
+	   l4_thread_no (thread->threadid), l4_version (thread->threadid));
 }

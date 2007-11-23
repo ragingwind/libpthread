@@ -1,5 +1,5 @@
-/* Wakeup a thread.  L4 version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* Thread initialization.  Hurd/L4 version.
+   Copyright (C) 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -18,30 +18,13 @@
    Boston, MA 02111-1307, USA.  */
 
 #include <l4.h>
-
 #include <pt-internal.h>
 
-#include <hurd/stddef.h>
+#include <hurd/exceptions.h>
 
-/* Wakeup THREAD.  */
 void
-__pthread_wakeup (struct __pthread *thread)
+__pthread_startup (void)
 {
-  debug (5, "%x.%x waking %x.%x",
-	 l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
-	 l4_thread_no (thread->threadid), l4_version (thread->threadid));
-
-  l4_msg_tag_t tag = l4_send (thread->threadid);
-  if (l4_ipc_failed (tag))
-    {
-      int err = l4_error_code ();
-      debug (1, "%x.%x failed to wake %x.%x: %s (%d)",
-	     l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
-	     l4_thread_no (thread->threadid), l4_version (thread->threadid),
-	     l4_strerror (err), err);
-    }
-  else
-    debug (5, "%x.%x woke %x.%x",
-	   l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
-	   l4_thread_no (thread->threadid), l4_version (thread->threadid));
+  struct __pthread *pthread = _pthread_self ();
+  pthread->threadid = l4_myself ();
 }
