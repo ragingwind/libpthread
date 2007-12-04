@@ -35,45 +35,34 @@ __pthread_thread_start (struct __pthread *thread)
     {
       assert (__pthread_total == 1);
       assert (l4_is_thread_equal (l4_myself (), thread->threadid));
-      l4_set_user_defined_handle_of (hurd_exception_thread (l4_myself ()),
-				     (l4_word_t) thread);
       l4_set_user_defined_handle ((l4_word_t) thread);
     }
   else
     {
-      struct cap_addr_trans addr_trans = CAP_ADDR_TRANS_VOID;
+      struct hurd_thread_exregs_in in;
+      struct hurd_thread_exregs_out out;
 
-      /* First, start the exception thread.  */
-      l4_word_t dummy;
-      err = rm_thread_exregs (ADDR_VOID, thread->object.addr,
-			      HURD_EXREGS_EXCEPTION_THREAD
-			      | HURD_EXREGS_SET_SP_IP
-			      | HURD_EXREGS_SET_USER_HANDLE
-			      | HURD_EXREGS_START
-			      | HURD_EXREGS_ABORT_IPC,
-			      ADDR_VOID, 0, addr_trans, ADDR_VOID,
-			      (l4_word_t) thread->exception_handler_sp,
-			      (l4_word_t) exception_handler_loop, 0,
-			      thread,
-			      ADDR_VOID, ADDR_VOID,
-			      &dummy, &dummy, &dummy, &dummy);
-      assert (err == 0);
+      in.aspace = ADDR (0, 0);
+      in.aspace_addr_trans = CAP_ADDR_TRANS_VOID;
+      in.aspace_addr_trans_flags = CAP_COPY_COPY_SOURCE_GUARD;
 
+      in.activity = ADDR_VOID;
+
+      in.exception_page = thread->exception_page.addr;
+
+      in.sp = (l4_word_t) thread->mcontext.sp;
+      in.ip = (l4_word_t) thread->mcontext.pc;
+
+      in.user_handle = (l4_word_t) thread;
       err = rm_thread_exregs (ADDR_VOID, thread->object.addr,
 			      HURD_EXREGS_SET_ASPACE
 			      | HURD_EXREGS_SET_ACTIVITY
+			      | HURD_EXREGS_SET_EXCEPTION_PAGE
 			      | HURD_EXREGS_SET_SP_IP
 			      | HURD_EXREGS_SET_USER_HANDLE
 			      | HURD_EXREGS_START
 			      | HURD_EXREGS_ABORT_IPC,
-			      ADDR (0, 0),
-			      CAP_COPY_COPY_SOURCE_GUARD, addr_trans,
-			      ADDR_VOID,
-			      (l4_word_t) thread->mcontext.sp,
-			      (l4_word_t) thread->mcontext.pc, 0,
-			      thread,
-			      ADDR_VOID, ADDR_VOID,
-			      &dummy, &dummy, &dummy, &dummy);
+			      in, &out);
       assert (err == 0);
     }
   return 0;

@@ -55,7 +55,7 @@ __pthread_thread_alloc (struct __pthread *thread)
       if (ADDR_IS_VOID (storage.addr))
 	return EAGAIN;
 
-      thread->exception_handler_stack = storage;
+      thread->exception_page = storage;
 
 
       storage = storage_alloc (meta_data_activity, cap_thread,
@@ -63,7 +63,7 @@ __pthread_thread_alloc (struct __pthread *thread)
 			       STORAGE_MEDIUM_LIVED, ADDR_VOID);
       if (ADDR_IS_VOID (storage.addr))
 	{
-	  storage_free (thread->exception_handler_stack.addr, false);
+	  storage_free (thread->exception_page.addr, false);
 	  return EAGAIN;
 	}
 

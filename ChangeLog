@@ -1,3 +1,23 @@
+2007-12-04  Neal H. Walfield  <neal@gnu.org>
+
+	Remove exception threads.  Replace with support for activations.
+	* sysdeps/l4/hurd/pt-sysdep.h (PTHREAD_SYSDEP_MEMBERS): Remove
+	fields exception_handler_stack and exception_handler_sp.  Add
+	field exception_page.
+	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc):
+	Allocate a page for THREAD->EXCEPTION_PAGE, not
+	THREAD->EXCEPTION_HANDLER_STACK.
+	* sysdeps/l4/hurd/ia32/pt-setup.c: Include <hurd/thread.h> and
+	<hurd/exceptions.h>.
+	(__pthread_setup): Remove code dealing with the exception thread.
+	Set up the exception page.
+	* sysdeps/l4/hurd/pt-thread-start.c (__pthread_thread_start):
+	Remove code dealing with the exception thread.  Update to use new
+	rm_thread_exregs interface.  Also set the thread's exception page.
+	* sysdeps/l4/hurd/pt-thread-halt.c (__pthread_thread_halt): Remove
+	code to dealing with the exception thread.  Free the
+	THREAD->EXCEPTION_PAGE.
+
 2007-11-23  Neal H. Walfield  <neal@gnu.org>
 
 	* pthread/pt-internal.h (__pthread_startup): Add declaration.

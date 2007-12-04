@@ -30,8 +30,8 @@ static struct storage saved_object;
 void
 __pthread_thread_halt (struct __pthread *thread, int need_dealloc)
 {
-  struct storage exception_handler_stack = thread->exception_handler_stack;
-  thread->exception_handler_stack.addr = ADDR_VOID;
+  struct storage exception_page = thread->exception_page;
+  thread->exception_page.addr = ADDR_VOID;
 
   struct storage object = thread->object;
   l4_thread_id_t tid = thread->threadid;
@@ -46,24 +46,9 @@ __pthread_thread_halt (struct __pthread *thread, int need_dealloc)
       saved_object.addr = ADDR_VOID;
     }
 
-  /* Stop the exception handler thread.  */
-  l4_word_t dummy = 0;
-  error_t err = rm_thread_exregs (ADDR_VOID, object.addr,
-				  HURD_EXREGS_EXCEPTION_THREAD
-				  | HURD_EXREGS_STOP | HURD_EXREGS_ABORT_IPC,
-				  ADDR_VOID,
-				  0, (struct cap_addr_trans) CAP_ADDR_TRANS_VOID,
-				  ADDR_VOID,
-				  0, 0, 0, 0,
-				  ADDR_VOID, ADDR_VOID,
-				  &dummy, &dummy, &dummy, &dummy);
-  if (err)
-    panic ("Error stopping exception thread.");
-
-  /* Free its stack.  */
-  assert (! ADDR_IS_VOID (exception_handler_stack.addr));
-  storage_free (exception_handler_stack.addr, false);
-  exception_handler_stack.addr = ADDR_VOID;
+  /* Free the exception page.  */
+  assert (! ADDR_IS_VOID (exception_page.addr));
+  storage_free (exception_page.addr, false);
 
   if (tid == l4_myself ())
     /* If we try to storage_free (storage.addr), we will freeze in the

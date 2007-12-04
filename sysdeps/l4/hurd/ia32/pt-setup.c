@@ -20,6 +20,8 @@
 #include <l4.h>
 
 #include <pt-internal.h>
+#include <hurd/thread.h>
+#include <hurd/exceptions.h>
 
 /* The stack layout used on the i386 is:
 
@@ -63,14 +65,20 @@ __pthread_setup (struct __pthread *thread,
   thread->mcontext.pc = entry_point;
   thread->mcontext.sp = stack_setup (thread, start_routine, arg);
 
+  if (__pthread_num_threads == 1)
+    return 0;
 
-  if (__pthread_num_threads != 1)
-    {
-      assert (! ADDR_IS_VOID (thread->exception_handler_stack.addr));
-      thread->exception_handler_sp
-	= ADDR_TO_PTR (addr_extend (thread->exception_handler_stack.addr,
-				    0, PAGESIZE_LOG2));
-    }
+  assert (! ADDR_IS_VOID (thread->exception_page.addr));
+
+  struct exception_page *exception_page 
+    = ADDR_TO_PTR (addr_extend (thread->exception_page.addr,
+				0, PAGESIZE_LOG2));
+
+  /* SP is set to the end of the exception page.  */
+  exception_page->exception_handler_sp = (l4_word_t) exception_page + PAGESIZE;
+
+  exception_page->exception_handler_ip = (l4_word_t) &exception_handler_entry;
+  exception_page->exception_handler_end = (l4_word_t) &exception_handler_end;
 
   return 0;
 }

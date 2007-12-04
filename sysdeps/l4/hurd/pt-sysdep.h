@@ -33,8 +33,7 @@
 #define PTHREAD_SYSDEP_MEMBERS \
   struct storage object; \
   l4_thread_id_t threadid; \
-  struct storage exception_handler_stack; \
-  l4_word_t exception_handler_sp; \
+  struct storage exception_page; \
   l4_word_t my_errno;
 
 extern inline struct __pthread *
