@@ -27,16 +27,20 @@
 void
 __pthread_block (struct __pthread *thread)
 {
-  debug (5, "%x.%x blocking",
-	 l4_thread_no (thread->threadid), l4_version (thread->threadid));
+  debug (5, "%x.%x/%x blocking",
+	 l4_thread_no (thread->threadid), l4_version (thread->threadid),
+	 thread->threadid);
 
+  l4_accept (L4_UNTYPED_WORDS_ACCEPTOR);
   l4_msg_tag_t tag = l4_receive (l4_anythread);
   if (l4_ipc_failed (tag))
     {
       int err = l4_error_code ();
-      debug (1, "%x.%x failed to block: %s (%d)",
+      debug (1, "%x.%x failed to block: %d, offset: %x",
 	     l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
-	     l4_strerror (err), err);
+	     (l4_error_code () >> 1) & 0x7,
+	     l4_error_code () >> 4);
+      assert (! l4_ipc_failed (tag));
     }
   else
     debug (5, "%x.%x unblocked",

@@ -27,9 +27,16 @@
 void
 __pthread_wakeup (struct __pthread *thread)
 {
-  debug (5, "%x.%x waking %x.%x",
-	 l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
-	 l4_thread_no (thread->threadid), l4_version (thread->threadid));
+  debug (5, "%x.%x/%x waking %x.%x/%x",
+	 l4_thread_no (l4_myself ()), l4_version (l4_myself ()), l4_myself (),
+	 l4_thread_no (thread->threadid), l4_version (thread->threadid),
+	 thread->threadid);
+
+  /* Signal the waiter.  */
+  l4_msg_t msg;
+  l4_msg_clear (msg);
+  l4_msg_set_untyped_words (msg, 0);
+  l4_msg_load (msg);
 
   l4_msg_tag_t tag = l4_send (thread->threadid);
   if (l4_ipc_failed (tag))
