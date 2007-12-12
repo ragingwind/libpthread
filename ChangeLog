@@ -1,3 +1,8 @@
+2007-12-13  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/hurd/pt-thread-halt.c: Include <hurd/exceptions.h>.
+	(__pthread_thread_halt): Call exception_page_cleanup.
+
 2007-12-12  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/pt-block.c (__pthread_block): Clear the acceptor.

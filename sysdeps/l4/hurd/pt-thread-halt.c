@@ -22,6 +22,8 @@
 
 #include <pt-internal.h>
 
+#include <hurd/exceptions.h>
+
 /* If we try to deallocate our self, we will end up causing a
    deadlock.  Thus, when a thread tries to free itself, we add it
    here.  The next thread to free a thread will free it.  */
@@ -48,6 +50,8 @@ __pthread_thread_halt (struct __pthread *thread, int need_dealloc)
 
   /* Free the exception page.  */
   assert (! ADDR_IS_VOID (exception_page.addr));
+  exception_page_cleanup (ADDR_TO_PTR (addr_extend (exception_page.addr,
+						    0, PAGESIZE_LOG2)));
   storage_free (exception_page.addr, false);
 
   if (tid == l4_myself ())
