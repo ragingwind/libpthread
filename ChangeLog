@@ -1,3 +1,10 @@
+2007-12-12  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/pt-block.c (__pthread_block): Clear the acceptor.
+	Improve debugging output.
+	* sysdeps/l4/pt-wakeup.c (__pthread_wakeup): Load an empty message.
+	Improve debugging output.
+
 2007-12-04  Neal H. Walfield  <neal@gnu.org>
 
 	Remove exception threads.  Replace with support for activations.
