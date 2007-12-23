@@ -43,8 +43,8 @@ __pthread_thread_start (struct __pthread *thread)
       struct hurd_thread_exregs_out out;
 
       in.aspace = ADDR (0, 0);
-      in.aspace_addr_trans = CAP_ADDR_TRANS_VOID;
-      in.aspace_addr_trans_flags = CAP_COPY_COPY_SOURCE_GUARD;
+      in.aspace_cap_properties = CAP_PROPERTIES_VOID;
+      in.aspace_cap_properties_flags = CAP_COPY_COPY_SOURCE_GUARD;
 
       in.activity = ADDR_VOID;
 

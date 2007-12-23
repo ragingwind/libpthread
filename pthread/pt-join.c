@@ -37,7 +37,8 @@ pthread_join (pthread_t thread, void **status)
     return ESRCH;
 
   __pthread_mutex_lock (&pthread->state_lock);
-  pthread_cleanup_push (__pthread_mutex_unlock, &pthread->state_lock);
+  pthread_cleanup_push ((void (*)(void *)) __pthread_mutex_unlock,
+			&pthread->state_lock);
 
   while (pthread->state == PTHREAD_JOINABLE)
     pthread_cond_wait (&pthread->state_cond, &pthread->state_lock);

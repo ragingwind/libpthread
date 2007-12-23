@@ -1,3 +1,13 @@
+2007-12-23  Neal H. Walfield  <neal@gnu.org>
+
+	* Makefile.am (AM_CPPFLAGS): Add "-std=gnu99 -Wall -g -O3".
+
+	* sysdeps/l4/pt-block.c (__pthread_block): Remove unused variable
+	err.
+
+	* pthread/pt-join.c (pthread_join): Cast argument to
+	pthread_cleanup_push to avoid warning.
+
 2007-12-13  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/hurd/pt-thread-halt.c: Include <hurd/exceptions.h>.

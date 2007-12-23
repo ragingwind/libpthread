@@ -35,7 +35,6 @@ __pthread_block (struct __pthread *thread)
   l4_msg_tag_t tag = l4_receive (l4_anythread);
   if (l4_ipc_failed (tag))
     {
-      int err = l4_error_code ();
       debug (1, "%x.%x failed to block: %d, offset: %x",
 	     l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
 	     (l4_error_code () >> 1) & 0x7,
