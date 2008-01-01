@@ -454,31 +454,31 @@ extern int pthread_spin_unlock (pthread_spinlock_t *__lock);
 
 # ifdef __USE_EXTERN_INLINES
 
-extern __inline int
+__extern_inline int
 pthread_spin_destroy (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_destroy (__lock);
 }
 
-extern __inline int
+__extern_inline int
 pthread_spin_init (pthread_spinlock_t *__lock, int __pshared)
 {
   return __pthread_spin_init (__lock, __pshared);
 }
 
-extern __inline int
+__extern_inline int
 pthread_spin_lock (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_lock (__lock);
 }
 
-extern __inline int
+__extern_inline int
 pthread_spin_trylock (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_trylock (__lock);
 }
 
-extern __inline int
+__extern_inline int
 pthread_spin_unlock (pthread_spinlock_t *__lock)
 {
   return __pthread_spin_unlock (__lock);

@@ -21,7 +21,7 @@
 #define _BITS_MEMORY_H	1
 
 /* Prevent read and write reordering across this function.  */
-inline void
+static inline void
 __memory_barrier (void)
 {
   int i;

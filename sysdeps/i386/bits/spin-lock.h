@@ -42,7 +42,7 @@ typedef __volatile int __pthread_spinlock_t;
 # endif
 
 # ifndef __PT_SPIN_INLINE
-#  define __PT_SPIN_INLINE extern __inline
+#  define __PT_SPIN_INLINE __extern_inline
 # endif
 
 __PT_SPIN_INLINE int __pthread_spin_destroy (__pthread_spinlock_t *__lock);
@@ -74,10 +74,10 @@ __pthread_spin_trylock (__pthread_spinlock_t *__lock)
   return __locked ? __EBUSY : 0;
 }
 
-extern __inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
+__extern_inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
 extern int _pthread_spin_lock (__pthread_spinlock_t *__lock);
 
-extern __inline int
+__extern_inline int
 __pthread_spin_lock (__pthread_spinlock_t *__lock)
 {
   if (__pthread_spin_trylock (__lock))
