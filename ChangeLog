@@ -1,3 +1,15 @@
+2008-01-01  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal): Add additional asserts.
+	[! NDEBUG]: Keep MUTEX->OWNER up to date.
+	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock):
+	Add additional asserts.
+	[! NDEBUG]: Keep MUTEX->OWNER up to date.
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock): Add
+	additional asserts.
+	[! NDEBUG]: Keep MUTEX->OWNER up to date.
+
 2007-12-23  Neal H. Walfield  <neal@gnu.org>
 
 	* Makefile.am (AM_CPPFLAGS): Add "-std=gnu99 -Wall -g -O3".

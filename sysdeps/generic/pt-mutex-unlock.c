@@ -1,5 +1,5 @@
 /* Unlock a mutex.  Generic version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -31,12 +31,20 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
   
   __pthread_spin_lock (&mutex->__lock);
 
-  if (mutex->attr)
+  if (! mutex->attr || mutex->attr->mutex_type == PTHREAD_MUTEX_NORMAL)
+    {
+#ifndef NDEBUG
+      if (_pthread_self ())
+	{
+	  assert (mutex->owner);
+	  assert (mutex->owner == _pthread_self ());
+	  mutex->owner = NULL;
+	}
+#endif
+    }
+  else
     switch (mutex->attr->mutex_type)
       {
-      case PTHREAD_MUTEX_NORMAL:
-	break;
-
       case PTHREAD_MUTEX_ERRORCHECK:
       case PTHREAD_MUTEX_RECURSIVE:
 	if (mutex->owner != _pthread_self ())
@@ -58,6 +66,7 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
       default:
 	LOSE;
       }
+
 
   if (mutex->__queue == NULL)
     {
