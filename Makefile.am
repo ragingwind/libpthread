@@ -1,5 +1,5 @@
 # Makefile.am - Makefile template for libpthread.
-# Copyright (C) 2003 Free Software Foundation, Inc.
+# Copyright (C) 2003, 2008 Free Software Foundation, Inc.
 #
 # This file is part of the GNU Hurd.
 # 
@@ -38,10 +38,10 @@ SYSDEP_PATH = $(srcdir)/sysdeps/l4/hurd/${arch}	\
 	 $(srcdir)/include
 vpath %.c $(SYSDEP_PATH)
 
-AM_CPPFLAGS = -std=gnu99 -Wall -g -O3 \
-  -I$(top_builddir)/include -D_GNU_SOURCE=1 -I$(srcdir)/pthread \
-  -I$(top_srcdir)/libc-parts $(addprefix -I, $(SYSDEP_PATH)) \
-  -imacros $(srcdir)/include/libc-symbols.h
+AM_CPPFLAGS = -std=gnu99 -Wall -g -O3 -I$(LIBC)/include			\
+-I$(top_builddir)/include -D_GNU_SOURCE=1 -I$(srcdir)/pthread		\
+-I$(top_srcdir)/libc-parts $(addprefix -I, $(SYSDEP_PATH)) -imacros	\
+$(srcdir)/include/libc-symbols.h
 
 # Sources.
 SYSDEPS := lockfile.c
