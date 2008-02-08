@@ -1,5 +1,5 @@
 /* pthread_setspecific.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -30,7 +30,8 @@ pthread_setspecific (pthread_key_t key, const void *value)
 
   if (! self->thread_specifics)
     {
-      err = hurd_ihash_create (&self->thread_specifics, HURD_IHASH_NO_LOCP);
+      err = hurd_ihash_create (&self->thread_specifics, false,
+			       HURD_IHASH_NO_LOCP);
       if (err)
 	return ENOMEM;
     }
