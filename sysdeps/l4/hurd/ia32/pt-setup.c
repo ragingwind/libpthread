@@ -1,5 +1,5 @@
 /* Setup thread stack.  Hurd/i386 version.
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -30,8 +30,33 @@
     -----------------
    |  START_ROUTINE  |
     -----------------
-   |  0              |
-   -----------------  */
+   |  Return address |
+    -----------------  <- %ebp
+   |  Frame pointer  |
+    -----------------
+
+  We do the following: setup the stack to return to the entry routine.
+
+  
+*/
+
+/* The stack contains:
+
+    arg
+    start_routine
+    0 <- fake return address
+    C entry_point
+*/
+extern uintptr_t _pthread_entry_point;
+__asm__ ("\t\n\
+	.globl	_pthread_entry_point, __pthread_entry_point\t\n\
+_pthread_entry_point:\t\n\
+__pthread_entry_point:\t\n\
+	pushl	$0\t\n\
+	popf\t\n\
+\t\n\
+	xor %ebp, %ebp\t\n\
+	ret\t\n");
 
 /* Set up the stack for THREAD, such that it appears as if
    START_ROUTINE and ARG were passed to the new thread's entry-point.
@@ -39,7 +64,8 @@
    opportunity to install THREAD in our utcb.  */
 static void *
 stack_setup (struct __pthread *thread,
-	     void *(*start_routine)(void *), void *arg)
+	     void *(*start_routine)(void *), void *arg,
+	     void (*entry_point)(void *(*)(void *), void *))
 {
   l4_word_t *top;
 
@@ -52,6 +78,7 @@ stack_setup (struct __pthread *thread,
       *--top = (l4_word_t) arg;	/* Argument to START_ROUTINE.  */
       *--top = (l4_word_t) start_routine;
       *--top = 0;		/* Fake return address.  */
+      *--top = entry_point;
     }
 
   return top;
@@ -62,8 +89,9 @@ __pthread_setup (struct __pthread *thread,
 		 void (*entry_point)(void *(*)(void *), void *),
 		 void *(*start_routine)(void *), void *arg)
 {
-  thread->mcontext.pc = entry_point;
-  thread->mcontext.sp = stack_setup (thread, start_routine, arg);
+  thread->mcontext.pc = (uintptr_t) &_pthread_entry_point;
+  thread->mcontext.sp = (uintptr_t) stack_setup (thread, start_routine, arg,
+						 entry_point);
 
   if (__pthread_num_threads == 1)
     return 0;

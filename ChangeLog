@@ -1,3 +1,12 @@
+2008-02-11  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/hurd/ia32/pt-setup.c (_pthread_entry_point): New
+	assembly function.
+	(stack_setup): Take additional argument entry_point.  Push it on
+	the stack.
+	(__pthread_setup): Set thread->mcontext.pc to
+	&_pthread_entry_point.  Pass ENTRY_POINT to stack_setup.
+
 2008-02-08  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/hurd/pt-setspecific.c (pthread_setspecific): Update use
