@@ -1,5 +1,10 @@
 2008-02-13  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc):
+	Update use of storage_alloc to be consistent with new API.
+
+2008-02-13  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/l4/hurd/pt-sysdep.c (_pthread_init_routine): Change
 	function signature to take a function pointer and an argument and
 	to not return.

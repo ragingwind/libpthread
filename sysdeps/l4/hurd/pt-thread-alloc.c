@@ -1,5 +1,5 @@
 /* Allocate kernel thread.  Hurd/L4 version.
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -51,7 +51,8 @@ __pthread_thread_alloc (struct __pthread *thread)
 	 running and it accesses its stack, it will fault, which we
 	 naturally cannot handle.  */
       storage = storage_alloc (ADDR_VOID, cap_page,
-			       STORAGE_UNKNOWN, ADDR_VOID);
+			       STORAGE_UNKNOWN, OBJECT_POLICY_DEFAULT,
+			       ADDR_VOID);
       if (ADDR_IS_VOID (storage.addr))
 	return EAGAIN;
 
@@ -60,7 +61,8 @@ __pthread_thread_alloc (struct __pthread *thread)
 
       storage = storage_alloc (meta_data_activity, cap_thread,
 			       /* Threads are rarely shortly lived.  */
-			       STORAGE_MEDIUM_LIVED, ADDR_VOID);
+			       STORAGE_MEDIUM_LIVED, OBJECT_POLICY_DEFAULT,
+			       ADDR_VOID);
       if (ADDR_IS_VOID (storage.addr))
 	{
 	  storage_free (thread->exception_page.addr, false);
