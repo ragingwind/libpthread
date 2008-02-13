@@ -38,17 +38,18 @@ sigprocmask (int HOW, const sigset_t *restrict SET, sigset_t *restrict OLDSET)
 }
 
 /* Forward.  */
-static void *init_routine (void);
+static void init_routine (void (*) (void *), void *)
+  __attribute__ ((noreturn));
 
 /* OK, the name of this variable isn't really appropriate, but I don't
    want to change it yet.  */
-void *(*_pthread_init_routine)(void) = &init_routine;
+void (*_pthread_init_routine)(void (*) (void *), void *) = &init_routine;
 
 /* This function is called from the Hurd-specific startup code.  It
    should return a new stack pointer for the main thread.  The caller
    will switch to this new stack before doing anything serious.  */
-static void * 
-init_routine (void)
+static void
+init_routine (void (*entry) (void *), void *arg)
 {
   /* Initialize the library.  */
   __pthread_initialize ();
@@ -57,8 +58,11 @@ init_routine (void)
   int err;
 
   /* Create the pthread structure for the main thread (i.e. us).  */
-  err = __pthread_create_internal (&thread, 0, 0, 0);
+  err = __pthread_create_internal (&thread, 0,
+				   (void *(*)(void *)) entry, arg);
   assert_perror (err);
 
-  return (void *) thread->mcontext.sp;
+  /* Switch stacks.  */
+  l4_start_sp_ip (l4_myself (), thread->mcontext.sp,
+		  thread->mcontext.pc);
 }

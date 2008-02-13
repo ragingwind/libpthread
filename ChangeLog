@@ -1,3 +1,12 @@
+2008-02-13  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/hurd/pt-sysdep.c (_pthread_init_routine): Change
+	function signature to take a function pointer and an argument and
+	to not return.
+	(init_routine): Likewise.  Pass entry and argument to
+	__pthread_create_internal.  Instead of returning, jump to the
+	program counter and switch stacks.
+
 2008-02-11  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/hurd/ia32/pt-setup.c (_pthread_entry_point): New
