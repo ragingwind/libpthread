@@ -48,15 +48,15 @@
     C entry_point
 */
 extern uintptr_t _pthread_entry_point;
-__asm__ ("\t\n\
-	.globl	_pthread_entry_point, __pthread_entry_point\t\n\
-_pthread_entry_point:\t\n\
-__pthread_entry_point:\t\n\
-	pushl	$0\t\n\
-	popf\t\n\
-\t\n\
-	xor %ebp, %ebp\t\n\
-	ret\t\n");
+__asm__ ("\n\
+	.globl	_pthread_entry_point, __pthread_entry_point\n\
+_pthread_entry_point:\n\
+__pthread_entry_point:\n\
+	pushl	$0\n\
+	popf\n\
+\n\
+	xor %ebp, %ebp\n\
+	ret\n");
 
 /* Set up the stack for THREAD, such that it appears as if
    START_ROUTINE and ARG were passed to the new thread's entry-point.
@@ -67,18 +67,18 @@ stack_setup (struct __pthread *thread,
 	     void *(*start_routine)(void *), void *arg,
 	     void (*entry_point)(void *(*)(void *), void *))
 {
-  l4_word_t *top;
+  uintptr_t *top;
 
   /* Calculate top of the new stack.  */
-  top = (l4_word_t *) ((l4_word_t) thread->stackaddr + thread->stacksize);
+  top = (uintptr_t *) ((uintptr_t) thread->stackaddr + thread->stacksize);
 
   if (start_routine)
     {
       /* Set up call frame.  */
-      *--top = (l4_word_t) arg;	/* Argument to START_ROUTINE.  */
-      *--top = (l4_word_t) start_routine;
+      *--top = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
+      *--top = (uintptr_t) start_routine;
       *--top = 0;		/* Fake return address.  */
-      *--top = entry_point;
+      *--top = (uintptr_t) entry_point;
     }
 
   return top;
@@ -89,9 +89,9 @@ __pthread_setup (struct __pthread *thread,
 		 void (*entry_point)(void *(*)(void *), void *),
 		 void *(*start_routine)(void *), void *arg)
 {
-  thread->mcontext.pc = (uintptr_t) &_pthread_entry_point;
-  thread->mcontext.sp = (uintptr_t) stack_setup (thread, start_routine, arg,
-						 entry_point);
+  thread->mcontext.pc = (void *) &_pthread_entry_point;
+  thread->mcontext.sp = (void *) stack_setup (thread, start_routine, arg,
+					      entry_point);
 
   if (__pthread_num_threads == 1)
     return 0;
@@ -103,10 +103,10 @@ __pthread_setup (struct __pthread *thread,
 				0, PAGESIZE_LOG2));
 
   /* SP is set to the end of the exception page.  */
-  exception_page->exception_handler_sp = (l4_word_t) exception_page + PAGESIZE;
+  exception_page->exception_handler_sp = (uintptr_t) exception_page + PAGESIZE;
 
-  exception_page->exception_handler_ip = (l4_word_t) &exception_handler_entry;
-  exception_page->exception_handler_end = (l4_word_t) &exception_handler_end;
+  exception_page->exception_handler_ip = (uintptr_t) &exception_handler_entry;
+  exception_page->exception_handler_end = (uintptr_t) &exception_handler_end;
 
   return 0;
 }
