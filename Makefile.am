@@ -38,10 +38,9 @@ SYSDEP_PATH = $(srcdir)/sysdeps/l4/hurd/${arch}	\
 	 $(srcdir)/include
 vpath %.c $(SYSDEP_PATH)
 
-AM_CPPFLAGS = -std=gnu99 -Wall -g -O3 -I$(LIBC)/include			\
--I$(top_builddir)/include -D_GNU_SOURCE=1 -I$(srcdir)/pthread		\
--I$(top_srcdir)/libc-parts $(addprefix -I, $(SYSDEP_PATH)) -imacros	\
-$(srcdir)/include/libc-symbols.h
+AM_CPPFLAGS = $(USER_CPPFLAGS) -I$(srcdir)/pthread \
+  $(addprefix -I, $(SYSDEP_PATH)) -imacros $(srcdir)/include/libc-symbols.h
+AM_CFLAGS = $(USER_CFLAGS)
 
 # Sources.
 SYSDEPS := lockfile.c
