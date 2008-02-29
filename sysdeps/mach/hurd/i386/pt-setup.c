@@ -63,8 +63,10 @@ stack_setup (struct __pthread *thread,
   if (start_routine)
     {
       /* And then the call frame.  */
-      *--top = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
-      *--top = (uintptr_t) start_routine;
+      top -= 2*sizeof(uintptr_t);
+      top = (uintptr_t) top & ~0xf;
+      top[1] = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
+      top[0] = (uintptr_t) start_routine;
       *--top = 0;		/* Fake return address.  */
     }
 

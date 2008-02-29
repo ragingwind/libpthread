@@ -1,3 +1,9 @@
+2008-02-29  Samuel Thibault  <samuel.thibault@ens-lyon.org
+
+	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Align stack on 0x10
+	for MMX operations.
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Likewise.
+
 2008-01-01  Samuel Thibault  <samuel.thibault@ens-lyon.org
 
 	* include/pthread/pthread.h (pthread_spin_destroy, pthread_spin_init,

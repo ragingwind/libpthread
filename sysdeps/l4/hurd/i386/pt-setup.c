@@ -47,8 +47,10 @@ stack_setup (struct __pthread *thread,
   if (start_routine)
     {
       /* Set up call frame.  */
-      *--top = (L4_Word_t) arg;	/* Argument to START_ROUTINE.  */
-      *--top = (L4_Word_t) start_routine;
+      top -= 2*sizeof(L4_Word_t);
+      top = (unsigned long) top & ~0xf;
+      top[1] = (L4_Word_t) arg;	/* Argument to START_ROUTINE.  */
+      top[0] = (L4_Word_t) start_routine;
       *--top = 0;		/* Fake return address.  */
     }
 
