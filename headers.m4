@@ -33,4 +33,5 @@ AC_CONFIG_LINKS([
   include/bits/pthread-np.h:libpthread/sysdeps/l4/bits/pthread-np.h
   include/semaphore.h:libpthread/include/semaphore.h
   include/bits/semaphore.h:libpthread/sysdeps/generic/bits/semaphore.h
+  include/signal.h:libpthread/signal/signal.h
 ])

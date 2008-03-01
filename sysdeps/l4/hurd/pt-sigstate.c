@@ -1,5 +1,5 @@
 /* Set a thread's signal state.  Hurd on L4 version.
-   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -28,6 +28,54 @@ __pthread_sigstate (struct __pthread *thread, int how,
 		    const sigset_t *set, sigset_t *oset,
 		    int clear_pending)
 {
-  /* FIXME: Do the right thing here.  */
+  struct signal_state *ss = &thread->ss;
+  pthread_mutex_lock (&ss->lock);
+
+  if (oset)
+    *oset = ss->blocked;
+
+  if (set)
+    {
+      /* Mask out SIGKILL and SIGSTOP.  */
+      sigset_t s = *set;
+      sigdelset (&s, SIGKILL);
+      sigdelset (&s, SIGSTOP);
+
+      switch (how)
+	{
+	case SIG_BLOCK:
+	  ss->blocked |= s;
+	  break;
+	case SIG_UNBLOCK:
+	  ss->blocked &= ~s;
+	  break;
+	case SIG_SETMASK:
+	  ss->blocked = s;
+	  break;
+	default:
+	  errno = EINVAL;
+	  pthread_mutex_unlock (&ss->lock);
+	  return -1;
+	}
+    }
+
+  if (clear_pending)
+    sigemptyset (&ss->pending);
+
+  /* A "signal shall remain pending until it is unblocked" (2.4.1).
+
+     "If there are any pending unblocked signals after the call to
+     sigprocmask(), at least one of those signals shall be delivered
+     before the call to sigprocmask() returns."
+     (pthread_sigmask).  */
+  sigset_t extant = ~ss->blocked & ss->pending;
+  if (! extant)
+    extant = ~ss->blocked & process_pending;
+
+  pthread_mutex_unlock (&ss->lock);
+
+  if (extant)
+    raise (l4_lsb64 (extant));
+
   return 0;
 }

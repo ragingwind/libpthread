@@ -24,7 +24,7 @@ if ARCH_POWERPC
   arch=powerpc
 endif
 
-# The source files is scattered over several directories.  Add 
+# The source files are scattered over several directories.  Add 
 # all these directories to the vpath.
 SYSDEP_PATH = $(srcdir)/sysdeps/l4/hurd/${arch}	\
 	 $(srcdir)/sysdeps/l4/${arch}		\
@@ -35,6 +35,7 @@ SYSDEP_PATH = $(srcdir)/sysdeps/l4/hurd/${arch}	\
 	 $(srcdir)/sysdeps/generic		\
 	 $(srcdir)/sysdeps/posix		\
 	 $(srcdir)/pthread			\
+	 $(srcdir)/signal			\
 	 $(srcdir)/include
 vpath %.c $(SYSDEP_PATH)
 
@@ -87,6 +88,7 @@ libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	pt-mutex-init.c pt-mutex-destroy.c				    \
 	pt-mutex-lock.c pt-mutex-trylock.c pt-mutex-timedlock.c		    \
 	pt-mutex-unlock.c						    \
+	pt-mutex-transfer-np.c						    \
 	pt-mutex-getprioceiling.c pt-mutex-setprioceiling.c		    \
 	pt-rwlock-attr.c						    \
 	pt-rwlockattr-init.c pt-rwlockattr-destroy.c			    \
@@ -129,4 +131,31 @@ libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	pt-getschedparam.c pt-setschedparam.c pt-setschedprio.c		    \
 	sem-close.c sem-init.c sem-timedwait.c sem-wait.c		    \
 	sem-destroy.c sem-open.c sem-trywait.c sem-getvalue.c		    \
-	sem-post.c sem-unlink.c
+	sem-post.c sem-unlink.c						    \
+									    \
+	kill.c								    \
+	killpg.c							    \
+	pt-kill-siginfo-np.c						    \
+	raise.c								    \
+	sigaction.c							    \
+	sigaddset.c							    \
+	sigaltstack.c							    \
+	sigdelset.c							    \
+	sigemptyset.c							    \
+	sigfillset.c							    \
+	sig-internal.c							    \
+	sig-internal.h							    \
+	siginterrupt.c							    \
+	sigismember.c							    \
+	signal.c							    \
+	signal-dispatch.c						    \
+	signal.h							    \
+	sigpending.c							    \
+	sigprocmask.c							    \
+	sigsuspend.c							    \
+	sigtimedwait.c							    \
+	sigwait.c							    \
+	sigwaiter.c							    \
+	sigwaitinfo.c							    \
+	signal-dispatch-lowlevel.c					    \
+	sigprocmask.c

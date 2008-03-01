@@ -1,0 +1,29 @@
+Unimplemented Functionality
+---------------------------
+
+We don't support interruptible functions.  That is, if a signal is
+delivered when a thread is in e.g. the write system call, then the
+write function should be interrupted and return EINTR when the signal
+handler is finished.  To realize this behavior, we could have a thread
+local interruptible flag and a setjmp buffer.  A function that is
+interruptible would fill the jump buffer and set the interruptible
+flag.  If a signal comes in and the interruptible flag is set, rather
+than resuming the thread, we longjmp to the buffer.
+
+If a signal action has set the SA_SIGINFO, the third argument must be
+a pointer to a ucontext describing the thread's interrupted state;
+this implementation passes NULL.  This isn't as bad as it sounds as
+the the ucontext family of functions are marked obsolete in SUSv3 with
+the advisory that any use of them should be replaced by the use of
+pthread functionality (cf. makecontext rationale).
+
+stop and continue signals are not implemented (as we need to stop all
+threads, this requires being in bed with libpthread).
+
+Implementation is not yet cancellation-safe.
+
+There are not even stubs for sighold, sigingore, sigpause, sigrelse,
+however, according to posix: "Use of any of these functions is
+unspecified in a multi-threaded process."
+
+Implement sigtimedwait, sigqueue.

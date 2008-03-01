@@ -1,3 +1,57 @@
+2008-03-01  Neal H. Walfield  <neal@gnu.org>
+
+	Add signal implementation.
+	* Makefile.am (SYSDEP_PATH): Add $(srcdir)/signal.
+	(libpthread_a_SOURCES): Add pt-mutex-transfer-np.c, kill.c,
+	killpg.c, pt-kill-siginfo-np.c, raise.c, sigaction.c, sigaddset.c,
+	sigaltstack.c, sigdelset.c, sigemptyset.c, sigfillset.c,
+	sig-internal.c, sig-internal.h, siginterrupt.c, sigismember.c,
+	signal.c, signal-dispatch.c, signal.h, sigpending.c,
+	sigprocmask.c, sigsuspend.c, sigtimedwait.c, sigwait.c,
+	sigwaiter.c, sigwaitinfo.c, signal-dispatch-lowlevel.c, and
+	sigprocmask.c.
+	* headers.m4: Link libpthread/signal/signal.h into ../include.
+	* sysdeps/generic/pt-mutex-transfer-np.c: New file.
+        * signal/README: New file.
+        * signal/TODO: Likewise.
+        * signal/kill.c: Likewise.
+        * signal/pt-kill-siginfo-np.c: Likewise.
+        * signal/sig-internal.c: Likewise.
+        * signal/sig-internal.h: Likewise.
+        * signal/sigaction.c: Likewise.
+        * signal/sigaltstack.c: Likewise.
+        * signal/signal-dispatch.c: Likewise.
+        * signal/signal.h: Likewise.
+        * signal/sigpending.c: Likewise.
+        * signal/sigsuspend.c: Likewise.
+        * signal/sigtimedwait.c: Likewise.
+        * signal/sigwaiter.c: Likewise.
+        * signal/sigwaitinfo.c: Likewise.
+	* sysdeps/l4/hurd/sig-sysdep.h: Likewise.
+	* sysdeps/l4/hurd/sigprocmask.c: Likewise.
+	* sysdeps/generic/killpg.c: Likewise.
+	* sysdeps/generic/pt-kill.c: Likewise.
+	* sysdeps/generic/raise.c: Likewise.
+	* sysdeps/generic/sigaddset.c: Likewise.
+	* sysdeps/generic/sigdelset.c: Likewise.
+	* sysdeps/generic/sigemptyset.c: Likewise.
+	* sysdeps/generic/sigfillset.c: Likewise.
+	* sysdeps/generic/siginterrupt.c: Likewise.
+	* sysdeps/generic/sigismember.c: Likewise.
+	* sysdeps/generic/signal.c: Likewise.
+	* sysdeps/generic/sigwait.c: Likewise.
+	* sysdeps/l4/hurd/ia32/signal-dispatch-lowlevel.c: Likewise.
+	* sysdeps/l4/hurd/pt-sysdep.c (sigprocmask): Remove function.
+	* sysdeps/l4/hurd/pt-sigstate.c (__pthread_sigstate): Implement
+	it.
+	* sysdeps/l4/hurd/pt-sigstate-init.c: Include <sig-internal.h>.
+	(__pthread_sigstate_init): Initialize THREAD->SS.
+	* sysdeps/l4/hurd/pt-kill.c: Remove file.
+	* pthread/pt-internal.h: Include <sig-internal.h>.
+	(PTHREAD_SIGNAL_MEMBERS) [! PTHREAD_SIGNAL_MEMBERS]: Define.
+	(struct __pthread): Add PTHREAD_SIGNAL_MEMBERS.
+	* pthread/pt-self.c (pthread_self): Assert that SELF is not NULL.
+
 2008-02-21  Neal H. Walfield  <neal@gnu.org>
 
 	* Makefile.am (AM_CPPFLAGS): Replace use of includes with

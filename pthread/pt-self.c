@@ -1,5 +1,5 @@
 /* Get calling thread's ID.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -25,5 +25,8 @@
 pthread_t
 pthread_self (void)
 {
-  return _pthread_self()->thread;
+  struct __pthread *self = _pthread_self ();
+  assert (self);
+
+  return self->thread;
 }

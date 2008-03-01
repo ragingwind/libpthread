@@ -33,6 +33,8 @@
 #include <pt-sysdep.h>
 #include <pt-machdep.h>
 
+#include <sig-internal.h>
+
 /* Thread state.  */
 enum pthread_state
 {
@@ -48,6 +50,10 @@ enum pthread_state
 
 #ifndef PTHREAD_SYSDEP_MEMBERS
 # define PTHREAD_SYSDEP_MEMBERS
+#endif
+
+#ifndef PTHREAD_SIGNAL_MEMBERS
+# define PTHREAD_SIGNAL_MEMBERS
 #endif
 
 /* This structure describes a POSIX thread.  */
@@ -84,6 +90,8 @@ struct __pthread
   PTHREAD_KEY_MEMBERS
 
   PTHREAD_SYSDEP_MEMBERS
+
+  PTHREAD_SIGNAL_MEMBERS
 
   struct __pthread *next, **prevp;
 };
