@@ -1,3 +1,7 @@
+2008-03-16  Samuel Thibault  <samuel.thibault@ens-lyon.org
+
+	* include/libc-symbols.h (HAVE_ASM_PREVIOUS_DIRECTIVE): Define.
+
 2008-02-29  Samuel Thibault  <samuel.thibault@ens-lyon.org
 
 	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Align stack on 0x10

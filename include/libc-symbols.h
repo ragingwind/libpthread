@@ -60,6 +60,7 @@
 #define HAVE_ELF
 #define HAVE_SECTION_QUOTES
 #define HAVE_VISIBILITY_ATTRIBUTE
+#define HAVE_ASM_PREVIOUS_DIRECTIVE
 // #define SHARED
 
 /* The symbols in all the user (non-_) macros are C symbols.
