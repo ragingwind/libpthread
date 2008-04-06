@@ -1,3 +1,7 @@
+2008-04-06  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/hurd/pt-kill.c: Just include "../generic/pt-kill.c".
+
 2008-03-01  Neal H. Walfield  <neal@gnu.org>
 
 	Add signal implementation.
