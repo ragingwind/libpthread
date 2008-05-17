@@ -188,6 +188,13 @@ extern int pthread_attr_getstacksize (const pthread_attr_t *__restrict attr,
 /* Set the value of the stacksize attribute in *ATTR to STACKSIZE.  */
 extern int pthread_attr_setstacksize (pthread_attr_t *attr,
 				      size_t stacksize);
+
+#ifdef __USE_GNU
+/* Initialize thread attribute *ATTR with attributes corresponding to the
+   already running thread THREAD.  It shall be called on an uninitialized ATTR
+   and destroyed with pthread_attr_destroy when no longer needed.  */
+extern int pthread_getattr_np (pthread_t thread, pthread_attr_t *attr);
+#endif
 
 
 /* Create a thread with attributes given by ATTR, executing

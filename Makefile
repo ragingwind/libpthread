@@ -45,6 +45,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 									    \
 	pt-alloc.c							    \
 	pt-create.c							    \
+	pt-getattr.c							    \
 	pt-equal.c							    \
 	pt-dealloc.c							    \
 	pt-detach.c							    \

@@ -1,14 +1,20 @@
-2008-03-16  Samuel Thibault  <samuel.thibault@ens-lyon.org
+2008-05-17  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/pthread/pthread.h (pthread_getattr_np): New declaration.
+	* pthread/pt-getattr.c: New file.
+	* Makefile (SRCS): Add pt-getattr.c.
+
+2008-03-16  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/libc-symbols.h (HAVE_ASM_PREVIOUS_DIRECTIVE): Define.
 
-2008-02-29  Samuel Thibault  <samuel.thibault@ens-lyon.org
+2008-02-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Align stack on 0x10
 	for MMX operations.
 	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Likewise.
 
-2008-01-01  Samuel Thibault  <samuel.thibault@ens-lyon.org
+2008-01-01  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/pthread/pthread.h (pthread_spin_destroy, pthread_spin_init,
 	pthread_spin_lock, pthread_spin_trylock, pthread_spin_unlock): Use
