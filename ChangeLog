@@ -1,3 +1,14 @@
+2008-05-21  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/hurd/bits/pthread-np.h: New file.
+	* headers.m4: Don't link include/bits/pthread-np.h to
+	libpthread/sysdeps/l4/bits/pthread-np.h but to
+	libpthread/sysdeps/l4/hurd/bits/pthread-np.h.
+	* include/pthread/pthread.h: Include <bits/pthread-np.h>.
+	* sysdeps/l4/hurd/pt-setactivity-np.c (pthread_setactivity_np):
+	New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-setactivity-np.c.
+
 2008-04-06  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/hurd/pt-kill.c: Just include "../generic/pt-kill.c".

@@ -133,6 +133,8 @@ libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	sem-destroy.c sem-open.c sem-trywait.c sem-getvalue.c		    \
 	sem-post.c sem-unlink.c						    \
 									    \
+	pt-setactivity-np.c						    \
+									    \
 	kill.c								    \
 	killpg.c							    \
 	pt-kill-siginfo-np.c						    \

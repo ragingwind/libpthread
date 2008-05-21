@@ -1,5 +1,5 @@
 # headers.m4 - Autoconf snippets to install links for header files.
-# Copyright 2003 Free Software Foundation, Inc.
+# Copyright 2003, 2008 Free Software Foundation, Inc.
 # Written by Marcus Brinkmann <marcus@gnu.org>.
 #
 # This file is free software; as a special exception the author gives
@@ -30,7 +30,7 @@ AC_CONFIG_LINKS([
   include/bits/thread-attr.h:libpthread/sysdeps/generic/bits/thread-attr.h
   include/bits/thread-barrier.h:libpthread/sysdeps/generic/bits/thread-barrier.h
   include/bits/thread-specific.h:libpthread/sysdeps/generic/bits/thread-specific.h
-  include/bits/pthread-np.h:libpthread/sysdeps/l4/bits/pthread-np.h
+  include/bits/pthread-np.h:libpthread/sysdeps/l4/hurd/bits/pthread-np.h
   include/semaphore.h:libpthread/include/semaphore.h
   include/bits/semaphore.h:libpthread/sysdeps/generic/bits/semaphore.h
   include/signal.h:libpthread/signal/signal.h
