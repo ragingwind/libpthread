@@ -1,5 +1,11 @@
 2008-05-27  Neal H. Walfield  <neal@gnu.org>
 
+	* pthread/pt-internal.h (__pthread_queue_iterate): Before
+	returning the current element, save its next pointer.
+	(__pthread_dequeuing_iterate): Likewise.
+
+2008-05-27  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/mach/hurd/pt-docancel.c (__pthread_do_cancel): Fix
 	assert.
 
