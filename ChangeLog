@@ -1,3 +1,8 @@
+2008-05-27  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/mach/hurd/pt-docancel.c (__pthread_do_cancel): Fix
+	assert.
+
 2008-05-17  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/pthread/pthread.h (pthread_getattr_np): New declaration.
