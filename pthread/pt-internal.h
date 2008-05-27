@@ -122,15 +122,22 @@ __pthread_dequeue (struct __pthread *thread)
 }
 
 /* Iterate over QUEUE storing each element in ELEMENT.  */
-#define __pthread_queue_iterate(queue, element) \
-	for (element = queue; element; element = element->next)
+#define __pthread_queue_iterate(queue, element)				\
+  for (struct __pthread *__pdi_next = (queue);				\
+       ((element) = __pdi_next)						\
+	 && ((__pdi_next = __pdi_next->next),				\
+	     true);							\
+       )
 
 /* Iterate over QUEUE dequeuing each element, storing it in
    ELEMENT.  */
-#define __pthread_dequeuing_iterate(queue, element) \
-	for (element = queue; \
-	     element && ((element->prevp = 0), 1); \
-	     element = element->next)
+#define __pthread_dequeuing_iterate(queue, element)			\
+  for (struct __pthread *__pdi_next = (queue);				\
+       ((element) = __pdi_next)						\
+	 && ((__pdi_next = __pdi_next->next),				\
+	     ((element)->prevp = 0),					\
+	     true);							\
+       )
 
 /* The total number of threads currently active.  */
 extern atomic_fast32_t __pthread_total;

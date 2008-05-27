@@ -27,6 +27,20 @@
 void
 __pthread_wakeup (struct __pthread *thread)
 {
-  long ret = futex_wake (&thread->threadid, INT_MAX);
-  assert (ret == 1);
+  /* We need to loop here as the blocked thread may not yet be
+     blocked!  Here's what happens when a thread blocks: it registers
+     itself as blocked, drops the relevant lock and then actually
+     blocks (via __pthread_block).  This means that after dropping the
+     lock and before blocking, it may be interrupted and another
+     thread may try to wake it.  */
+  long ret;
+  do
+    {
+      ret = futex_wake (&thread->threadid, INT_MAX);
+      assertx (ret <= 1, "tid: %x, ret: %d", thread->threadid, ret);
+
+      if (ret == 0)
+	l4_thread_switch (thread->threadid);
+    }
+  while (ret == 0);
 }

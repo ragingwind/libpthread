@@ -1,3 +1,12 @@
+2008-05-27  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-internal.h (__pthread_queue_iterate): Before
+	returning the current element, save its next pointer.
+	(__pthread_dequeuing_iterate): Likewise.
+
+	* sysdeps/l4/hurd/pt-wakeup.c (__pthread_wakeup): Loop until we
+	successfully wake THREAD.
+
 2008-05-21  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/hurd/bits/pthread-np.h: New file.
