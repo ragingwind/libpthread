@@ -1,5 +1,5 @@
-/* Deallocate the kernel thread resources.  L4/Hurd version.
-   Copyright (C) 2007 Software Foundation, Inc.
+/* Deallocate the kernel thread resources.  Viengoos version.
+   Copyright (C) 2007, 2008 Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,47 +23,75 @@
 #include <pt-internal.h>
 
 #include <hurd/exceptions.h>
+#include <hurd/mutex.h>
+#include <hurd/as.h>
+#include <hurd/addr.h>
 
 /* If we try to deallocate our self, we will end up causing a
    deadlock.  Thus, when a thread tries to free itself, we add it
    here.  The next thread to free a thread will free it.  */
-static struct storage saved_object;
+ss_mutex_t saved_object_lock;
+static addr_t saved_object;
 
 void
 __pthread_thread_halt (struct __pthread *thread, int need_dealloc)
 {
-  struct storage exception_page = thread->exception_page;
-  thread->exception_page.addr = ADDR_VOID;
+  /* We may deallocate THREAD.  First save any data we need.  */
 
-  struct storage object = thread->object;
+  addr_t exception_area[EXCEPTION_AREA_SIZE / PAGESIZE];
+  memcpy (exception_area, thread->exception_area,
+	  sizeof (thread->exception_area));
+  memset (thread->exception_area, 0, sizeof (thread->exception_area));
+
+  void *va = thread->exception_area_va;
+
+  addr_t object = thread->object;
   l4_thread_id_t tid = thread->threadid;
 
   if (need_dealloc)
     __pthread_dealloc (thread);
 
-  if (! ADDR_IS_VOID (saved_object.addr))
+  /* The THREAD data structure is no longer valid.  */
+  thread = NULL;
+
+  /* Deallocate any saved object.  */
+  ss_mutex_lock (&saved_object_lock);
+  if (! ADDR_IS_VOID (saved_object))
     {
-      storage_free (saved_object.addr, false);
-      saved_object.cap->type = cap_void;
-      saved_object.addr = ADDR_VOID;
+      storage_free (saved_object, false);
+      saved_object = ADDR_VOID;
+    }
+  ss_mutex_unlock (&saved_object_lock);
+
+  /* Free the exception area.  */
+
+  /* Clean up the exception page.  */
+  exception_page_cleanup
+    (ADDR_TO_PTR (addr_extend (exception_area[EXCEPTION_PAGE],
+			       0, PAGESIZE_LOG2)));
+
+  /* Free the storage.  */
+  int i;
+  for (i = 0; i < EXCEPTION_AREA_SIZE / PAGESIZE; i ++)
+    {
+      assert (! ADDR_IS_VOID (exception_area[i]));
+      storage_free (exception_area[i], false);
     }
 
-  /* Free the exception page.  */
-  assert (! ADDR_IS_VOID (exception_page.addr));
-  exception_page_cleanup (ADDR_TO_PTR (addr_extend (exception_page.addr,
-						    0, PAGESIZE_LOG2)));
-  storage_free (exception_page.addr, false);
+  /* And the address space.  */
+  as_free (addr_chop (PTR_TO_ADDR (va), EXCEPTION_AREA_SIZE_LOG2), false);
 
   if (tid == l4_myself ())
     /* If we try to storage_free (storage.addr), we will freeze in the
-       middle.  That's no good.  Thus, we add ourself to the pool of
-       available objects.  */
-    saved_object = object;
-  else
+       middle.  That's no good.  We set SAVED_OBJECT to our thread
+       object and the next thread in will free us.  */
     {
-      storage_free (object.addr, false);
-      object.cap->type = cap_void;
+      ss_mutex_lock (&saved_object_lock);
+      saved_object = object;
+      ss_mutex_unlock (&saved_object_lock);
     }
+  else
+    storage_free (object, false);
 
   if (tid == l4_myself ())
     {
@@ -72,5 +100,5 @@ __pthread_thread_halt (struct __pthread *thread, int need_dealloc)
 	     l4_thread_no (l4_myself ()), l4_version (l4_myself ()));
     }
   else
-    thread_stop (object.addr);
+    thread_stop (object);
 }

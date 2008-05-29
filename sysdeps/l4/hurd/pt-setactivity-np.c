@@ -31,7 +31,7 @@ pthread_setactivity_np (addr_t activity)
   in.activity = activity;
 
   struct hurd_thread_exregs_out out;
-  int err = rm_thread_exregs (ADDR_VOID, self->object.addr,
+  int err = rm_thread_exregs (ADDR_VOID, self->object,
 			      HURD_EXREGS_SET_ACTIVITY,
 			      in, &out);
 

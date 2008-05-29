@@ -1,3 +1,32 @@
+2008-05-29  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/hurd/pt-sysdep.h Include <hurd/exceptions.h>.
+	(EXCEPTION_AREA_SIZE): Define.
+	(EXCEPTION_AREA_SIZE_LOG2): Likewise.
+	(EXCEPTION_PAGE): Likewise.
+	(PTHREAD_SYSDEP_MEMBERS): Change object's type to an addr_t.
+	Update users.  Remove field exception_page, replace with
+	exception_area.  Add field exception_area_va.
+	* sysdeps/l4/hurd/pt-thread-alloc.c: Include <hurd/as.h> and
+	<hurd/addr.h>.
+	(__pthread_thread_alloc): Allocate EXCEPTION_AREA_SIZE bytes of
+	address space.  Save it in THREAD->EXCEPTION_AREA_VA.  Allocate a
+	page for each page in that area.  Save them in
+	THREAD->EXCEPTION_AREA.
+	* sysdeps/l4/hurd/ia32/pt-setup.c (__pthread_setup): Set
+	EXCEPTION_PAGE->EXCEPTION_HANDLER_SP to the end of
+	EXCEPTION_PAGE->EXCEPTION_HANDLER_SP minus one word, in which we
+	save the address of the exception page.
+	* sysdeps/l4/hurd/pt-thread-start.c (__pthread_thread_start): Set
+	IN.EXCEPTION_PAGE to the first page in THREAD->EXCEPTION_AREA_VA.
+	* sysdeps/l4/hurd/pt-thread-halt.c: Include <hurd/mutex.h>,
+	<hurd/as.h> and <hurd/addr.h>.
+	(saved_object_lock): New variable.
+	(__pthread_thread_halt): Lock SAVED_OBJECT_LOCK when accessing
+	SAVED_OBJECT.  Free the address space used by the exception
+	area (THREAD->EXCEPTION_AREA_VA) and its associated
+	storage (THREAD->EXCEPTION_AREA).
+
 2008-05-27  Neal H. Walfield  <neal@gnu.org>
 
 	* pthread/pt-internal.h (__pthread_queue_iterate): Before

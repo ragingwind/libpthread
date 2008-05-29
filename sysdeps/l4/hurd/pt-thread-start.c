@@ -48,13 +48,14 @@ __pthread_thread_start (struct __pthread *thread)
 
       in.activity = ADDR_VOID;
 
-      in.exception_page = thread->exception_page.addr;
+      in.exception_page = addr_chop (PTR_TO_ADDR (thread->exception_area_va),
+				     PAGESIZE_LOG2);
 
       in.sp = (l4_word_t) thread->mcontext.sp;
       in.ip = (l4_word_t) thread->mcontext.pc;
 
       in.user_handle = (l4_word_t) thread;
-      err = rm_thread_exregs (ADDR_VOID, thread->object.addr,
+      err = rm_thread_exregs (ADDR_VOID, thread->object,
 			      HURD_EXREGS_SET_ASPACE
 			      | HURD_EXREGS_SET_ACTIVITY
 			      | HURD_EXREGS_SET_EXCEPTION_PAGE

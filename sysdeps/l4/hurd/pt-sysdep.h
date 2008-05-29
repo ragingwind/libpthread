@@ -1,5 +1,5 @@
-/* Internal defenitions for pthreads library.
-   Copyright (C) 2000, 2002, 2005, 2007 Free Software Foundation, Inc.
+/* Internal definitions for pthreads library.
+   Copyright (C) 2000, 2002, 2005, 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -30,10 +30,18 @@
 /* The default stack size: 2MB.  */
 #define PTHREAD_STACK_DEFAULT	(2 * 1024 * 1024)
 
+#include <hurd/exceptions.h>
+
+#define EXCEPTION_AREA_SIZE EXCEPTION_STACK_SIZE
+#define EXCEPTION_AREA_SIZE_LOG2 EXCEPTION_STACK_SIZE_LOG2
+/* The exception page is the first object.  */
+#define EXCEPTION_PAGE 0
+
 #define PTHREAD_SYSDEP_MEMBERS \
-  struct storage object; \
+  addr_t object; \
   l4_thread_id_t threadid; \
-  struct storage exception_page; \
+  addr_t exception_area[EXCEPTION_AREA_SIZE / PAGESIZE]; \
+  void *exception_area_va; \
   l4_word_t my_errno;
 
 extern inline struct __pthread *

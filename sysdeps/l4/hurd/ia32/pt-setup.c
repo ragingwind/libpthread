@@ -1,4 +1,4 @@
-/* Setup thread stack.  Hurd/i386 version.
+/* Setup thread stack.  Viengoos/i386 version.
    Copyright (C) 2000, 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -96,14 +96,16 @@ __pthread_setup (struct __pthread *thread,
   if (__pthread_num_threads == 1)
     return 0;
 
-  assert (! ADDR_IS_VOID (thread->exception_page.addr));
+  assert (! ADDR_IS_VOID (thread->exception_area[0]));
 
-  struct exception_page *exception_page 
-    = ADDR_TO_PTR (addr_extend (thread->exception_page.addr,
-				0, PAGESIZE_LOG2));
+  struct exception_page *exception_page = thread->exception_area_va;
 
-  /* SP is set to the end of the exception page.  */
-  exception_page->exception_handler_sp = (uintptr_t) exception_page + PAGESIZE;
+  /* SP is set to the end of the exception area minus one word, which
+     is the location of the exception page.  */
+  exception_page->exception_handler_sp
+    = (uintptr_t) thread->exception_area_va + EXCEPTION_AREA_SIZE;
+  exception_page->exception_handler_sp -= sizeof (void *);
+  * (void **) exception_page->exception_handler_sp = thread->exception_area_va;
 
   exception_page->exception_handler_ip = (uintptr_t) &exception_handler_entry;
   exception_page->exception_handler_end = (uintptr_t) &exception_handler_end;
