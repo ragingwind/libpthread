@@ -46,7 +46,10 @@ AM_CFLAGS = $(USER_CFLAGS)
 # Sources.
 SYSDEPS := lockfile.c
 
+if ! ENABLE_TESTS
 noinst_LIBRARIES = libpthread.a
+endif
+
 libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	pt-attr-getguardsize.c pt-attr-getinheritsched.c		    \
 	pt-attr-getschedparam.c pt-attr-getschedpolicy.c pt-attr-getscope.c \
