@@ -1,5 +1,5 @@
 /* Initialize a mutex.  Generic version.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -32,10 +32,15 @@ _pthread_mutex_init (pthread_mutex_t *mutex,
 
   if (! attr
       || memcmp (attr, &__pthread_default_mutexattr, sizeof (*attr) == 0))
-    /* Use the default attributes.  */
+    /* The default attributes.  */
     return 0;
 
-  /* Non-default attributes.  */
+  if (attr == &__pthread_recursive_mutexattr)
+    /* Non-default but known attributes.  */
+    {
+      mutex->attr = attr;
+      return 0;
+    }
 
   mutex->attr = malloc (sizeof *attr);
   if (! mutex->attr)

@@ -1,5 +1,5 @@
 /* Destroy a mutex.  Generic version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000,02, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -26,7 +26,10 @@
 int
 _pthread_mutex_destroy (pthread_mutex_t *mutex)
 {
-  if (mutex->attr)
+  if (mutex->attr == &__pthread_recursive_mutexattr)
+    /* Static attributes.  */
+    ;
+  else
     free (mutex->attr);
 
   return 0;

@@ -1,5 +1,5 @@
 /* Default mutex attributes.  Generic version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -26,4 +26,12 @@ const struct __pthread_mutexattr __pthread_default_mutexattr =
   protocol: PTHREAD_PRIO_NONE,
   pshared: PTHREAD_PROCESS_PRIVATE,
   mutex_type: PTHREAD_MUTEX_DEFAULT
+};
+
+const struct __pthread_mutexattr __pthread_recursive_mutexattr =
+{
+  prioceiling: 0,
+  protocol: PTHREAD_PRIO_NONE,
+  pshared: PTHREAD_PROCESS_PRIVATE,
+  mutex_type: PTHREAD_MUTEX_RECURSIVE
 };

@@ -314,6 +314,9 @@ extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr,
 typedef struct __pthread_mutex pthread_mutex_t;
 
 #define PTHREAD_MUTEX_INITIALIZER __PTHREAD_MUTEX_INITIALIZER
+/* Static initializer for recursive mutexes.  */
+#define PTHREAD_MUTEX_RECURSIVE_INITIALIZER_NP \
+  __PTHREAD_MUTEX_RECURSIVE_INITIALIZER
 
 /* Create a mutex with attributes given by ATTR and store it in
    *__MUTEX.  */

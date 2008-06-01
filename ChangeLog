@@ -1,3 +1,19 @@
+2008-06-01  Neal H. Walfield  <neal@gnu.org>
+
+	* include/pthread/pthread.h (PTHREAD_MUTEX_RECURSIVE_INITIALIZER_NP):
+	New definition.
+	* sysdeps/generic/bits/mutex.h
+	(__PTHREAD_MUTEX_RECURSIVE_INITIALIZER): New definition.
+	* sysdeps/generic/bits/mutex-attr.h (__pthread_recursive_mutexattr):
+	New definition.
+	* sysdeps/generic/pt-mutexattr.c (__pthread_recursive_mutexattr):
+	New declaration.
+	* sysdeps/generic/pt-mutex-init.c (_pthread_mutex_init): If ATTR
+	is &__PTHREAD_RECURSIVE_MUTEXATTR, don't allocate a copy, just
+	save in MUTEX->ATTR.
+	* sysdeps/generic/pt-mutex-destroy.c (_pthread_mutex_destroy): If
+	MUTEX->ATTR is &__PTHREAD_RECURSIVE_MUTEXATTR, don't free it.
+
 2008-05-29  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* headers.m4: Link files into `sysroot/include/' instead of `include/'.
