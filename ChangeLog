@@ -1,3 +1,8 @@
+2008-06-05  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc):
+	Replace use of as_slot_ensure with as_ensure.
+
 2008-06-01  Neal H. Walfield  <neal@gnu.org>
 
 	* include/pthread/pthread.h (PTHREAD_MUTEX_RECURSIVE_INITIALIZER_NP):

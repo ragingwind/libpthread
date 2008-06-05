@@ -56,7 +56,7 @@ __pthread_thread_alloc (struct __pthread *thread)
 	  addr_t slot = addr_chop (PTR_TO_ADDR (thread->exception_area_va
 						+ i * PAGESIZE),
 				   PAGESIZE_LOG2);
-	  as_slot_ensure (slot);
+	  as_ensure (slot);
 
 	  struct storage storage = storage_alloc (ADDR_VOID, cap_page,
 						  STORAGE_LONG_LIVED,
