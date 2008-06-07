@@ -1,3 +1,9 @@
+2008-06-07  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-internal.h (__pthread_queue_iterate): Use 1, not
+	true.
+	(__pthread_dequeuing_iterate): Likewise.
+
 2008-06-05  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc):

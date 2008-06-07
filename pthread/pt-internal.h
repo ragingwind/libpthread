@@ -126,7 +126,7 @@ __pthread_dequeue (struct __pthread *thread)
   for (struct __pthread *__pdi_next = (queue);				\
        ((element) = __pdi_next)						\
 	 && ((__pdi_next = __pdi_next->next),				\
-	     true);							\
+	     1);							\
        )
 
 /* Iterate over QUEUE dequeuing each element, storing it in
@@ -136,7 +136,7 @@ __pthread_dequeue (struct __pthread *thread)
        ((element) = __pdi_next)						\
 	 && ((__pdi_next = __pdi_next->next),				\
 	     ((element)->prevp = 0),					\
-	     true);							\
+	     1);							\
        )
 
 /* The total number of threads currently active.  */
