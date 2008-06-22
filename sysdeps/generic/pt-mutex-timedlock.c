@@ -141,15 +141,16 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
   else
     __pthread_block (self);
 
-  if (! mutex->attr || mutex->attr->mutex_type == PTHREAD_MUTEX_NORMAL)
-    {
 #ifndef NDEBUG
-      mutex->owner = self;
+  assert (mutex->owner == self);
 #endif
-    }
-  else
+
+  if (mutex->attr)
     switch (mutex->attr->mutex_type)
       {
+      case PTHREAD_MUTEX_NORMAL:
+	break;
+
       case PTHREAD_MUTEX_RECURSIVE:
 	assert (mutex->locks == 0);
 	mutex->locks = 1;

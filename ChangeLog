@@ -1,3 +1,10 @@
+2008-06-22  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal): Don't set MUTEX->OWNER here.
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock): Set
+	it here to WAKEUP.
+
 2008-06-07  Neal H. Walfield  <neal@gnu.org>
 
 	* pthread/pt-internal.h (__pthread_queue_iterate): Use 1, not

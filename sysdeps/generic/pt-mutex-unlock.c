@@ -78,6 +78,10 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
   wakeup = mutex->__queue;
   __pthread_dequeue (wakeup);
 
+#ifndef NDEBUG
+  mutex->owner = wakeup;
+#endif
+
   /* We do not unlock MUTEX->held: we are transferring the ownership
      to the thread that we are waking up.  */
 
