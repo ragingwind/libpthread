@@ -1,3 +1,14 @@
+2008-06-22  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal) [! NDEBUG]: Set MUTEX->OWNER
+	appropriately and assert that it is consistent.
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock) [!
+	NDEBUG]: Set MUTEX->OWNER appropriately and assert that it is
+	consistent.
+	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock) [!
+	NDEBUG]: Set MUTEX->OWNER.
+
 2008-06-07  Neal H. Walfield  <neal@gnu.org>
 
 	* pthread/pt-internal.h (__pthread_queue_iterate): Use 1, not
