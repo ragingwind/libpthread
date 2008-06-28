@@ -20,6 +20,8 @@
 #ifndef _BITS_BARRIER_ATTR_H
 #define _BITS_BARRIER_ATTR_H	1
 
+enum __pthread_process_shared;
+
 /* This structure describes the attributes of a POSIX thread barrier.
    Note that not all of them are supported on all systems.  */
 struct __pthread_barrierattr

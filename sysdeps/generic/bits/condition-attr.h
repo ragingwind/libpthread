@@ -22,6 +22,8 @@
 
 #include <time.h>
 
+enum __pthread_process_shared;
+
 /* User visible part of a condition attribute variable.  */
 struct __pthread_condattr
   {

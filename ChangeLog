@@ -1,5 +1,40 @@
 2008-06-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	* include/pthread/pthread.h: Do not define __need_clockid_t, include
+	<time.h>, and define clockid_t if __clockid_defined is not defined.
+	Include <pthread/pthreadtypes.h>
+	(pthread_equal): New extern inline.
+	(pthread_cleanup_push, pthread_cleanup_pop): New macros.
+	(__pthread_process_shared, __pthread_inheritsched,
+	__pthread_contentionscope, __pthread_detachstate,
+	__pthread_mutex_protocol, __pthread_mutex_type,
+	pthread_attr_t, pthread_mutex_attr_t, pthread_mutex_t,
+	pthread_condattr_t, pthread_cond_t, pthread_spinlock_t,
+	pthread_rwlockattr_t, pthread_rwlock_t, pthread_barrierattr_t,
+	pthread_barrier_t, pthread_key_t, pthread_once_t): Move enums and
+	typedefs to...
+	* include/pthread/pthreadtypes.h: ... new file.
+	* sysdeps/generic/bits/cancelation.h (pthread_cleanup_push): Rename
+	macro to __pthread_cleanup_push.
+	(pthread_cleanup_pop): Rename macro to __pthread_cleanup_pop.
+	* sysdeps/generic/bits/barrier-attr.h (__pthread_process_shared):
+	Forward-declare enum.
+	* sysdeps/generic/bits/condition-attr.h (__pthread_process_shared):
+	Likewise.
+	* sysdeps/generic/bits/mutex-attr.h (__pthread_mutex_protocol,
+	__pthread_process_shared, __pthread_mutex_type):
+	Likewise.
+	* sysdeps/generic/bits/rwlock-attr.h (__pthread_process_shared):
+	Likewise.
+	* sysdeps/generic/bits/thread-attr.h (__pthread_detachstate,
+	__pthread_inheritsched, __pthread_contentionscope):
+	Likewise.
+	* sysdeps/generic/bits/pthread.h (pthread_t): Rename type to
+	__pthread_t.
+	(pthread_equal): Rename to __pthread_equal.
+
+2008-06-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
 	* sysdeps/generic/bits/thread-barrier.h: Remove unused file.
 
 2008-06-22  Neal H. Walfield  <neal@gnu.org>

@@ -26,65 +26,33 @@
 #include <features.h>
 
 #include <sched.h>
-#define __need_clockid_t
-#include <time.h>
-
-/* If we are in a mode where clockid_t is not automatically defined
-   and another header has already included <time.h> then defining
-   __need_clockid_t was not enough.  */
-#ifndef __clockid_t_defined
-# define __clockid_t_defined    1
-# include <bits/types.h>
-/* Clock ID used in clock and timer functions.  */
-typedef __clockid_t clockid_t;
-#endif
 
 __BEGIN_DECLS
+
+#include <pthread/pthreadtypes.h>
 
 #include <bits/pthread.h>
 
 /* Possible values for the process shared attribute.  */
-enum __pthread_process_shared
-  {
-    PTHREAD_PROCESS_PRIVATE = 0,
-#define PTHREAD_PROCESS_PRIVATE 0
-    PTHREAD_PROCESS_SHARED
-#define PTHREAD_PROCESS_SHARED 1
-  };
+#define PTHREAD_PROCESS_PRIVATE __PTHREAD_PROCESS_PRIVATE
+#define PTHREAD_PROCESS_SHARED __PTHREAD_PROCESS_SHARED
 
 
 /* Thread attributes.  */
 
 /* Possible values for the inheritsched attribute.  */
-enum __pthread_inheritsched
-  {
-    PTHREAD_EXPLICIT_SCHED = 0,
-#define PTHREAD_EXPLICIT_SCHED 0
-    PTHREAD_INHERIT_SCHED
-#define PTHREAD_INHERIT_SCHED 1
-  };
+#define PTHREAD_EXPLICIT_SCHED __PTHREAD_EXPLICIT_SCHED
+#define PTHREAD_INHERIT_SCHED __PTHREAD_INHERIT_SCHED
 
 /* Possible values for the `contentionscope' attribute.  */
-enum __pthread_contentionscope
-  {
-    PTHREAD_SCOPE_SYSTEM = 0,
-#define PTHREAD_SCOPE_SYSTEM 0
-    PTHREAD_SCOPE_PROCESS,
-#define PTHREAD_SCOPE_PROCESS 1
-  };
+#define PTHREAD_SCOPE_SYSTEM __PTHREAD_SCOPE_SYSTEM
+#define PTHREAD_SCOPE_PROCESS __PTHREAD_SCOPE_PROCESS
 
 /* Possible values for the `detachstate' attribute.  */
-enum __pthread_detachstate
-  {
-    PTHREAD_CREATE_JOINABLE = 0,
-#define PTHREAD_CREATE_JOINABLE 0
-    PTHREAD_CREATE_DETACHED
-#define PTHREAD_CREATE_DETACHED 1
-  };
+#define PTHREAD_CREATE_JOINABLE __PTHREAD_CREATE_JOINABLE
+#define PTHREAD_CREATE_DETACHED __PTHREAD_CREATE_DETACHED
 
 #include <bits/thread-attr.h>
-
-typedef struct __pthread_attr pthread_attr_t;
 
 /* Initialize the thread attribute object in *ATTR to the default
    values.  */
@@ -220,46 +188,47 @@ extern int pthread_detach (pthread_t __threadp);
    if they are not.  */
 extern int pthread_equal (pthread_t __t1, pthread_t __t2);
 
+# ifdef __USE_EXTERN_INLINES
+
+__extern_inline int
+pthread_equal (pthread_t __t1, pthread_t __t2)
+{
+  return __pthread_equal (__t1, __t2);
+}
+
+# endif /* Use extern inlines.  */
+
+
 /* Return the thread ID of the calling thread.  */
 extern pthread_t pthread_self (void);
 
 
 /* Mutex attributes.  */
 
-enum __pthread_mutex_protocol
-  {
-    PTHREAD_PRIO_NONE_NP = 0,
-    PTHREAD_PRIO_INHERIT_NP,
-    PTHREAD_PRIO_PROTECT_NP
+#define PTHREAD_PRIO_NONE_NP __PTHREAD_PRIO_NONE
+#define PTHREAD_PRIO_INHERIT_NP __PTHREAD_PRIO_INHERIT
+#define PTHREAD_PRIO_PROTECT_NP __PTHREAD_PRIO_PROTECT
 #ifdef __USE_UNIX98
-    ,
-    PTHREAD_PRIO_NONE = PTHREAD_PRIO_NONE_NP,
-    PTHREAD_PRIO_INHERIT = PTHREAD_PRIO_INHERIT_NP,
-    PTHREAD_PRIO_PROTECT = PTHREAD_PRIO_PROTECT_NP
+#define PTHREAD_PRIO_NONE PTHREAD_PRIO_NONE_NP
+#define PTHREAD_PRIO_INHERIT PTHREAD_PRIO_INHERIT_NP
+#define PTHREAD_PRIO_PROTECT PTHREAD_PRIO_PROTECT_NP
 #endif
-  };
 
-enum __pthread_mutex_type
-  {
-    PTHREAD_MUTEX_TIMED_NP = 0,
-    PTHREAD_MUTEX_ERRORCHECK_NP,
-    PTHREAD_MUTEX_RECURSIVE_NP
+#define PTHREAD_MUTEX_TIMED_NP __PTHREAD_MUTEX_TIMED
+#define PTHREAD_MUTEX_ERRORCHECK_NP __PTHREAD_MUTEX_ERRORCHECK
+#define PTHREAD_MUTEX_RECURSIVE_NP __PTHREAD_MUTEX_RECURSIVE
 #ifdef __USE_UNIX98
-    ,
-    PTHREAD_MUTEX_NORMAL = PTHREAD_MUTEX_TIMED_NP,
-    PTHREAD_MUTEX_ERRORCHECK = PTHREAD_MUTEX_ERRORCHECK_NP,
-    PTHREAD_MUTEX_RECURSIVE = PTHREAD_MUTEX_RECURSIVE_NP,
-    PTHREAD_MUTEX_DEFAULT = PTHREAD_MUTEX_NORMAL
+#define PTHREAD_MUTEX_NORMAL PTHREAD_MUTEX_TIMED_NP
+#define PTHREAD_MUTEX_ERRORCHECK PTHREAD_MUTEX_ERRORCHECK_NP
+#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+#define PTHREAD_MUTEX_DEFAULT PTHREAD_MUTEX_NORMAL
 #endif
 #ifdef __USE_GNU
-    /* For compatibility.  */
-    , PTHREAD_MUTEX_FAST_NP = PTHREAD_MUTEX_TIMED_NP
+/* For compatibility.  */
+#define PTHREAD_MUTEX_FAST_NP PTHREAD_MUTEX_TIMED_NP
 #endif
-  };
 
 #include <bits/mutex-attr.h>
-
-typedef struct __pthread_mutexattr pthread_mutexattr_t;
 
 /* Initialize the mutex attribute object in *ATTR to the default
    values.  */
@@ -318,8 +287,6 @@ extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr,
 
 #include <bits/mutex.h>
 
-typedef struct __pthread_mutex pthread_mutex_t;
-
 #define PTHREAD_MUTEX_INITIALIZER __PTHREAD_MUTEX_INITIALIZER
 
 /* Create a mutex with attributes given by ATTR and store it in
@@ -364,8 +331,6 @@ extern int pthread_mutex_setprioceiling (pthread_mutex_t *__restrict mutex,
 
 #include <bits/condition-attr.h>
 
-typedef struct __pthread_condattr pthread_condattr_t;
-
 /* Initialize the condition attribute in *ATTR to the default
    values.  */
 extern int pthread_condattr_init (pthread_condattr_t *attr);
@@ -399,8 +364,6 @@ extern int pthread_condattr_setpshared (pthread_condattr_t *attr,
 /* Condition variables.  */
 
 #include <bits/condition.h>
-
-typedef struct __pthread_cond pthread_cond_t;
 
 #define PTHREAD_COND_INITIALIZER __PTHREAD_COND_INITIALIZER
 
@@ -436,8 +399,6 @@ extern int pthread_cond_timedwait (pthread_cond_t *__restrict __cond,
 #ifdef __USE_XOPEN2K
 
 # include <bits/spin-lock.h>
-
-typedef __pthread_spinlock_t pthread_spinlock_t;
 
 #define PTHREAD_SPINLOCK_INITIALIZER __SPIN_LOCK_INITIALIZER
 
@@ -502,8 +463,6 @@ pthread_spin_unlock (pthread_spinlock_t *__lock)
 
 #include <bits/rwlock-attr.h>
 
-typedef struct __pthread_rwlockattr pthread_rwlockattr_t;
-
 /* Initialize rwlock attribute object in *ATTR to the default
    values.  */
 extern int pthread_rwlockattr_init (pthread_rwlockattr_t *attr);
@@ -526,8 +485,6 @@ extern int pthread_rwlockattr_setpshared (pthread_rwlockattr_t *attr,
 /* rwlocks.  */
 
 #include <bits/rwlock.h>
-
-typedef struct __pthread_rwlock pthread_rwlock_t;
 
 /* Create a rwlock object with attributes given by ATTR and strore the
    result in *RWLOCK.  */
@@ -580,6 +537,9 @@ extern void pthread_cleanup_pop (int execute);
 
 #include <bits/cancelation.h>
 
+#define pthread_cleanup_push(rt, rtarg) __pthread_cleanup_push(rt, rtarg)
+#define pthread_cleanup_pop(execute) __pthread_cleanup_pop(execute)
+
 #define PTHREAD_CANCEL_DISABLE 0
 #define PTHREAD_CANCEL_ENABLE 1
 
@@ -611,8 +571,6 @@ extern void pthread_testcancel (void);
 
 #include <bits/barrier-attr.h>
 
-typedef struct __pthread_barrierattr pthread_barrierattr_t;
-
 /* Initialize barrier attribute object in *ATTR to the default
    values.  */
 extern int pthread_barrierattr_init (pthread_barrierattr_t *attr);
@@ -635,8 +593,6 @@ extern int pthread_barrierattr_setpshared (pthread_barrierattr_t *attr,
 /* Barriers.  */
 
 #include <bits/barrier.h>
-
-typedef struct __pthread_barrier pthread_barrier_t;
 
 /* Returned by pthread_barrier_wait to exactly one thread each time a
    barrier is passed.  */
@@ -661,8 +617,6 @@ extern int pthread_barrier_wait (pthread_barrier_t *barrier);
 
 #include <bits/thread-specific.h>
 
-typedef __pthread_key pthread_key_t;
-
 /* Create a thread specific data key in KEY visible to all threads.
    On thread destruction, DESTRUCTOR shall be called with the thread
    specific data associate with KEY if it is not NULL.  */
@@ -683,8 +637,6 @@ extern int pthread_setspecific (pthread_key_t key, const void *value);
 /* Dynamic package initialization.  */
 
 #include <bits/once.h>
-
-typedef struct __pthread_once pthread_once_t;
 
 #define PTHREAD_ONCE_INIT __PTHREAD_ONCE_INIT
 

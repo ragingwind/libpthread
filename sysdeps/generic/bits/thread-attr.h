@@ -22,6 +22,10 @@
 
 #include <sched.h>
 
+enum __pthread_detachstate;
+enum __pthread_inheritsched;
+enum __pthread_contentionscope;
+
 /* This structure describes the attributes of a POSIX thread.  Note
    that not all of them are supported on all systems.  */
 struct __pthread_attr

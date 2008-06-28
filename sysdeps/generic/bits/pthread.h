@@ -20,16 +20,16 @@
 #ifndef _BITS_PTHREAD_H
 #define _BITS_PTHREAD_H	1
 
-typedef int pthread_t;
+typedef int __pthread_t;
 
 /* Return true if __T1 and __T2 both name the same thread.  Otherwise,
    false.  */
 extern int
-pthread_equal (pthread_t __t1, pthread_t __t2);
+__pthread_equal (__pthread_t __t1, __pthread_t __t2);
 
 #ifdef __USE_EXTERN_INLINES
 __extern_inline int
-pthread_equal (pthread_t __t1, pthread_t __t2)
+__pthread_equal (__pthread_t __t1, __pthread_t __t2)
 {
   return __t1 == __t2;
 }
