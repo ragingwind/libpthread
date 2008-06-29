@@ -1,3 +1,8 @@
+2008-06-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
+	Do not use assertx and threadid.
+
 2008-06-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/pthread/pthread.h: Do not define __need_clockid_t, include
