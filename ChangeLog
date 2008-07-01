@@ -156,7 +156,6 @@
 
 	* sysdeps/i386/machine-sp.h (thread_stack_pointer):
 	Optimize esp read.
-	* i386/cthreads.h (cthread_sp): Likewise.
 	* include/pthread/pthread.h: Add the restrict keyword where
 	appropriate for full compliance.
 	* pthread/pt-internal.h: Likewise.
