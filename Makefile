@@ -137,6 +137,7 @@ libname = libpthread
 sysdeps_headers =				\
               pthread.h				\
               pthread/pthread.h			\
+              pthread/pthreadtypes.h		\
 	      semaphore.h			\
 						\
               bits/pthread.h			\

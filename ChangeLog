@@ -1,3 +1,7 @@
+2008-07-18  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* Makefile (sysdeps_headers): add pthread/pthreadtypes.h
+
 2008-06-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
