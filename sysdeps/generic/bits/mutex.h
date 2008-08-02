@@ -57,11 +57,4 @@ struct __pthread_mutex
 # endif
 #endif /* Not __pthread_mutex_defined.  */
 
-#ifdef _BITS_MUTEX_H
-
-#include <errno.h>
-#include <stddef.h>
-
-#endif
-
 #endif /* bits/mutex.h */
