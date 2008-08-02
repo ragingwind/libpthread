@@ -28,7 +28,7 @@ __memory_barrier (void)
 
   /* Any lock'ed instruction will do.  We just do a simple
      increment.  */
-  __asm__ __volatile ("lock; incl %0" : "=m" (i) : "m" (i));
+  __asm__ __volatile ("lock; incl %0" : "=m" (i) : "m" (i) : "memory");
 }
 
 /* Prevent read reordering across this function.  */

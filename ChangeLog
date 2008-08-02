@@ -2,6 +2,9 @@
 
 	* sysdeps/generic/bits/mutex.h: Do not include <errno.h> and
 	<stddef.h>
+	* sysdeps/i386/bits/memory.h (__memory_barrier): Add memory clobber.
+	* sysdeps/i386/bits/spin-lock.h (__pthread_spin_trylock,
+	__pthread_spin_unlock): Add memory clobbers.
 
 2008-07-18  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

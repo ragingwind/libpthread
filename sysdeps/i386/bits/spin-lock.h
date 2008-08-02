@@ -70,7 +70,7 @@ __pthread_spin_trylock (__pthread_spinlock_t *__lock)
 {
   int __locked;
   __asm__ __volatile ("xchgl %0, %1"
-		      : "=&r" (__locked), "=m" (*__lock) : "0" (1));
+		      : "=&r" (__locked), "=m" (*__lock) : "0" (1) : "memory");
   return __locked ? __EBUSY : 0;
 }
 
@@ -92,7 +92,7 @@ __pthread_spin_unlock (__pthread_spinlock_t *__lock)
 {
   int __unlocked;
   __asm__ __volatile ("xchgl %0, %1"
-		      : "=&r" (__unlocked), "=m" (*__lock) : "0" (0));
+		      : "=&r" (__unlocked), "=m" (*__lock) : "0" (0) : "memory");
   return 0;
 }
 
