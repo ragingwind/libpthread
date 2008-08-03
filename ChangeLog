@@ -5,6 +5,10 @@
 	* sysdeps/i386/bits/memory.h (__memory_barrier): Add memory clobber.
 	* sysdeps/i386/bits/spin-lock.h (__pthread_spin_trylock,
 	__pthread_spin_unlock): Add memory clobbers.
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Fix cast from
+	thread to integer.  Fix reservation of stack room for initial frame.
+	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Fix reservation of
+	stack room for initial frame.
 
 2008-07-18  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
