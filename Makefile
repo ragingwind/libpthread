@@ -145,6 +145,7 @@ sysdeps_headers =				\
               bits/condition.h			\
               bits/condition-attr.h		\
               bits/spin-lock.h			\
+              bits/spin-lock-inline.h		\
               bits/cancelation.h		\
               bits/thread-attr.h		\
               bits/barrier-attr.h		\
@@ -158,10 +159,10 @@ sysdeps_headers =				\
 
 SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/i386	\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/i386			\
+	 $(srcdir)/sysdeps/i386					\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/hurd			\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)			\
 	 $(srcdir)/sysdeps/hurd					\
-	 $(srcdir)/sysdeps/i386					\
 	 $(srcdir)/sysdeps/generic				\
 	 $(srcdir)/sysdeps/posix				\
 	 $(srcdir)/pthread					\

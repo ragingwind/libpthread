@@ -423,6 +423,8 @@ extern int pthread_spin_unlock (pthread_spinlock_t *__lock);
 
 # ifdef __USE_EXTERN_INLINES
 
+# include <bits/spin-lock-inline.h>
+
 __extern_inline int
 pthread_spin_destroy (pthread_spinlock_t *__lock)
 {

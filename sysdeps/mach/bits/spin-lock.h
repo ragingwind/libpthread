@@ -33,65 +33,6 @@ typedef __spin_lock_t __pthread_spinlock_t;
 #error __SPIN_LOCK_INITIALIZER undefined: should be defined by <lock-intern.h>.
 #endif
 
-#if defined __USE_EXTERN_INLINES || defined _FORCE_INLINES
-
-# ifndef __EBUSY
-#  include <errno.h>
-#  define __EBUSY EBUSY
-# endif
-
-# ifndef __PT_SPIN_INLINE
-#  define __PT_SPIN_INLINE __extern_inline
-# endif
-
-__PT_SPIN_INLINE int __pthread_spin_destroy (__pthread_spinlock_t *__lock);
-
-__PT_SPIN_INLINE int
-__pthread_spin_destroy (__pthread_spinlock_t *__lock)
-{
-  return 0;
-}
-
-__PT_SPIN_INLINE int __pthread_spin_init (__pthread_spinlock_t *__lock,
-					  int __pshared);
-
-__PT_SPIN_INLINE int
-__pthread_spin_init (__pthread_spinlock_t *__lock, int __pshared)
-{
-  *__lock = __SPIN_LOCK_INITIALIZER;
-  return 0;
-}
-
-__PT_SPIN_INLINE int __pthread_spin_trylock (__pthread_spinlock_t *__lock);
-
-__PT_SPIN_INLINE int
-__pthread_spin_trylock (__pthread_spinlock_t *__lock)
-{
-  return __spin_try_lock (__lock) ? 0 : __EBUSY;
-}
-
-__extern_inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
-extern int _pthread_spin_lock (__pthread_spinlock_t *__lock);
-
-__extern_inline int
-__pthread_spin_lock (__pthread_spinlock_t *__lock)
-{
-  if (__pthread_spin_trylock (__lock))
-    return _pthread_spin_lock (__lock);
-  return 0;
-}
-
-__PT_SPIN_INLINE int __pthread_spin_unlock (__pthread_spinlock_t *__lock);
-
-__PT_SPIN_INLINE int
-__pthread_spin_unlock (__pthread_spinlock_t *__lock)
-{
-  __spin_unlock (__lock);
-  return 0;
-}
-
-#endif /* Use extern inlines or force inlines.  */
-
 __END_DECLS
 
 #endif /* bits/spin-lock.h */

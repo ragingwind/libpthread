@@ -1,3 +1,14 @@
+2008-08-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* Makefile (sysdeps_headers): Add spin-lock-inline.h.
+	(SYSDEP_PATH): Move sysdeps/i386 right after
+	sysdeps/$(MICROKERNEL)/i386.
+	* include/pthread/pthread.h: Include <bits/spin-lock-inline.h>.
+	* sysdeps/i386/bits/spin-lock.h: Move inlines to...
+	* sysdeps/i386/bits/spin-lock-inline.h: ... new file.
+	* sysdeps/mach/bits/spin-lock.h: Move inlines to...
+	* sysdeps/mach/bits/spin-lock-inline.h: ... new file.
+
 2008-08-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/generic/bits/mutex.h: Do not include <errno.h> and
