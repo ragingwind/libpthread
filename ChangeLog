@@ -1,3 +1,8 @@
+2008-08-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/pthread/pthreadtypes.h (__pthread_inheritsched): Remove
+	comma at end of enumeration.
+
 2008-08-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* Makefile (sysdeps_headers): Add spin-lock-inline.h.

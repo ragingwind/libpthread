@@ -61,7 +61,7 @@ enum __pthread_inheritsched
 enum __pthread_contentionscope
   {
     __PTHREAD_SCOPE_SYSTEM = 0,
-    __PTHREAD_SCOPE_PROCESS,
+    __PTHREAD_SCOPE_PROCESS
   };
 
 /* Possible values for the `detachstate' attribute.  */
