@@ -1,3 +1,18 @@
+2008-08-11  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/pt-docancel.c: Remove file.
+	* sysdeps/l4/pt-thread-alloc.c: Likewise.
+	* sysdeps/l4/pt-wakeup.c: Likewise.
+	* sysdeps/l4/pt-thread-halt.c: Likewise.
+	* sysdeps/l4/pt-start.c: Likewise.
+	* sysdeps/l4/pt-stack-alloc.c: Likewise.
+	* sysdeps/l4/pt-thread-start.c: Likewise.
+	* sysdeps/l4/pt-block.c: Likewise.
+	* sysdeps/l4/hurd/pt-sysdep.h: Likewise.
+	* sysdeps/l4/hurd/pt-sysdep.c: Likewise.
+	* sysdeps/l4/hurd/i386/pt-setup.c: Likewise.
+	* sysdeps/l4/hurd/i386/pt-machdep.c: Likewise.
+
 2008-08-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/pthread/pthreadtypes.h (__pthread_inheritsched): Remove
