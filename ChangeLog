@@ -1,5 +1,9 @@
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/generic/pt-startup.c (__pthread_startup): New file.
+
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/generic/bits/mutex.h (__PTHREAD_RECURSIVE_MUTEX_INITIALIZER):
 	Define.
 	(__PTHREAD_MUTEX_RECURSIVE_INITIALIZER): Don't define.
