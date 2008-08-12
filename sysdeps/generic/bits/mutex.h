@@ -57,7 +57,7 @@ struct __pthread_mutex
 #  define __PTHREAD_MUTEX_INITIALIZER \
     { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0, 0 }
 
-#  define __PTHREAD_MUTEX_RECURSIVE_INITIALIZER			\
+#  define __PTHREAD_RECURSIVE_MUTEX_INITIALIZER \
     { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0,	\
 	(struct __pthread_mutexattr *) &__pthread_recursive_mutexattr, 0, 0, 0 }
 

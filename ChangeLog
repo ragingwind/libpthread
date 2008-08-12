@@ -1,5 +1,14 @@
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/generic/bits/mutex.h (__PTHREAD_RECURSIVE_MUTEX_INITIALIZER):
+	Define.
+	(__PTHREAD_MUTEX_RECURSIVE_INITIALIZER): Don't define.
+	* include/pthread/pthread.h
+	(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP) [__USE_GNU]: Define.
+	(PTHREAD_MUTEX_RECURSIVE_INITIALIZER_NP): Don't define.
+
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
 	Merge in Samuel Thibault's changes from the main line.
 
 	* Makefile.am (libpthread_a_SOURCES): Add pt-getattr.c.
