@@ -1,11 +1,13 @@
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
+	Merge changes from hurd-l4 fork.
+
+	* Makefile (SRCS): Add pt-startup.c and pt-mutex-transfer-np.c.
+	(sysdeps_headers): Add pthread-np.h.
+
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/generic/bits/pthread-np.h: New file.
-
-2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
-
-	* sysdeps/ia32/machine-sp.h (thread_stack_pointer):
-	Optimize esp read.
 
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
@@ -22,16 +24,68 @@
 
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
-	Merge in Samuel Thibault's changes from the main line.
-
-	* Makefile.am (libpthread_a_SOURCES): Add pt-getattr.c.
-	* headers.m4: Link libpthread/include/pthread/pthreadtypes.h to
-	sysroot/include/pthread/pthreadtypes.h and
-	libpthread/sysdeps/${arch}/bits/spin-lock-inline.h. to
-	sysroot/include/bits/spin-lock-inline.h.
-
 	* include/pthread/pthread.h: Include <sys/cdefs.h>.
 	(__extern_inline): If not defined, define appropriately.
+
+2008-06-01  Neal H. Walfield  <neal@gnu.org>
+
+	* include/pthread/pthread.h (PTHREAD_MUTEX_RECURSIVE_INITIALIZER_NP):
+	New definition.
+	* sysdeps/generic/bits/mutex.h
+	(__PTHREAD_MUTEX_RECURSIVE_INITIALIZER): New definition.
+	* sysdeps/generic/bits/mutex-attr.h (__pthread_recursive_mutexattr):
+	New definition.
+	* sysdeps/generic/pt-mutexattr.c (__pthread_recursive_mutexattr):
+	New declaration.
+	* sysdeps/generic/pt-mutex-init.c (_pthread_mutex_init): If ATTR
+	is &__PTHREAD_RECURSIVE_MUTEXATTR, don't allocate a copy, just
+	save in MUTEX->ATTR.
+	* sysdeps/generic/pt-mutex-destroy.c (_pthread_mutex_destroy): If
+	MUTEX->ATTR is &__PTHREAD_RECURSIVE_MUTEXATTR, don't free it.
+
+2008-05-29  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* sysdeps/generic/sem-timedwait.c: Don't include <error.h>.
+
+2008-05-21  Neal H. Walfield  <neal@gnu.org>
+
+	* include/pthread/pthread.h: Include <bits/pthread-np.h>.
+
+2008-03-01  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-transfer-np.c: New file.
+
+	* pthread/pt-self.c (pthread_self): Assert that SELF is not NULL.
+
+2007-12-23  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-join.c (pthread_join): Cast argument to
+	pthread_cleanup_push to avoid warning.
+
+2007-11-23  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-internal.h (__pthread_startup): Add declaration.
+	* pthread/pt-create.c (entry_point): Call __pthread_startup.
+
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
+	Remove dead code.
+
+2008-08-11  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/l4/pt-docancel.c: Remove file.
+	* sysdeps/l4/pt-thread-alloc.c: Likewise.
+	* sysdeps/l4/pt-wakeup.c: Likewise.
+	* sysdeps/l4/pt-thread-halt.c: Likewise.
+	* sysdeps/l4/pt-start.c: Likewise.
+	* sysdeps/l4/pt-stack-alloc.c: Likewise.
+	* sysdeps/l4/pt-thread-start.c: Likewise.
+	* sysdeps/l4/pt-block.c: Likewise.
+	* sysdeps/l4/hurd/pt-sysdep.h: Likewise.
+	* sysdeps/l4/hurd/pt-sysdep.c: Likewise.
+	* sysdeps/l4/hurd/i386/pt-setup.c: Likewise.
+	* sysdeps/l4/hurd/i386/pt-machdep.c: Likewise.
 
 2008-08-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
@@ -41,25 +95,34 @@
 2008-08-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* Makefile (sysdeps_headers): Add spin-lock-inline.h.
-	(SYSDEP_PATH): Move sysdeps/ia32 right after
-	sysdeps/$(MICROKERNEL)/ia32.
+	(SYSDEP_PATH): Move sysdeps/i386 right after
+	sysdeps/$(MICROKERNEL)/i386.
 	* include/pthread/pthread.h: Include <bits/spin-lock-inline.h>.
-	* sysdeps/ia32/bits/spin-lock.h: Move inlines to...
-	* sysdeps/ia32/bits/spin-lock-inline.h: ... new file.
+	* sysdeps/i386/bits/spin-lock.h: Move inlines to...
+	* sysdeps/i386/bits/spin-lock-inline.h: ... new file.
+	* sysdeps/mach/bits/spin-lock.h: Move inlines to...
+	* sysdeps/mach/bits/spin-lock-inline.h: ... new file.
 
 2008-08-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/generic/bits/mutex.h: Do not include <errno.h> and
 	<stddef.h>
-	* sysdeps/ia32/bits/memory.h (__memory_barrier): Add memory clobber.
-	* sysdeps/ia32/bits/spin-lock.h (__pthread_spin_trylock,
+	* sysdeps/i386/bits/memory.h (__memory_barrier): Add memory clobber.
+	* sysdeps/i386/bits/spin-lock.h (__pthread_spin_trylock,
 	__pthread_spin_unlock): Add memory clobbers.
-	* sysdeps/l4/hurd/ia32/pt-setup.c (stack_setup): Fix reservation of
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Fix cast from
+	thread to integer.  Fix reservation of stack room for initial frame.
+	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Fix reservation of
 	stack room for initial frame.
 
 2008-07-18  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* Makefile (sysdeps_headers): add pthread/pthreadtypes.h
+
+2008-06-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
+	Do not use assertx and threadid.
 
 2008-06-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
@@ -100,6 +163,34 @@
 
 	* sysdeps/generic/bits/thread-barrier.h: Remove unused file.
 
+2008-06-22  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal) [! NDEBUG]: Set MUTEX->OWNER
+	appropriately and assert that it is consistent.
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock) [!
+	NDEBUG]: Set MUTEX->OWNER appropriately and assert that it is
+	consistent.
+	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock) [!
+	NDEBUG]: Set MUTEX->OWNER.
+
+2008-06-07  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-internal.h (__pthread_queue_iterate): Use 1, not
+	true.
+	(__pthread_dequeuing_iterate): Likewise.
+
+2008-05-27  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-internal.h (__pthread_queue_iterate): Before
+	returning the current element, save its next pointer.
+	(__pthread_dequeuing_iterate): Likewise.
+
+2008-05-27  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/mach/hurd/pt-docancel.c (__pthread_do_cancel): Fix
+	assert.
+
 2008-05-17  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/pthread/pthread.h (pthread_getattr_np): New declaration.
@@ -112,393 +203,24 @@
 
 2008-02-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	* sysdeps/l4/hurd/ia32/pt-setup.c (stack_setup): Align stack on 0x10
+	* sysdeps/l4/hurd/i386/pt-setup.c (stack_setup): Align stack on 0x10
 	for MMX operations.
+	* sysdeps/mach/hurd/i386/pt-setup.c (stack_setup): Likewise.
 
 2008-01-01  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/pthread/pthread.h (pthread_spin_destroy, pthread_spin_init,
 	pthread_spin_lock, pthread_spin_trylock, pthread_spin_unlock): Use
 	__extern_inline macro instead of extern __inline.
-	* sysdeps/ia32/bits/spin-lock.h (__PT_SPIN_INLINE,
+	* sysdeps/i386/bits/spin-lock.h (__PT_SPIN_INLINE,
+	__pthread_spin_lock): Likewise
+	* sysdeps/mach/bits/spin-lock.h (__PT_SPIN_INLINE,
 	__pthread_spin_lock): Likewise
 	* sysdeps/generic/bits/pthread.h (pthread_equal): Declare ; only
 	provide inline when __USE_EXTERN_INLINES is defined. Use __extern_inline
 	macro instead of extern __inline.
-	* sysdeps/ia32/bits/memory.h (__memory_barrier): Add static to inline.
+	* sysdeps/i386/bits/memory.h (__memory_barrier): Add static to inline.
 
-2008-06-22  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/generic/pt-mutex-timedlock.c
-	(__pthread_mutex_timedlock_internal): Don't set MUTEX->OWNER here.
-	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock): Set
-	it here to WAKEUP.
-
-2008-06-07  Neal H. Walfield  <neal@gnu.org>
-
-	* pthread/pt-internal.h (__pthread_queue_iterate): Use 1, not
-	true.
-	(__pthread_dequeuing_iterate): Likewise.
-
-2008-06-05  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc):
-	Replace use of as_slot_ensure with as_ensure.
-
-2008-06-01  Neal H. Walfield  <neal@gnu.org>
-
-	* include/pthread/pthread.h (PTHREAD_MUTEX_RECURSIVE_INITIALIZER_NP):
-	New definition.
-	* sysdeps/generic/bits/mutex.h
-	(__PTHREAD_MUTEX_RECURSIVE_INITIALIZER): New definition.
-	* sysdeps/generic/bits/mutex-attr.h (__pthread_recursive_mutexattr):
-	New definition.
-	* sysdeps/generic/pt-mutexattr.c (__pthread_recursive_mutexattr):
-	New declaration.
-	* sysdeps/generic/pt-mutex-init.c (_pthread_mutex_init): If ATTR
-	is &__PTHREAD_RECURSIVE_MUTEXATTR, don't allocate a copy, just
-	save in MUTEX->ATTR.
-	* sysdeps/generic/pt-mutex-destroy.c (_pthread_mutex_destroy): If
-	MUTEX->ATTR is &__PTHREAD_RECURSIVE_MUTEXATTR, don't free it.
-
-2008-05-29  Thomas Schwinge  <tschwinge@gnu.org>
-
-	* headers.m4: Link files into `sysroot/include/' instead of `include/'.
-	Create symbolic link to package's library in `sysroot/lib/'.
-	* Makefile.am [ENABLE_TESTS]: Don't build package's library.
-
-	* sysdeps/generic/sem-timedwait.c: Don't include <error.h>.
-
-2008-05-29  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/pt-sysdep.h Include <hurd/exceptions.h>.
-	(EXCEPTION_AREA_SIZE): Define.
-	(EXCEPTION_AREA_SIZE_LOG2): Likewise.
-	(EXCEPTION_PAGE): Likewise.
-	(PTHREAD_SYSDEP_MEMBERS): Change object's type to an addr_t.
-	Update users.  Remove field exception_page, replace with
-	exception_area.  Add field exception_area_va.
-	* sysdeps/l4/hurd/pt-thread-alloc.c: Include <hurd/as.h> and
-	<hurd/addr.h>.
-	(__pthread_thread_alloc): Allocate EXCEPTION_AREA_SIZE bytes of
-	address space.  Save it in THREAD->EXCEPTION_AREA_VA.  Allocate a
-	page for each page in that area.  Save them in
-	THREAD->EXCEPTION_AREA.
-	* sysdeps/l4/hurd/ia32/pt-setup.c (__pthread_setup): Set
-	EXCEPTION_PAGE->EXCEPTION_HANDLER_SP to the end of
-	EXCEPTION_PAGE->EXCEPTION_HANDLER_SP minus one word, in which we
-	save the address of the exception page.
-	* sysdeps/l4/hurd/pt-thread-start.c (__pthread_thread_start): Set
-	IN.EXCEPTION_PAGE to the first page in THREAD->EXCEPTION_AREA_VA.
-	* sysdeps/l4/hurd/pt-thread-halt.c: Include <hurd/mutex.h>,
-	<hurd/as.h> and <hurd/addr.h>.
-	(saved_object_lock): New variable.
-	(__pthread_thread_halt): Lock SAVED_OBJECT_LOCK when accessing
-	SAVED_OBJECT.  Free the address space used by the exception
-	area (THREAD->EXCEPTION_AREA_VA) and its associated
-	storage (THREAD->EXCEPTION_AREA).
-
-2008-05-27  Neal H. Walfield  <neal@gnu.org>
-
-	* pthread/pt-internal.h (__pthread_queue_iterate): Before
-	returning the current element, save its next pointer.
-	(__pthread_dequeuing_iterate): Likewise.
-
-	* sysdeps/l4/hurd/pt-wakeup.c (__pthread_wakeup): Loop until we
-	successfully wake THREAD.
-
-2008-05-21  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/bits/pthread-np.h: New file.
-	* headers.m4: Don't link include/bits/pthread-np.h to
-	libpthread/sysdeps/l4/bits/pthread-np.h but to
-	libpthread/sysdeps/l4/hurd/bits/pthread-np.h.
-	* include/pthread/pthread.h: Include <bits/pthread-np.h>.
-	* sysdeps/l4/hurd/pt-setactivity-np.c (pthread_setactivity_np):
-	New file.
-	* Makefile.am (libpthread_a_SOURCES): Add pt-setactivity-np.c.
-
-2008-04-06  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/pt-kill.c: Just include "../generic/pt-kill.c".
-
-2008-03-01  Neal H. Walfield  <neal@gnu.org>
-
-	Add signal implementation.
-	* Makefile.am (SYSDEP_PATH): Add $(srcdir)/signal.
-	(libpthread_a_SOURCES): Add pt-mutex-transfer-np.c, kill.c,
-	killpg.c, pt-kill-siginfo-np.c, raise.c, sigaction.c, sigaddset.c,
-	sigaltstack.c, sigdelset.c, sigemptyset.c, sigfillset.c,
-	sig-internal.c, sig-internal.h, siginterrupt.c, sigismember.c,
-	signal.c, signal-dispatch.c, signal.h, sigpending.c,
-	sigprocmask.c, sigsuspend.c, sigtimedwait.c, sigwait.c,
-	sigwaiter.c, sigwaitinfo.c, signal-dispatch-lowlevel.c, and
-	sigprocmask.c.
-	* headers.m4: Link libpthread/signal/signal.h into ../include.
-	* sysdeps/generic/pt-mutex-transfer-np.c: New file.
-        * signal/README: New file.
-        * signal/TODO: Likewise.
-        * signal/kill.c: Likewise.
-        * signal/pt-kill-siginfo-np.c: Likewise.
-        * signal/sig-internal.c: Likewise.
-        * signal/sig-internal.h: Likewise.
-        * signal/sigaction.c: Likewise.
-        * signal/sigaltstack.c: Likewise.
-        * signal/signal-dispatch.c: Likewise.
-        * signal/signal.h: Likewise.
-        * signal/sigpending.c: Likewise.
-        * signal/sigsuspend.c: Likewise.
-        * signal/sigtimedwait.c: Likewise.
-        * signal/sigwaiter.c: Likewise.
-        * signal/sigwaitinfo.c: Likewise.
-	* sysdeps/l4/hurd/sig-sysdep.h: Likewise.
-	* sysdeps/l4/hurd/sigprocmask.c: Likewise.
-	* sysdeps/generic/killpg.c: Likewise.
-	* sysdeps/generic/pt-kill.c: Likewise.
-	* sysdeps/generic/raise.c: Likewise.
-	* sysdeps/generic/sigaddset.c: Likewise.
-	* sysdeps/generic/sigdelset.c: Likewise.
-	* sysdeps/generic/sigemptyset.c: Likewise.
-	* sysdeps/generic/sigfillset.c: Likewise.
-	* sysdeps/generic/siginterrupt.c: Likewise.
-	* sysdeps/generic/sigismember.c: Likewise.
-	* sysdeps/generic/signal.c: Likewise.
-	* sysdeps/generic/sigwait.c: Likewise.
-	* sysdeps/l4/hurd/ia32/signal-dispatch-lowlevel.c: Likewise.
-	* sysdeps/l4/hurd/pt-sysdep.c (sigprocmask): Remove function.
-	* sysdeps/l4/hurd/pt-sigstate.c (__pthread_sigstate): Implement
-	it.
-	* sysdeps/l4/hurd/pt-sigstate-init.c: Include <sig-internal.h>.
-	(__pthread_sigstate_init): Initialize THREAD->SS.
-	* sysdeps/l4/hurd/pt-kill.c: Remove file.
-	* pthread/pt-internal.h: Include <sig-internal.h>.
-	(PTHREAD_SIGNAL_MEMBERS) [! PTHREAD_SIGNAL_MEMBERS]: Define.
-	(struct __pthread): Add PTHREAD_SIGNAL_MEMBERS.
-	* pthread/pt-self.c (pthread_self): Assert that SELF is not NULL.
-
-2008-02-21  Neal H. Walfield  <neal@gnu.org>
-
-	* Makefile.am (AM_CPPFLAGS): Replace use of includes with
-	$(USER_CPPFLAGS).
-	(AM_CFLAGS): New variable.
-
-2008-02-16  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/ia32/pt-setup.c (stack_setup): Add correct casts
-	to elide gcc warnings.
-	(__pthread_setup): Likewise.
-
-2008-02-13  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc):
-	Update use of storage_alloc to be consistent with new API.
-
-2008-02-13  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/pt-sysdep.c (_pthread_init_routine): Change
-	function signature to take a function pointer and an argument and
-	to not return.
-	(init_routine): Likewise.  Pass entry and argument to
-	__pthread_create_internal.  Instead of returning, jump to the
-	program counter and switch stacks.
-
-2008-02-11  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/ia32/pt-setup.c (_pthread_entry_point): New
-	assembly function.
-	(stack_setup): Take additional argument entry_point.  Push it on
-	the stack.
-	(__pthread_setup): Set thread->mcontext.pc to
-	&_pthread_entry_point.  Pass ENTRY_POINT to stack_setup.
-
-2008-02-08  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/hurd/pt-setspecific.c (pthread_setspecific): Update use
-	of hurd_ihash_create to be consistent with API changes.
-
-2008-01-23  Neal H. Walfield  <neal@gnu.org>
-
-	* Makefile.am (AM_CPPFLAGS): Add -I$(LIBC)/include.
-
-2008-01-17  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/pt-block.c: New file.
-	* sysdeps/l4/hurd/pt-wakeup.c: Likewise.
-
-2008-01-01  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/generic/pt-mutex-timedlock.c
-	(__pthread_mutex_timedlock_internal): Add additional asserts.
-	[! NDEBUG]: Keep MUTEX->OWNER up to date.
-	* sysdeps/generic/pt-mutex-trylock.c (__pthread_mutex_trylock):
-	Add additional asserts.
-	[! NDEBUG]: Keep MUTEX->OWNER up to date.
-	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock): Add
-	additional asserts.
-	[! NDEBUG]: Keep MUTEX->OWNER up to date.
-
-2007-12-23  Neal H. Walfield  <neal@gnu.org>
-
-	* Makefile.am (AM_CPPFLAGS): Add "-std=gnu99 -Wall -g -O3".
-
-	* sysdeps/l4/pt-block.c (__pthread_block): Remove unused variable
-	err.
-
-	* pthread/pt-join.c (pthread_join): Cast argument to
-	pthread_cleanup_push to avoid warning.
-
-2007-12-13  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/hurd/pt-thread-halt.c: Include <hurd/exceptions.h>.
-	(__pthread_thread_halt): Call exception_page_cleanup.
-
-2007-12-12  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/pt-block.c (__pthread_block): Clear the acceptor.
-	Improve debugging output.
-	* sysdeps/l4/pt-wakeup.c (__pthread_wakeup): Load an empty message.
-	Improve debugging output.
-
-2007-12-04  Neal H. Walfield  <neal@gnu.org>
-
-	Remove exception threads.  Replace with support for activations.
-	* sysdeps/l4/hurd/pt-sysdep.h (PTHREAD_SYSDEP_MEMBERS): Remove
-	fields exception_handler_stack and exception_handler_sp.  Add
-	field exception_page.
-	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc):
-	Allocate a page for THREAD->EXCEPTION_PAGE, not
-	THREAD->EXCEPTION_HANDLER_STACK.
-	* sysdeps/l4/hurd/ia32/pt-setup.c: Include <hurd/thread.h> and
-	<hurd/exceptions.h>.
-	(__pthread_setup): Remove code dealing with the exception thread.
-	Set up the exception page.
-	* sysdeps/l4/hurd/pt-thread-start.c (__pthread_thread_start):
-	Remove code dealing with the exception thread.  Update to use new
-	rm_thread_exregs interface.  Also set the thread's exception page.
-	* sysdeps/l4/hurd/pt-thread-halt.c (__pthread_thread_halt): Remove
-	code to dealing with the exception thread.  Free the
-	THREAD->EXCEPTION_PAGE.
-
-2007-11-23  Neal H. Walfield  <neal@gnu.org>
-
-	* pthread/pt-internal.h (__pthread_startup): Add declaration.
-	* pthread/pt-create.c (entry_point): Call __pthread_startup.
-	* sysdeps/l4/hurd/pt-sysdep.h: Include <hurd/storage.h> and
-	<sys/mman.h>.
-	(PTHREAD_SYSDEP_MEMBERS): Add fields object,
-	exception_handler_stack and exception_handler_sp.
-	(__attribute__): Call munmap.
-	* sysdeps/l4/hurd/ia32/pt-setup.c (__pthread_setup): Set up
-	thread->exception_handler_sp.  Don't set the user define handle
-	here.
-	* sysdeps/l4/hurd/pt-startup.c: New file.  Do it here.
-	* sysdeps/l4/hurd/pt-thread-alloc.c: New file.
-	* sysdeps/l4/hurd/pt-thread-halt.c: New file.
-	* sysdeps/l4/hurd/pt-thread-start.c: New file.
-	* Makefile.am (libpthread_a_SOURCES): Add pt-startup.c.
-
-	* sysdeps/l4/pt-block.c: Include <hurd/stddef.h>.
-	(__pthread_block): Detect IPC failure.  Add debugging output.
-	* sysdeps/l4/pt-wakeup.c: Include <hurd/stddef.h>.
-	(__pthread_wakeup): Detect IPC failure.  Add debugging output.
-
-2007-11-20  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/pt-thread-dealloc.c: New file.
-	* Makefile.am (libpthread_a_SOURCES): Add pt-thread-dealloc.c.
-
-	* sysdeps/l4/hurd/pt-sysdep.h (PTHREAD_STACK_DEFAULT): Change to
-	2MB.
-
-	* sysdeps/l4/hurd/pt-sysdep.c (sched_yield): New function.
-	(sigprocmask): Likewise.
-	(init_routine): Only call __pthread_initialize once.  Update
-	comments.
-
-2007-11-20  Neal H. Walfield  <neal@gnu.org>
-
-	* Makefile.am (libpthread_a_SOURCES): Remove pt-create-np.c.
-	* sysdeps/l4/pt-create-np.c: Remove file.
-	* sysdeps/l4/pt-pool-np.c (pthread_pool_add_np): Change tid from
-	an _L4_thread_id_t to an l4_thread_id_t.
-	(pthread_pool_get_np): Return an l4_thread_id_t, not a
-	_L4_thread_id_t.
-	* sysdeps/l4/bits/pthread-np.h (pthread_create_from_l4_tid_np):
-	Remove declaration.
-	(pthread_pool_add_np): Change tid from an _L4_thread_id_t to an
-	l4_thread_id_t.
-	(pthread_pool_get_np): Return an l4_thread_id_t, not a
-	_L4_thread_id_t.
-
-	* sysdeps/l4/pt-docancel.c (__pthread_do_cancel): Implement for
-	the case that the target thread is not the executing thread.
-
-	* sysdeps/l4/pt-thread-alloc.c (__pthread_thread_alloc): Return
-	EAGAIN if pthread_pool_get_np does not return a thread.  Update
-	comments.
-
-	* sysdeps/l4/pt-thread-start.c (__pthread_thread_start): Don't set
-	the thread's pager.  Assert that if this is the first thread, then
-	THREAD->THREADID is designates the running thread.
-
-	* sysdeps/l4/pt-timedblock.c (__pthread_timedblock): Add warning
-	about incomplete implementation.
-
-	* Makefile.am (libpthread_a_SOURCES): Remove pt-thread-init.c.
-	* sysdeps/l4/pt-thread-init.c: Remove dead file.
-	* sysdeps/l4/pt-start.c: Remove dead file.
-
-2007-11-20  Neal H. Walfield  <neal@gnu.org>
-
-	Also merge semaphore changes from mainline Hurd.
-
-2007-11-20  Neal H. Walfield  <neal@gnu.org>
-
-	Merge changes from mainline Hurd.  Update L4 bits to compile with
-	those changes.
-
-	* sysdeps/l4/pt-block.c (__pthread_block): Call l4_receive, not
-	L4_Receive.
-	* sysdeps/l4/pt-create-np.c (pthread_create_from_l4_tid_np): Don't
-	pass TID to __pthread_create_internal.  Emit a warning.
-	* sysdeps/l4/pt-stack-alloc.c (allocate_page): Remove function.
-	(__pthread_stack_alloc): Don't require that STACKSIZE is equal to
-	__pthread_stacksize.  Call mmap.
-	* sysdeps/l4/pt-thread-halt.c (__pthread_thread_halt): Take
-	additional argument, need_dealloc.  Call __pthread_dealloc.  Stop
-	the thread.
-	* sysdeps/l4/hurd/pt-sysdep.c (init_routine): When calling
-	__pthread_create_internal, don't pass the tid.
-	* tests/test-1.c (main): Use pthread_mutex_init, not
-	PTHREAD_MUTEX_INITIALIZER.
-
-	* pthread/pt-alloc.c: Don't include <bits/atomic.h>.  Include
-	<atomic.h>.
-	(__pthread_free_threads): Make it an atomicptr_t, not an
-	__atomicptr_t.
-	(__pthread_alloc): Don't use __atomicptr_compare_and_swap, use
-	atomic_compare_and_exchange_val_acq.
-	* pthread/pt-create.c: Don't include <bits/atomic.h>.  Include
-	<atomic.h>.
-	(__pthread_total): Make it an atomic_fast32_t, not an __atomic_t.
-	(__pthread_create_internal): Use atomic_increment and
-	atomic_decrement, not __atomic_inc and __atomic_dec.
-	* pthread/pt-dealloc.c: Don't include <bits/atomic.h>.  Include
-	<atomic.h>.
-	(__pthread_free_threads): Make it an atomicptr_t, not an
-	__atomicptr_t.
-	(__pthread_dealloc): Use atomic_compare_and_exchange_val_acq, not
-	__atomicptr_compare_and_swap.
-	* pthread/pt-exit.c: Don't include <bits/atomic.h>.  Include
-	<atomic.h>.
-	(pthread_exit): Use atomic_decrement_and_test, not
-	__atomic_dec_and_test.
-	* pthread/pt-internal.h: Don't include <bits/atomic.h>.  Include
-	<atomic.h>.
-	(__pthread_total): Make it an atomic_fast32_t, not an __atomic_t.
-	* sysdeps/powerpc/bits/atomic.h: Remove file.
-	* sysdeps/ia32/bits/atomic.h: Likewise.
-	
 2007-11-19  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile (CFLAGS): Don't set and instead...
@@ -555,7 +277,6 @@
 
 	* sysdeps/i386/machine-sp.h (thread_stack_pointer):
 	Optimize esp read.
-	* i386/cthreads.h (cthread_sp): Likewise.
 	* include/pthread/pthread.h: Add the restrict keyword where
 	appropriate for full compliance.
 	* pthread/pt-internal.h: Likewise.
@@ -783,101 +504,13 @@
 	THREAD_SPECIFICS to hurd_ihash_t.
 	* sysdeps/hurd/pt-setspecific.c (pthread_setspecific): Call
 	hurd_ihash_create instead ihash_create, and hurd_ihash_add instead
-
-2007-08-06  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/bits/pthread-np.h (pthread_create_from_l4_tid_np):
-	Don't require the GNU interface: use _L4_thread_id_t, not
-	l4_thread_id_t.
-	(pthread_pool_add_np): Likewise.
-	(pthread_pool_get_np): Likewise.
-	* sysdeps/l4/pt-create-np.c (pthread_create_from_l4_tid_np): Likewise.
-	* sysdeps/l4/pt-pool-np.c (pool_list): Likewise.
-	(pthread_pool_add_np): Likewise.
-	(pthread_pool_get_np): Likewise.
-
-2005-02-08  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/posix/pt-spin.c (__pthread_spin_lock): Make a weak alias
-	to _pthread_spin_lock.
-	* sysdeps/l4/hurd/pt-sysdep.h (_pthread_self): Add
-	__always_inline__ attribute.
-	(__pthread_stack_dealloc): Likewise.
-
-2005-01-12  Neal H. Walfield  <neal@gnu.org>
-
-	* sysdeps/l4/pt-thread-alloc.c: Replace assert with a compile time
-	warning.
-	* sysdeps/l4/hurd/pt-sigstate.c (__pthread_sigstate): Don't return
-	EINVAL.  Pretend to work so the generic code is happy.
-
-2004-11-02  Marcus Brinkmann  <marcus@gnu.org>
-
-	* sysdeps/generic/bits/condition.h (__PTHREAD_COND_INITIALIZER): 
-	Remove compound statement.
-	* pthread/pt-alloc.c (initialize_pthread): Use compound statement.
-	* sysdeps/generic/pt-cond-init.c (pthread_cond_init): Likewise.
-
-2004-11-01  Marcus Brinkmann  <marcus@gnu.org>
-
-	* pthread/pt-create.c (__pthread_total): Change type to uatomic32_t.
-	* pthread/pt-internal.h (__pthread_total): Likewise in declaration.
-	
-	* pthread/pt-internal.h: Include <atomic.h>, not <bits/atomic.h>.
-	(__pthread_total): Change type of declaration to uatomic_max_t.
-	* pthread/pt-alloc.c: Include <atomic.h>, not <bits/atomic.h>.
-	(__pthread_free_threads): Change type to uatomicptr_t.
-	(__pthread_alloc): Call atomic_compare_and_exchange_val_acq
-	instead of __atomicptr_compare_and_swap.
-	* pthread/pt-create.c: Include <atomic.h>, not <bits/atomic.h>.
-	(__pthread_total): Change type to uatomic_max_t.
-	(__pthread_create_internal): Call atomic_increment, not
-	__atomic_inc and atomic_decrement, not __atomic_dec.
-	* pthread/pt-dealloc.c: Include <atomic.h>, not <bits/atomic.h>.
-	(__pthread_free_threads): Declare as uatomicptr_t.
-	(__pthread_dealloc): Call atomic_compare_and_exchange_val_acq
-	instead of __atomicptr_compare_and_swap.
-	* pthread/pt-exit.c: Include <atomic.h>, not <bits/atomic.h>.
-	(pthread_exit): Call atomic_decrement_and_test instead of
-	__atomic_dec_and_test.
-	* sysdeps/l4/pt-create-np.c: Do not include <bits/atomic.h>.
-
-2004-10-29  Marcus Brinkmann  <marcus@gnu.org>
-
-	* headers.am (AC_CONFIG_LINKS): Remove include/bits/atomic.h.
-
-2004-03-23  Marcus Brinkmann  <marcus@gnu.org>
-
-	* sysdeps/generic/bits/mutex.h (__PTHREAD_MUTEX_INITIALIZER):
-	Remove compound statement.
-	(pthread_mutex_init): Use compound statement with initializer.
-	* pthread/pt-alloc.c (initialize_pthread): Likewise.
-	* sysdeps/generic/pt-mutex-init.c (_pthread_mutex_init): Likewise.
-
-2004-03-19  Marcus Brinkmann  <marcus@gnu.org>
-
-	* sysdeps/l4/bits/pthread-np.h (pthread_pool_add_np,
-	pthread_pool_get_np): New prototypes.
-	* sysdeps/l4/pt-pool-np.c: New file.
-	* Makefile.am (libpthread_a_SOURCES): Add pt-pool-np.c.
-	* sysdeps/l4/pt-thread-alloc.c (__pthread_thread_alloc): Try to
-	allocate thread from pool.
-	* sysdeps/l4/pt-thread-halt.c (__pthread_thread_halt): Add thread
-	to pool after stopping it.
-
-2004-03-17  Marcus Brinkmann  <marcus@gnu.org>
-
-	* sysdeps/l4/pt-thread-start.c (__pthread_thread_start): Use L4
-	convenience interface.
-
-	* sysdeps/l4/pt-spin.c (_pthread_spin_lock): Implement using new
-	time period interface.
-
-2003-10-16  Johan Rydberg  <jrydberg@night.trouble.net>
-
-	Many changes throughout all files, converting L4 specific source
-	code to the GNU libl4 interface.  Integration into the hurd-l4
-	infrastructure.
+	ihash_add.
+	* sysdeps/hurd/pt-getspecific.c (pthread_getspecific): Call
+	hurd_ihash_find instead of ihash_find.
+	* sysdeps/hurd/pt-destroy-specific.c (__pthread_destroy_specific):
+	Call hurd_ihash_find instead of ihash_find, hurd_ihash_remove
+	instead of ihash_remove, and hurd_ihash_free instead of
+	ihash_free.
 
 2003-08-03  Marco Gerards  <metgerards@student.han.nl>
 

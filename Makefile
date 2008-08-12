@@ -71,6 +71,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 	pt-mutex-init.c pt-mutex-destroy.c				    \
 	pt-mutex-lock.c pt-mutex-trylock.c pt-mutex-timedlock.c		    \
 	pt-mutex-unlock.c						    \
+	pt-mutex-transfer-np.c						    \
 	pt-mutex-getprioceiling.c pt-mutex-setprioceiling.c		    \
 									    \
 	pt-rwlock-attr.c						    \
@@ -99,6 +100,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 	pt-thread-dealloc.c						    \
 	pt-thread-start.c						    \
 	pt-thread-halt.c						    \
+	pt-startup.c							    \
 									    \
 	pt-getconcurrency.c pt-setconcurrency.c				    \
 									    \
@@ -141,6 +143,7 @@ sysdeps_headers =				\
 	      semaphore.h			\
 						\
               bits/pthread.h			\
+              bits/pthread-np.h			\
               bits/mutex.h			\
               bits/condition.h			\
               bits/condition-attr.h		\

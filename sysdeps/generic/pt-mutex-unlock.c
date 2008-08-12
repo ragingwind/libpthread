@@ -37,12 +37,7 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
       if (_pthread_self ())
 	{
 	  assert (mutex->owner);
-	  assertx (mutex->owner == _pthread_self (),
-		   "%p(%x) != %p(%x)",
-		   mutex->owner,
-		   ((struct __pthread *) mutex->owner)->threadid,
-		   _pthread_self (),
-		   _pthread_self ()->threadid);
+	  assert (mutex->owner == _pthread_self ());
 	  mutex->owner = NULL;
 	}
 #endif

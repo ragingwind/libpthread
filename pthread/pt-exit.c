@@ -24,7 +24,7 @@
 
 #include <pt-internal.h>
 
-#include <atomic.h>
+#include <bits/atomic.h>
 
 
 /* Terminate the current thread and make STATUS available to any
@@ -57,7 +57,7 @@ pthread_exit (void *status)
 
   /* Decrease the number of threads.  We use an atomic operation to
      make sure that only the last thread calls `exit'.  */
-  if (atomic_decrement_and_test (&__pthread_total))
+  if (__atomic_dec_and_test (&__pthread_total))
     /* We are the last thread.  */
     exit (0);
 
