@@ -1,5 +1,9 @@
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/generic/bits/pthreadtypes.h: Remove dead file.
+
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/generic/bits/pthread-np.h: New file.
 
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
