@@ -1,3 +1,110 @@
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
+	Merge in Samuel Thibault's changes from the main line.
+
+	* Makefile.am (libpthread_a_SOURCES): Add pt-getattr.c.
+	* headers.m4: Link libpthread/include/pthread/pthreadtypes.h to
+	sysroot/include/pthread/pthreadtypes.h and
+	libpthread/sysdeps/${arch}/bits/spin-lock-inline.h. to
+	sysroot/include/bits/spin-lock-inline.h.
+
+	* include/pthread/pthread.h: Include <sys/cdefs.h>.
+	(__extern_inline): If not defined, define appropriately.
+
+2008-08-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/pthread/pthreadtypes.h (__pthread_inheritsched): Remove
+	comma at end of enumeration.
+
+2008-08-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* Makefile (sysdeps_headers): Add spin-lock-inline.h.
+	(SYSDEP_PATH): Move sysdeps/ia32 right after
+	sysdeps/$(MICROKERNEL)/ia32.
+	* include/pthread/pthread.h: Include <bits/spin-lock-inline.h>.
+	* sysdeps/ia32/bits/spin-lock.h: Move inlines to...
+	* sysdeps/ia32/bits/spin-lock-inline.h: ... new file.
+
+2008-08-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/generic/bits/mutex.h: Do not include <errno.h> and
+	<stddef.h>
+	* sysdeps/ia32/bits/memory.h (__memory_barrier): Add memory clobber.
+	* sysdeps/ia32/bits/spin-lock.h (__pthread_spin_trylock,
+	__pthread_spin_unlock): Add memory clobbers.
+	* sysdeps/l4/hurd/ia32/pt-setup.c (stack_setup): Fix reservation of
+	stack room for initial frame.
+
+2008-07-18  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* Makefile (sysdeps_headers): add pthread/pthreadtypes.h
+
+2008-06-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/pthread/pthread.h: Do not define __need_clockid_t, include
+	<time.h>, and define clockid_t if __clockid_defined is not defined.
+	Include <pthread/pthreadtypes.h>
+	(pthread_equal): New extern inline.
+	(pthread_cleanup_push, pthread_cleanup_pop): New macros.
+	(__pthread_process_shared, __pthread_inheritsched,
+	__pthread_contentionscope, __pthread_detachstate,
+	__pthread_mutex_protocol, __pthread_mutex_type,
+	pthread_attr_t, pthread_mutex_attr_t, pthread_mutex_t,
+	pthread_condattr_t, pthread_cond_t, pthread_spinlock_t,
+	pthread_rwlockattr_t, pthread_rwlock_t, pthread_barrierattr_t,
+	pthread_barrier_t, pthread_key_t, pthread_once_t): Move enums and
+	typedefs to...
+	* include/pthread/pthreadtypes.h: ... new file.
+	* sysdeps/generic/bits/cancelation.h (pthread_cleanup_push): Rename
+	macro to __pthread_cleanup_push.
+	(pthread_cleanup_pop): Rename macro to __pthread_cleanup_pop.
+	* sysdeps/generic/bits/barrier-attr.h (__pthread_process_shared):
+	Forward-declare enum.
+	* sysdeps/generic/bits/condition-attr.h (__pthread_process_shared):
+	Likewise.
+	* sysdeps/generic/bits/mutex-attr.h (__pthread_mutex_protocol,
+	__pthread_process_shared, __pthread_mutex_type):
+	Likewise.
+	* sysdeps/generic/bits/rwlock-attr.h (__pthread_process_shared):
+	Likewise.
+	* sysdeps/generic/bits/thread-attr.h (__pthread_detachstate,
+	__pthread_inheritsched, __pthread_contentionscope):
+	Likewise.
+	* sysdeps/generic/bits/pthread.h (pthread_t): Rename type to
+	__pthread_t.
+	(pthread_equal): Rename to __pthread_equal.
+
+2008-06-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/generic/bits/thread-barrier.h: Remove unused file.
+
+2008-05-17  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/pthread/pthread.h (pthread_getattr_np): New declaration.
+	* pthread/pt-getattr.c: New file.
+	* Makefile (SRCS): Add pt-getattr.c.
+
+2008-03-16  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/libc-symbols.h (HAVE_ASM_PREVIOUS_DIRECTIVE): Define.
+
+2008-02-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/l4/hurd/ia32/pt-setup.c (stack_setup): Align stack on 0x10
+	for MMX operations.
+
+2008-01-01  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/pthread/pthread.h (pthread_spin_destroy, pthread_spin_init,
+	pthread_spin_lock, pthread_spin_trylock, pthread_spin_unlock): Use
+	__extern_inline macro instead of extern __inline.
+	* sysdeps/ia32/bits/spin-lock.h (__PT_SPIN_INLINE,
+	__pthread_spin_lock): Likewise
+	* sysdeps/generic/bits/pthread.h (pthread_equal): Declare ; only
+	provide inline when __USE_EXTERN_INLINES is defined. Use __extern_inline
+	macro instead of extern __inline.
+	* sysdeps/ia32/bits/memory.h (__memory_barrier): Add static to inline.
+
 2008-06-22  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/generic/pt-mutex-timedlock.c

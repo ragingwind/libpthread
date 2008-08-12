@@ -1,5 +1,5 @@
 /* Definitions of user-visible names for spin locks.
-   Copyright (C) 1994, 1997, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1994, 1997, 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -32,65 +32,6 @@ typedef __spin_lock_t __pthread_spinlock_t;
 #ifndef __SPIN_LOCK_INITIALIZER
 #error __SPIN_LOCK_INITIALIZER undefined: should be defined by <lock-intern.h>.
 #endif
-
-#if defined __USE_EXTERN_INLINES || defined _FORCE_INLINES
-
-# ifndef __EBUSY
-#  include <errno.h>
-#  define __EBUSY EBUSY
-# endif
-
-# ifndef __PT_SPIN_INLINE
-#  define __PT_SPIN_INLINE extern __inline
-# endif
-
-__PT_SPIN_INLINE int __pthread_spin_destroy (__pthread_spinlock_t *__lock);
-
-__PT_SPIN_INLINE int
-__pthread_spin_destroy (__pthread_spinlock_t *__lock)
-{
-  return 0;
-}
-
-__PT_SPIN_INLINE int __pthread_spin_init (__pthread_spinlock_t *__lock,
-					  int __pshared);
-
-__PT_SPIN_INLINE int
-__pthread_spin_init (__pthread_spinlock_t *__lock, int __pshared)
-{
-  *__lock = __SPIN_LOCK_INITIALIZER;
-  return 0;
-}
-
-__PT_SPIN_INLINE int __pthread_spin_trylock (__pthread_spinlock_t *__lock);
-
-__PT_SPIN_INLINE int
-__pthread_spin_trylock (__pthread_spinlock_t *__lock)
-{
-  return __spin_try_lock (__lock) ? 0 : __EBUSY;
-}
-
-extern __inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
-extern int _pthread_spin_lock (__pthread_spinlock_t *__lock);
-
-extern __inline int
-__pthread_spin_lock (__pthread_spinlock_t *__lock)
-{
-  if (__pthread_spin_trylock (__lock))
-    return _pthread_spin_lock (__lock);
-  return 0;
-}
-
-__PT_SPIN_INLINE int __pthread_spin_unlock (__pthread_spinlock_t *__lock);
-
-__PT_SPIN_INLINE int
-__pthread_spin_unlock (__pthread_spinlock_t *__lock)
-{
-  __spin_unlock (__lock);
-  return 0;
-}
-
-#endif /* Use extern inlines or force inlines.  */
 
 __END_DECLS
 

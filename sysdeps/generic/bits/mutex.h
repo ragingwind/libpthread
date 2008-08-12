@@ -1,5 +1,8 @@
 /* Mutex type.  Generic version.
-   Copyright (C) 2000, 2002, 2005, 2008 Free Software Foundation, Inc.
+
+   Copyright (C) 2000, 2002, 2005, 2006, 2007, 2008
+     Free Software Foundation, Inc.
+
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -60,12 +63,5 @@ struct __pthread_mutex
 
 # endif
 #endif /* Not __pthread_mutex_defined.  */
-
-#ifdef _BITS_MUTEX_H
-
-#include <errno.h>
-#include <stddef.h>
-
-#endif
 
 #endif /* bits/mutex.h */

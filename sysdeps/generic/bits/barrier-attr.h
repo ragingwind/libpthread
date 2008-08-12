@@ -1,5 +1,5 @@
 /* Thread barrier attribute type.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -19,6 +19,8 @@
 
 #ifndef _BITS_BARRIER_ATTR_H
 #define _BITS_BARRIER_ATTR_H	1
+
+enum __pthread_process_shared;
 
 /* This structure describes the attributes of a POSIX thread barrier.
    Note that not all of them are supported on all systems.  */

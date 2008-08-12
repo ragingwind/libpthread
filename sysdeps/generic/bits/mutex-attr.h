@@ -20,6 +20,10 @@
 #ifndef _BITS_MUTEX_ATTR_H
 #define _BITS_MUTEX_ATTR_H	1
 
+enum __pthread_mutex_protocol;
+enum __pthread_process_shared;
+enum __pthread_mutex_type;
+
 /* This structure describes the attributes of a POSIX mutex
    attribute.  */
 struct __pthread_mutexattr

@@ -72,6 +72,9 @@ stack_setup (struct __pthread *thread,
   /* Calculate top of the new stack.  */
   top = (uintptr_t *) ((uintptr_t) thread->stackaddr + thread->stacksize);
 
+  /* Align on 0x10 for MMX operations.  */
+  top = (uintptr_t) top & ~0xf;
+
   if (start_routine)
     {
       /* Set up call frame.  */

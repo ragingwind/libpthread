@@ -1,6 +1,6 @@
 #
-#   Copyright (C) 1994, 1995, 1996, 1997, 2000, 2002, 2004, 2005, 2006, 2007
-#     Free Software Foundation, Inc.
+#   Copyright (C) 1994, 1995, 1996, 1997, 2000, 2002, 2004, 2005, 2006, 2007,
+#     2008 Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License as
@@ -45,6 +45,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 									    \
 	pt-alloc.c							    \
 	pt-create.c							    \
+	pt-getattr.c							    \
 	pt-equal.c							    \
 	pt-dealloc.c							    \
 	pt-detach.c							    \
@@ -136,6 +137,7 @@ libname = libpthread
 sysdeps_headers =				\
               pthread.h				\
               pthread/pthread.h			\
+              pthread/pthreadtypes.h		\
 	      semaphore.h			\
 						\
               bits/pthread.h			\
@@ -143,6 +145,7 @@ sysdeps_headers =				\
               bits/condition.h			\
               bits/condition-attr.h		\
               bits/spin-lock.h			\
+              bits/spin-lock-inline.h		\
               bits/cancelation.h		\
               bits/thread-attr.h		\
               bits/barrier-attr.h		\
@@ -156,10 +159,10 @@ sysdeps_headers =				\
 
 SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/ia32	\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/ia32			\
+	 $(srcdir)/sysdeps/ia32					\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/hurd			\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)			\
 	 $(srcdir)/sysdeps/hurd					\
-	 $(srcdir)/sysdeps/ia32					\
 	 $(srcdir)/sysdeps/generic				\
 	 $(srcdir)/sysdeps/posix				\
 	 $(srcdir)/pthread					\

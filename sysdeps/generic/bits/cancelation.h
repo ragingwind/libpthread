@@ -1,5 +1,5 @@
 /* Cancelation.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ struct __pthread_cancelation_handler
 /* Returns the thread local location of the cleanup handler stack.  */
 struct __pthread_cancelation_handler **__pthread_get_cleanup_stack (void);
 
-#define pthread_cleanup_push(rt, rtarg) \
+#define __pthread_cleanup_push(rt, rtarg) \
 	{ \
 	  struct __pthread_cancelation_handler **__handlers \
 	    = __pthread_get_cleanup_stack (); \
@@ -44,7 +44,7 @@ struct __pthread_cancelation_handler **__pthread_get_cleanup_stack (void);
 	    }; \
 	  *__handlers = &__handler;
 	  
-#define pthread_cleanup_pop(execute) \
+#define __pthread_cleanup_pop(execute) \
 	  if (execute) \
 	    __handler.handler (__handler.arg); \
 	  assert (*__handlers == &__handler); \

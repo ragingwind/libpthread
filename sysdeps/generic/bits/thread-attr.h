@@ -1,5 +1,5 @@
 /* Thread attribute type.  Generic version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,6 +21,10 @@
 #define _BITS_THREAD_ATTR_H	1
 
 #include <sched.h>
+
+enum __pthread_detachstate;
+enum __pthread_inheritsched;
+enum __pthread_contentionscope;
 
 /* This structure describes the attributes of a POSIX thread.  Note
    that not all of them are supported on all systems.  */

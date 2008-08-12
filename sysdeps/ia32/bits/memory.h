@@ -1,5 +1,5 @@
 /* Memory barrier operations.  i386 version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,14 +21,14 @@
 #define _BITS_MEMORY_H	1
 
 /* Prevent read and write reordering across this function.  */
-inline void
+static inline void
 __memory_barrier (void)
 {
   int i;
 
   /* Any lock'ed instruction will do.  We just do a simple
      increment.  */
-  __asm__ __volatile ("lock; incl %0" : "=m" (i) : "m" (i));
+  __asm__ __volatile ("lock; incl %0" : "=m" (i) : "m" (i) : "memory");
 }
 
 /* Prevent read reordering across this function.  */
