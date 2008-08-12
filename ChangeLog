@@ -1,3 +1,8 @@
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock):
+	Remove dead code.
+
 2008-08-11  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/l4/pt-docancel.c: Remove file.
