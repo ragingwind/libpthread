@@ -1,3 +1,7 @@
+2008-08-12  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/bits/pthread-np.h: New file.
+
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/ia32/machine-sp.h (thread_stack_pointer):
@@ -5,7 +9,7 @@
 
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
-	* sysdeps/generic/pt-startup.c (__pthread_startup): New file.
+	* sysdeps/generic/pt-startup.c: New file.
 
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
