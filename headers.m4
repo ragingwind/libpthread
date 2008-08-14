@@ -17,7 +17,6 @@ AC_CONFIG_LINKS([
   sysroot/include/bits/memory.h:libpthread/sysdeps/${arch}/bits/memory.h
   sysroot/include/bits/spin-lock.h:libpthread/sysdeps/${arch}/bits/spin-lock.h
   sysroot/include/bits/spin-lock-inline.h:libpthread/sysdeps/${arch}/bits/spin-lock-inline.h
-  sysroot/include/bits/pthreadtypes.h:libpthread/sysdeps/generic/bits/pthreadtypes.h
   sysroot/include/bits/barrier-attr.h:libpthread/sysdeps/generic/bits/barrier-attr.h
   sysroot/include/bits/barrier.h:libpthread/sysdeps/generic/bits/barrier.h
   sysroot/include/bits/cancelation.h:libpthread/sysdeps/generic/bits/cancelation.h
@@ -30,7 +29,6 @@ AC_CONFIG_LINKS([
   sysroot/include/bits/rwlock-attr.h:libpthread/sysdeps/generic/bits/rwlock-attr.h
   sysroot/include/bits/rwlock.h:libpthread/sysdeps/generic/bits/rwlock.h
   sysroot/include/bits/thread-attr.h:libpthread/sysdeps/generic/bits/thread-attr.h
-  sysroot/include/bits/thread-barrier.h:libpthread/sysdeps/generic/bits/thread-barrier.h
   sysroot/include/bits/thread-specific.h:libpthread/sysdeps/generic/bits/thread-specific.h
   sysroot/include/bits/pthread-np.h:libpthread/sysdeps/l4/hurd/bits/pthread-np.h
   sysroot/include/semaphore.h:libpthread/include/semaphore.h

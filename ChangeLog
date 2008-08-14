@@ -1,3 +1,10 @@
+2008-08-14  Neal H. Walfield  <neal@gnu.org>
+
+	* headers.m4: Remove link from sysroot/include/bits/pthreadtypes.h
+	to libpthread/sysdeps/generic/bits/pthreadtypes.h and link from
+	sysroot/include/bits/thread-barrier.h to
+	libpthread/sysdeps/generic/bits/thread-barrier.h.
+
 2008-08-12  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/generic/bits/pthreadtypes.h: Remove dead file.
