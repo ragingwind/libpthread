@@ -1,5 +1,17 @@
 2008-08-16  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/l4/pt-block.c: Remove file.
+	* sysdeps/l4/pt-docancel.c: Likewise.
+	* sysdeps/l4/pt-pool-np.c: Likewise.
+	* sysdeps/l4/pt-thread-alloc.c: Likewise.
+	* sysdeps/l4/pt-thread-dealloc.c: Likewise.
+	* sysdeps/l4/pt-thread-halt.c: Likewise.
+	* sysdeps/l4/pt-thread-start.c: Likewise.
+	* sysdeps/l4/pt-wakeup.c: Likewise.
+	* sysdeps/l4/bits/pthread-np.h: Likewise.
+
+2008-08-16  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/l4/hurd/pt-docancel.c: New file.
 
 2008-08-16  Neal H. Walfield  <neal@gnu.org>
