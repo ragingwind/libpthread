@@ -1,5 +1,9 @@
 2008-08-16  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/l4/hurd/pt-docancel.c: New file.
+
+2008-08-16  Neal H. Walfield  <neal@gnu.org>
+
 	* pthread/pt-alloc.c: Don't include <atomic.h>.
 	(__pthread_free_threads): Change to a struct __pthread *.
 	(__pthread_free_threads_lock): New variable.
