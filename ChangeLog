@@ -15,6 +15,9 @@
 	* pthread/pt-join.c (pthread_join): Call __pthread_thread_halt
 	before destroying the thread.  When destroying the thread, call
 	__pthread_thread_dealloc on it.
+	* pthread/pt-detach.c (pthread_detach): If destroying the thread,
+	call __pthread_thread_halt before deallocating the stack.  In this
+	case, also call __pthread_thread_dealloc on the tcb.
 	* pthread/pt-exit.c (pthread_exit): Call __pthread_dealloc only if
 	the thread is detached and then as the last thing we do before
 	calling __pthread_thread_halt.
