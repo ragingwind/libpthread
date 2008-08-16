@@ -30,14 +30,8 @@
    being halted, thus the last action should be halting the thread
    itself.  */
 void
-__pthread_thread_halt (struct __pthread *thread, int need_dealloc)
+__pthread_thread_halt (struct __pthread *thread)
 {
-  error_t err;
-  thread_t tid = thread->kernel_thread;
-
-  if (need_dealloc)
-    __pthread_dealloc (thread);
-
-  err = __thread_terminate (tid);
+  error_t err = __thread_terminate (thread->kernel_thread);
   assert_perror (err);
 }

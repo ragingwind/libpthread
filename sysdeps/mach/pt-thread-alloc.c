@@ -63,6 +63,9 @@ create_wakeupmsg (struct __pthread *thread)
 int
 __pthread_thread_alloc (struct __pthread *thread)
 {
+  if (thread->have_kernel_resources)
+    return 0;
+
   error_t err;
 
   err = create_wakeupmsg (thread);
@@ -96,6 +99,8 @@ __pthread_thread_alloc (struct __pthread *thread)
       if (err)
 	return EAGAIN;
     }
+
+  thread->have_kernel_resources = true;
 
   return 0;
 }
