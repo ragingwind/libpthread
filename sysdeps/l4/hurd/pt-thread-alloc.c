@@ -35,12 +35,15 @@ extern addr_t meta_data_activity;
 int
 __pthread_thread_alloc (struct __pthread *thread)
 {
+  if (thread->have_kernel_resources)
+    return 0;
+
+
   /* The main thread is already running of course.  */
   if (__pthread_num_threads == 1)
     {
       thread->object = __hurd_startup_data->thread;
       thread->threadid = l4_myself ();
-      return 0;
     }
   else
     {
@@ -90,6 +93,8 @@ __pthread_thread_alloc (struct __pthread *thread)
 
       thread->object = storage.addr;
     }
+
+  thread->have_kernel_resources = true;
 
   return 0;
 }

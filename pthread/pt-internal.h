@@ -38,9 +38,13 @@
 /* Thread state.  */
 enum pthread_state
 {
+  /* The thread is running and joinable.  */
   PTHREAD_JOINABLE = 0,
+  /* The thread is running and detached.  */
   PTHREAD_DETACHED,
+  /* A joinable thread exited and its return code is available.  */
   PTHREAD_EXITED,
+  /* The thread structure is unallocated and available for reuse.  */
   PTHREAD_TERMINATED
 };
 
@@ -215,22 +219,22 @@ extern int __pthread_setup (struct __pthread *__restrict thread,
    resources) for THREAD; it must not be placed on the run queue.  */
 extern int __pthread_thread_alloc (struct __pthread *thread);
 
-/* Deallocate any kernel resources associated with THREAD except don't
-   halt the thread itself.  On return, the thread will be marked as
-   dead and __pthread_halt will be called.  */
+/* Deallocate any kernel resources associated with THREAD.  The thread
+   must not be running (that is, if __pthread_thread_start was called,
+   __pthread_thread_halt must first be called).  This function will
+   never be called by a thread on itself.  In the case that a thread
+   exits, its thread structure will be cached and cleaned up
+   later.  */
 extern void __pthread_thread_dealloc (struct __pthread *thread);
 
 /* Start THREAD making it eligible to run.  */
 extern int __pthread_thread_start (struct __pthread *thread);
 
-/* Stop the kernel thread associated with THREAD.  If NEED_DEALLOC is
-   true, the function must call __pthread_dealloc on THREAD.
-
-   NB: The thread executing this function may be the thread which is
-   being halted, thus the last action should be halting the thread
-   itself.  */
-extern void __pthread_thread_halt (struct __pthread *thread,
-				   int need_dealloc);
+/* Stop the kernel thread associated with THREAD.  This function may
+   be called by two threads in parallel.  In particular, by the thread
+   itself and another thread trying to join it.  This function must be
+   implemented such that this is safe.  */
+extern void __pthread_thread_halt (struct __pthread *thread);
 
 
 /* Called by a thread just before it calls the provided start

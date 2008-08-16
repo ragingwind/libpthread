@@ -1,5 +1,5 @@
 /* Allocate a new thread structure.
-   Copyright (C) 2000, 2002, 2005, 2007 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -25,8 +25,6 @@
 
 #include <pt-internal.h>
 
-#include <atomic.h>
-
 /* This braindamage is necessary because the standard says that some
    of the threads functions "shall fail" if "No thread could be found
    corresponding to that specified by the given thread ID."  */
@@ -44,9 +42,9 @@ int __pthread_num_threads;
 /* A lock for the table, and the other variables above.  */
 pthread_rwlock_t __pthread_threads_lock;
 
-
 /* List of thread structures corresponding to free thread IDs.  */
-atomicptr_t __pthread_free_threads;
+struct __pthread *__pthread_free_threads;
+pthread_mutex_t __pthread_free_threads_lock;
 
 static inline error_t
 initialize_pthread (struct __pthread *new, int recycling)
@@ -94,36 +92,34 @@ __pthread_alloc (struct __pthread **pthread)
   int max_threads;
   int new_max_threads;
 
-  /* Try to re-use a thread structure before creating a new one.  */
-  while ((new = (struct __pthread *)__pthread_free_threads))
+  pthread_mutex_lock (&__pthread_free_threads_lock);
+  for (new = __pthread_free_threads; new; new = new->next)
     {
-      if (atomic_compare_and_exchange_val_acq (&__pthread_free_threads,
-					       (uintptr_t) new->next,
-					       (uintptr_t) new)
-	  == (uintptr_t) new)
+      /* There is no need to take NEW->STATE_LOCK: if NEW is on this
+	 list, then it is protected by __PTHREAD_FREE_THREADS_LOCK
+	 except in __pthread_dealloc where after it is added to the
+	 list (with the lock held), it drops the lock and then sets
+	 NEW->STATE and immediately stops using NEW.  */
+      if (new->state == PTHREAD_TERMINATED)
 	{
-	  /* Yes, we managed to get one.  The thread number in the
-             thread structure still refers to the correct slot.  */
-	  err = initialize_pthread (new, 1);
-	  if (err)
-	    /* An error occured, however, we cannot just free NEW as
-	       there may be resources attached to it.  We must return
-	       it to the free list.  */
-	    while (1)
-	      {
-		new->next = (struct __pthread *)__pthread_free_threads;
-		if (atomic_compare_and_exchange_val_acq
-		    (&__pthread_free_threads,
-		     (uintptr_t) new, (uintptr_t) new->next)
-		    == (uintptr_t) new->next)
-		  break;
-	      }
-
-	  if (! err)
-	    *pthread = new;
-
-	  return err;
+	  __pthread_dequeue (new);
+	  break;
 	}
+    }
+  pthread_mutex_unlock (&__pthread_free_threads_lock);
+
+  if (new)
+    {
+      /* The thread may still be running.  Make sure it is stopped.
+	 If this is the case, then the thread is either at the end of
+	 __pthread_dealloc or in __pthread_thread_halt.  In both
+	 cases, we are interrupt it.  */
+      __pthread_thread_halt (new);
+
+      err = initialize_pthread (new, 1);
+      if (! err)
+	*pthread = new;
+      return err;
     }
 
   /* Allocate a new thread structure.  */

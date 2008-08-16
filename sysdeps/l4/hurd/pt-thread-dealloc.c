@@ -1,5 +1,5 @@
-/* Deallocate the kernel thread resources.  Viengoos version.
-   Copyright (C) 2007, 2008 Software Foundation, Inc.
+/* Deallocate a thread.  Viengoos version.
+   Copyright (C) 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -22,11 +22,34 @@
 
 #include <pt-internal.h>
 
-#include <hurd/thread.h>
+#include <hurd/exceptions.h>
+#include <hurd/mutex.h>
+#include <hurd/as.h>
+#include <hurd/addr.h>
 
 void
-__pthread_thread_halt (struct __pthread *thread)
+__pthread_thread_dealloc (struct __pthread *thread)
 {
-  if (thread->have_kernel_resources)
-    thread_stop (thread->object);
+  assert (thread != _pthread_self ());
+
+  /* Clean up the exception page.  */
+  exception_page_cleanup
+    (ADDR_TO_PTR (addr_extend (thread->exception_area[EXCEPTION_PAGE],
+			       0, PAGESIZE_LOG2)));
+
+  /* Free the storage.  */
+  int i;
+  for (i = 0; i < EXCEPTION_AREA_SIZE / PAGESIZE; i ++)
+    {
+      assert (! ADDR_IS_VOID (thread->exception_area[i]));
+      storage_free (thread->exception_area[i], false);
+    }
+
+  /* And the address space.  */
+  as_free (addr_chop (PTR_TO_ADDR (thread->exception_area_va),
+		      EXCEPTION_AREA_SIZE_LOG2), false);
+
+  storage_free (thread->object, false);
+
+  thread->have_kernel_resources = 0;
 }

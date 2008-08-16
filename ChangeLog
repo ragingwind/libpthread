@@ -1,3 +1,36 @@
+2008-08-16  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-alloc.c: Don't include <atomic.h>.
+	(__pthread_free_threads): Change to a struct __pthread *.
+	(__pthread_free_threads_lock): New variable.
+	(__pthread_alloc): When looking for a TCB to reuse, iterate over
+	__pthread_free_threads taking the first for which the STATE field
+	is PTHREAD_TERMINATED.  When reusing a TCB, first call
+	__pthread_thread_halt on it.
+	* pthread/pt-dealloc.c: Don't include <atomic.h>.
+	(__pthread_free_threads): Change to a struct __pthread *.
+	(__pthread_free_threads_lock): New declaration.
+	(__pthread_dealloc): Enqueue PTHREAD on __PTHREAD_FREE_THREADS.
+	Set PTHREAD->STATE to PTHREAD_TERMINATED after everything else.
+	* pthread/pt-join.c (pthread_join): Call __pthread_thread_halt
+	before destroying the thread.  When destroying the thread, call
+	__pthread_thread_dealloc on it.
+	* pthread/pt-exit.c (pthread_exit): Call __pthread_dealloc only if
+	the thread is detached and then as the last thing we do before
+	calling __pthread_thread_halt.
+	* pthread/pt-internal.h (__pthread_thread_halt): Remove argument
+	NEED_DEALLOC.  Update users.
+	* sysdeps/l4/hurd/pt-thread-halt.c (__pthread_thread_halt): Remove
+	argument need_dealloc.  Move the deallocation code from this
+	file...
+	* sysdeps/l4/hurd/pt-thread-dealloc.c: ... to this new file.
+	* sysdeps/l4/hurd/pt-sysdep.h (PTHREAD_SYSDEP_MEMBERS): Add field
+	have_kernel_resources.
+	* sysdeps/l4/hurd/pt-thread-alloc.c (__pthread_thread_alloc): If
+	THREAD->HAVE_KERNEL_RESOURCES is true, just return.  After
+	allocating the resources, set THREAD->HAVE_KERNEL_RESOURCES to
+	true.
+
 2008-08-14  Neal H. Walfield  <neal@gnu.org>
 
 	* headers.m4: Remove link from sysroot/include/bits/pthreadtypes.h

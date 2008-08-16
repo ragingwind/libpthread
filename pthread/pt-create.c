@@ -195,7 +195,7 @@ __pthread_create_internal (struct __pthread **thread,
   __pthread_sigstate_destroy (pthread);
  failed_setup:
   __pthread_thread_dealloc (pthread);
-  __pthread_thread_halt (pthread, 0);
+  __pthread_thread_halt (pthread);
  failed_thread_alloc:
   __pthread_stack_dealloc (pthread->stackaddr, pthread->stacksize);
   pthread->stack = 0;

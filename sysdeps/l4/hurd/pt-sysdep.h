@@ -42,6 +42,8 @@
   l4_thread_id_t threadid; \
   addr_t exception_area[EXCEPTION_AREA_SIZE / PAGESIZE]; \
   void *exception_area_va; \
+  /* If the above four fields are valid.  */ \
+  bool have_kernel_resources; \
   l4_word_t my_errno;
 
 extern inline struct __pthread *

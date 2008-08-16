@@ -1,5 +1,5 @@
 /* Deallocate a thread structure.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,13 +23,12 @@
 
 #include <pt-internal.h>
 
-#include <atomic.h>
-
 /* List of thread structures corresponding to free thread IDs.  */
-extern atomicptr_t __pthread_free_threads;
+extern struct __pthread *__pthread_free_threads;
+extern pthread_mutex_t __pthread_free_threads_lock;
 
-/* Deallocate the thread structure for PTHREAD and the resources
-   associated with it.  */
+
+/* Deallocate the thread structure for PTHREAD.  */
 void
 __pthread_dealloc (struct __pthread *pthread)
 {
@@ -44,22 +43,22 @@ __pthread_dealloc (struct __pthread *pthread)
      pthread_join is completely bogus, but unfortunately allowed
      by the standards.  */
   __pthread_mutex_lock (&pthread->state_lock);
-  pthread->state = PTHREAD_TERMINATED;
   if (pthread->state != PTHREAD_EXITED)
     pthread_cond_broadcast (&pthread->state_cond);
   __pthread_mutex_unlock (&pthread->state_lock);
 
   /* We do not actually deallocate the thread structure, but add it to
      a list of re-usable thread structures.  */
-  while (1)
-    {
-      pthread->next = (struct __pthread *)__pthread_free_threads;
-      if (atomic_compare_and_exchange_val_acq (&__pthread_free_threads,
-					       (uintptr_t) pthread,
-					       (uintptr_t) pthread->next)
-	  == (uintptr_t) pthread->next)
-	break;
-    }
+  pthread_mutex_lock (&__pthread_free_threads_lock);
+  __pthread_enqueue (&__pthread_free_threads, pthread);
+  pthread_mutex_unlock (&__pthread_free_threads_lock);
 
-  /* NOTREACHED */
+  /* Setting PTHREAD->STATE to PTHREAD_TERMINATED makes this TCB
+     available for reuse.  After that point, we can no longer assume
+     that PTHREAD is valid.
+
+     Note that it is safe to not lock this update to PTHREAD->STATE:
+     the only way that it can now be accessed is in __pthread_alloc,
+     which reads this variable.  */
+  pthread->state = PTHREAD_TERMINATED;
 }
