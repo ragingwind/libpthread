@@ -26,11 +26,9 @@ endif
 
 # The source files are scattered over several directories.  Add 
 # all these directories to the vpath.
-SYSDEP_PATH = $(srcdir)/sysdeps/l4/hurd/${arch}	\
-	 $(srcdir)/sysdeps/l4/${arch}		\
+SYSDEP_PATH = $(srcdir)/sysdeps/viengoos/${arch} \
 	 $(srcdir)/sysdeps/${arch}		\
-	 $(srcdir)/sysdeps/l4/hurd		\
-	 $(srcdir)/sysdeps/l4			\
+	 $(srcdir)/sysdeps/viengoos		\
 	 $(srcdir)/sysdeps/hurd			\
 	 $(srcdir)/sysdeps/generic		\
 	 $(srcdir)/sysdeps/posix		\
@@ -68,7 +66,6 @@ libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	pt-alloc.c							    \
 	pt-create.c							    \
 	pt-getattr.c							    \
-	pt-pool-np.c							    \
 	pt-equal.c							    \
 	pt-dealloc.c							    \
 	pt-detach.c							    \

@@ -30,7 +30,7 @@ AC_CONFIG_LINKS([
   sysroot/include/bits/rwlock.h:libpthread/sysdeps/generic/bits/rwlock.h
   sysroot/include/bits/thread-attr.h:libpthread/sysdeps/generic/bits/thread-attr.h
   sysroot/include/bits/thread-specific.h:libpthread/sysdeps/generic/bits/thread-specific.h
-  sysroot/include/bits/pthread-np.h:libpthread/sysdeps/l4/hurd/bits/pthread-np.h
+  sysroot/include/bits/pthread-np.h:libpthread/sysdeps/viengoos/bits/pthread-np.h
   sysroot/include/semaphore.h:libpthread/include/semaphore.h
   sysroot/include/bits/semaphore.h:libpthread/sysdeps/generic/bits/semaphore.h
   sysroot/include/signal.h:libpthread/signal/signal.h
