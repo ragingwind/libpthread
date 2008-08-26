@@ -1,3 +1,9 @@
+2008-08-26  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/mach/pt-thread-alloc.c (__pthread_thread_alloc): Set
+	THREAD->HAVE_KERNEL_RESOURCES to 1, not true.  Reported by Flávio
+	Cruz <Flávio Cruz>.
+
 2008-08-16  Neal H. Walfield  <neal@gnu.org>
 
 	* pthread/pt-alloc.c: Don't include <bits/atomic.h>.

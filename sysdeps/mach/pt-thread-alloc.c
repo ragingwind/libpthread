@@ -1,5 +1,5 @@
 /* Start thread.  Mach version.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -100,7 +100,7 @@ __pthread_thread_alloc (struct __pthread *thread)
 	return EAGAIN;
     }
 
-  thread->have_kernel_resources = true;
+  thread->have_kernel_resources = 1;
 
   return 0;
 }
