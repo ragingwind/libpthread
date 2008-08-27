@@ -1,5 +1,5 @@
 /* Compatibility routines for cthreads.
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -20,7 +20,11 @@
 #include <assert.h>
 #include <pthread.h>
 
-#include <cthreads.h>
+typedef void *cthread_t;
+typedef void *(*cthread_fn_t) (void *arg);
+typedef int cthread_key_t;
+
+#define	CTHREAD_KEY_INVALID (cthread_key_t) -1
 
 void
 cthread_detach (cthread_t thread)

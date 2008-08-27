@@ -1,3 +1,11 @@
+2008-08-27  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/cthreads-compat.c: Don't include <cthreads.h>.
+	(cthread_t): New type definition.
+	(cthread_fn_t): Likewise.
+	(cthread_key_t): Likewise.
+	(CTHREAD_KEY_INVALID): Define.
+
 2008-08-26  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/mach/pt-thread-alloc.c (__pthread_thread_alloc): Set
