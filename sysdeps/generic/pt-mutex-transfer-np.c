@@ -45,7 +45,12 @@ __pthread_mutex_transfer_np (struct __pthread_mutex *mutex, pthread_t tid)
     }
 
 #ifndef NDEBUG
-  mutex->owner = thread;
+# if !defined(ALWAYS_TRACK_MUTEX_OWNER)
+  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+# endif
+    {
+      mutex->owner = thread;
+    }
 #endif
 
   return 0;

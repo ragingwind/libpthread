@@ -36,6 +36,7 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
   if (__pthread_spin_trylock (&mutex->__held) == 0)
     /* Successfully acquired the lock.  */
     {
+#ifdef ALWAYS_TRACK_MUTEX_OWNER
 #ifndef NDEBUG
       self = _pthread_self ();
       if (self)
@@ -46,6 +47,7 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
 	  assert (! mutex->owner);
 	  mutex->owner = _pthread_self ();
 	}
+#endif
 #endif
 
       if (mutex->attr)
@@ -73,14 +75,16 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
   self = _pthread_self ();
   assert (self);
 
-  if (mutex->attr)
+  if (! mutex->attr || mutex->attr->mutex_type == PTHREAD_MUTEX_NORMAL)
+    {
+#if defined(ALWAYS_TRACK_MUTEX_OWNER)
+      assert (mutex->owner != self);
+#endif
+    }
+  else
     {
       switch (mutex->attr->mutex_type)
 	{
-	case PTHREAD_MUTEX_NORMAL:
-	  assert (mutex->owner != self);
-	  break;
-
 	case PTHREAD_MUTEX_ERRORCHECK:
 	  if (mutex->owner == self)
 	    {
@@ -102,10 +106,11 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
 	  LOSE;
 	}
     }
-  else
-    assert (mutex->owner != self);
 
-  assert (mutex->owner);
+#if !defined(ALWAYS_TRACK_MUTEX_OWNER)
+  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+#endif
+    assert (mutex->owner);
 
   if (abstime && (abstime->tv_nsec < 0 || abstime->tv_nsec >= 1000000000))
     return EINVAL;
@@ -141,9 +146,12 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
   else
     __pthread_block (self);
 
-#ifndef NDEBUG
-  assert (mutex->owner == self);
+#if !defined(ALWAYS_TRACK_MUTEX_OWNER)
+  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
 #endif
+    {
+      assert (mutex->owner == self);
+    }
 
   if (mutex->attr)
     switch (mutex->attr->mutex_type)

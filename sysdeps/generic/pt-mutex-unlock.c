@@ -33,13 +33,15 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
 
   if (! mutex->attr || mutex->attr->mutex_type == PTHREAD_MUTEX_NORMAL)
     {
-#ifndef NDEBUG
+#if defined(ALWAYS_TRACK_MUTEX_OWNER)
+# ifndef NDEBUG
       if (_pthread_self ())
 	{
 	  assert (mutex->owner);
 	  assert (mutex->owner == _pthread_self ());
 	  mutex->owner = NULL;
 	}
+# endif
 #endif
     }
   else
@@ -79,7 +81,12 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
   __pthread_dequeue (wakeup);
 
 #ifndef NDEBUG
-  mutex->owner = wakeup;
+# if !defined (ALWAYS_TRACK_MUTEX_OWNER)
+  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+# endif
+    {
+      mutex->owner = wakeup;
+    }
 #endif
 
   /* We do not unlock MUTEX->held: we are transferring the ownership

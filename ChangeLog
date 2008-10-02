@@ -1,3 +1,16 @@
+2008-10-02  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/pt-mutex-timedlock.c
+	(__pthread_mutex_timedlock_internal) [! ALWAYS_TRACK_MUTEX_OWNER]:
+	Don't update MUTEX->OWNER or assert MUTEX->OWNER for normal
+	mutexes.
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock)
+	[! ALWAYS_TRACK_MUTEX_OWNER]: Don't update MUTEX->OWNER or assert
+	MUTEX->OWNER for normal mutexes.
+	* sysdeps/generic/pt-mutex-transfer-np.c
+	(__pthread_mutex_transfer_np) [!  ALWAYS_TRACK_MUTEX_OWNER]: Don't
+	update MUTEX->OWNER for normal mutexes.
+
 2008-08-27  Neal H. Walfield  <neal@gnu.org>
 
 	* pthread/cthreads-compat.c: Don't include <cthreads.h>.
