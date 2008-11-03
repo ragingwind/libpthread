@@ -39,5 +39,5 @@ AC_CONFIG_LINKS([
 AC_CONFIG_COMMANDS_POST([
   mkdir -p sysroot/lib libpthread &&
   ln -sf ../../libpthread/libpthread.a sysroot/lib/ &&
-  touch libpthread/libpthread.a
+  echo '/* This file intentionally left blank.  */' >libpthread/libpthread.a
 ])

@@ -1,3 +1,7 @@
+2008-11-03  Neal H. Walfield  <neal@gnu.org>
+
+	* headers.m4: Don't create an empty libpthread/libpthread.a.
+
 2008-08-16  Neal H. Walfield  <neal@gnu.org>
 
 	* Makefile.am (SYSDEP_PATH): Replace l4/hurd with viengoos.
