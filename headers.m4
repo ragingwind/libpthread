@@ -14,9 +14,9 @@ AC_CONFIG_LINKS([
   sysroot/include/pthread.h:libpthread/include/pthread.h
   sysroot/include/pthread/pthread.h:libpthread/include/pthread/pthread.h
   sysroot/include/pthread/pthreadtypes.h:libpthread/include/pthread/pthreadtypes.h
-  sysroot/include/bits/memory.h:libpthread/sysdeps/${arch}/bits/memory.h
-  sysroot/include/bits/spin-lock.h:libpthread/sysdeps/${arch}/bits/spin-lock.h
-  sysroot/include/bits/spin-lock-inline.h:libpthread/sysdeps/${arch}/bits/spin-lock-inline.h
+  sysroot/include/bits/memory.h:libpthread/sysdeps/generic/bits/memory.h
+  sysroot/include/bits/spin-lock.h:libpthread/sysdeps/generic/bits/spin-lock.h
+  sysroot/include/bits/spin-lock-inline.h:libpthread/sysdeps/generic/bits/spin-lock-inline.h
   sysroot/include/bits/barrier-attr.h:libpthread/sysdeps/generic/bits/barrier-attr.h
   sysroot/include/bits/barrier.h:libpthread/sysdeps/generic/bits/barrier.h
   sysroot/include/bits/cancelation.h:libpthread/sysdeps/generic/bits/cancelation.h

@@ -1,3 +1,15 @@
+2008-11-19  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/generic/bits/memory.h: New file.
+	* sysdeps/generic/bits/spin-lock-inline.h: Likewise.
+	* sysdeps/generic/bits/spin-lock.h: Likewise.
+	* headers.m4: Link sysroot/include/bits/memory.h to
+	libpthread/sysdeps/generic/bits/memory.h,
+	sysroot/include/bits/spin-lock.h to
+	libpthread/sysdeps/generic/bits/spin-lock.h, and
+	sysroot/include/bits/spin-lock-inline.h to
+	libpthread/sysdeps/generic/bits/spin-lock-inline.h.
+
 2008-12-17  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/viengoos/pt-block.c (__pthread_block): Use
