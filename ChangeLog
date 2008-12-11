@@ -1,5 +1,9 @@
 2008-12-11  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/generic/bits/spin-lock-inline.h: New file.
+
+2008-12-11  Neal H. Walfield  <neal@gnu.org>
+
 	* pthread/pt-alloc.c (__pthread_alloc): Use calloc, not malloc, to
 	allocate a new struct __pthread.
 
