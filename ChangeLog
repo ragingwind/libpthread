@@ -1,3 +1,8 @@
+2008-12-11  Neal H. Walfield  <neal@gnu.org>
+
+	* pthread/pt-alloc.c (__pthread_alloc): Use calloc, not malloc, to
+	allocate a new struct __pthread.
+
 2008-11-03  Neal H. Walfield  <neal@gnu.org>
 
 	* headers.m4: Don't create an empty libpthread/libpthread.a.

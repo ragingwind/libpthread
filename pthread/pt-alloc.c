@@ -123,7 +123,7 @@ __pthread_alloc (struct __pthread **pthread)
     }
 
   /* Allocate a new thread structure.  */
-  new = malloc (sizeof (struct __pthread));
+  new = calloc (sizeof (struct __pthread), 1);
   if (new == NULL)
     return ENOMEM;
 
