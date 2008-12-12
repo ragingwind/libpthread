@@ -28,12 +28,11 @@ pthread_setactivity_np (addr_t activity)
   struct __pthread *self = _pthread_self ();
 
   struct hurd_thread_exregs_in in;
-  in.activity = activity;
-
   struct hurd_thread_exregs_out out;
   int err = rm_thread_exregs (ADDR_VOID, self->object,
 			      HURD_EXREGS_SET_ACTIVITY,
-			      in, &out);
+			      in, ADDR_VOID, activity, ADDR_VOID, ADDR_VOID,
+			      &out, NULL, NULL, NULL, NULL);
 
   return err;
 }

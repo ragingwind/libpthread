@@ -1,5 +1,5 @@
-/* Start thread.  L4 version.
-   Copyright (C) 2007 Free Software Foundation, Inc.
+/* Start thread.  Viengoos version.
+   Copyright (C) 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -35,21 +35,17 @@ __pthread_thread_start (struct __pthread *thread)
     {
       assert (__pthread_total == 1);
       assert (l4_is_thread_equal (l4_myself (), thread->threadid));
-      l4_set_user_defined_handle ((l4_word_t) thread);
     }
   else
     {
       struct hurd_thread_exregs_in in;
       struct hurd_thread_exregs_out out;
 
-      in.aspace = ADDR (0, 0);
+      addr_t aspace = ADDR (0, 0);
       in.aspace_cap_properties = CAP_PROPERTIES_VOID;
       in.aspace_cap_properties_flags = CAP_COPY_COPY_SOURCE_GUARD;
 
-      in.activity = ADDR_VOID;
-
-      in.exception_page = addr_chop (PTR_TO_ADDR (thread->exception_area_va),
-				     PAGESIZE_LOG2);
+      addr_t activity = ADDR_VOID;
 
       in.sp = (l4_word_t) thread->mcontext.sp;
       in.ip = (l4_word_t) thread->mcontext.pc;
@@ -58,12 +54,12 @@ __pthread_thread_start (struct __pthread *thread)
       err = rm_thread_exregs (ADDR_VOID, thread->object,
 			      HURD_EXREGS_SET_ASPACE
 			      | HURD_EXREGS_SET_ACTIVITY
-			      | HURD_EXREGS_SET_EXCEPTION_PAGE
 			      | HURD_EXREGS_SET_SP_IP
 			      | HURD_EXREGS_SET_USER_HANDLE
 			      | HURD_EXREGS_START
 			      | HURD_EXREGS_ABORT_IPC,
-			      in, &out);
+			      in, aspace, activity, ADDR_VOID, ADDR_VOID,
+			      &out, NULL, NULL, NULL, NULL);
       assert (err == 0);
     }
   return 0;

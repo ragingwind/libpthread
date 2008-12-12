@@ -27,6 +27,25 @@
 void
 __pthread_thread_halt (struct __pthread *thread)
 {
+  /* We need to be careful.  This function is called in three
+     situations: by the thread itself when it is about to exit, by a
+     thread joining it, and when reusing an existing thread.  Hence,
+     it must be kosher to interrupt this functions execution at any
+     point: syncronization is difficult as in the first case, there is
+     no way to indicate completion.  */
   if (thread->have_kernel_resources)
-    thread_stop (thread->object);
+    {
+      if (thread == _pthread_self ())
+	{
+	  while (1)
+	    vg_suspend ();
+	}
+      else
+	{
+	  error_t err = thread_stop (thread->object);
+	  if (err)
+	    panic ("Failed to halt " ADDR_FMT ": %d",
+		   ADDR_PRINTF (thread->object), err);
+	}
+    }
 }

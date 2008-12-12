@@ -31,20 +31,16 @@
 #define PTHREAD_STACK_DEFAULT	(2 * 1024 * 1024)
 
 #include <hurd/exceptions.h>
+#include <hurd/message-buffer.h>
 
-#define EXCEPTION_AREA_SIZE EXCEPTION_STACK_SIZE
-#define EXCEPTION_AREA_SIZE_LOG2 EXCEPTION_STACK_SIZE_LOG2
-/* The exception page is the first object.  */
-#define EXCEPTION_PAGE 0
-
-#define PTHREAD_SYSDEP_MEMBERS \
-  addr_t object; \
-  l4_thread_id_t threadid; \
-  addr_t exception_area[EXCEPTION_AREA_SIZE / PAGESIZE]; \
-  void *exception_area_va; \
-  /* If the above four fields are valid.  */ \
-  bool have_kernel_resources; \
-  l4_word_t my_errno;
+#define PTHREAD_SYSDEP_MEMBERS					\
+  addr_t object;						\
+  vg_thread_id_t threadid;					\
+  struct vg_utcb *utcb;						\
+  struct hurd_message_buffer *lock_message_buffer;		\
+  /* If the above fields are valid.  */				\
+  bool have_kernel_resources;					\
+  uintptr_t my_errno;
 
 extern inline struct __pthread *
 __attribute__((__always_inline__))

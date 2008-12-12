@@ -26,30 +26,20 @@
 #include <hurd/mutex.h>
 #include <hurd/as.h>
 #include <hurd/addr.h>
+#include <hurd/message-buffer.h>
 
 void
 __pthread_thread_dealloc (struct __pthread *thread)
 {
   assert (thread != _pthread_self ());
 
-  /* Clean up the exception page.  */
-  exception_page_cleanup
-    (ADDR_TO_PTR (addr_extend (thread->exception_area[EXCEPTION_PAGE],
-			       0, PAGESIZE_LOG2)));
+  __pthread_thread_halt (thread);
 
-  /* Free the storage.  */
-  int i;
-  for (i = 0; i < EXCEPTION_AREA_SIZE / PAGESIZE; i ++)
-    {
-      assert (! ADDR_IS_VOID (thread->exception_area[i]));
-      storage_free (thread->exception_area[i], false);
-    }
+  /* Clean up the activation state.  */
+  hurd_activation_state_free (thread->utcb);
 
-  /* And the address space.  */
-  as_free (addr_chop (PTR_TO_ADDR (thread->exception_area_va),
-		      EXCEPTION_AREA_SIZE_LOG2), false);
-
-  storage_free (thread->object, false);
+  assert (thread->lock_message_buffer);
+  hurd_message_buffer_free (thread->lock_message_buffer);
 
   thread->have_kernel_resources = 0;
 }

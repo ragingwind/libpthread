@@ -1,5 +1,58 @@
 2008-12-11  Neal H. Walfield  <neal@gnu.org>
 
+	Update to new RPC interfaces, IPC semantics.
+
+	* sysdeps/viengoos/bits/pthread-np.h: Include <hurd/exceptions.h>.
+	(pthread_hurd_utcb_np): New declaration.
+	* sysdeps/viengoos/pt-hurd-utcb-np.c: New file.
+	* Makefile.am (libpthread_a_SOURCES): Add pt-hurd-utcb.c.
+
+	* sysdeps/viengoos/pt-sysdep.h (EXCEPTION_AREA_SIZE): Don't
+	define.
+	(EXCEPTION_AREA_SIZE_LOG2): Likewise.
+	(EXCEPTION_PAGE): Likewise.
+	(PTHREAD_SYSDEP_MEMBERS): Remove fields exception_area, and
+	exception_area_va.  Add fields utcb and lock_message_buffer.
+	* sysdeps/viengoos/pt-thread-alloc.c: Include
+	<hurd/message-buffer.h>.
+	(__pthread_thread_alloc): Initialize thread->lock_message_buffer.
+	When executed the first time, set the thread's L4 user-defined
+	handler.  Initialize THREAD->UTCB with the thread's current utcb.
+	Set HURD_UTCB to PTHREAD_HURD_UTCB_NP.  For subsequent threads,
+	don't manually set up the activation area.  Instead, call
+	hurd_activation_state_alloc.
+	* sysdeps/viengoos/pt-thread-dealloc.c: Include
+	<hurd/message-buffer.h>.
+	(__pthread_thread_dealloc): Call __pthread_thread_halt.  Don't
+	manually clean up the activation area.  Instead, call
+	hurd_activation_state_free.  Free THREAD->LOCK_MESSAGE_BUFFER.
+	* sysdeps/viengoos/ia32/pt-setup.c (stack_setup): Pre-fault the
+	first four pages of the new stack.
+	(__pthread_setup): Don't set up the activation area.
+
+	* sysdeps/viengoos/pt-wakeup.c (__pthread_wakeup): Use
+	futex_wake_using with the calling thread's lock messenger.
+	* sysdeps/viengoos/pt-block.c (__pthread_block): Use
+	futex_wait_using and provide THREAD->LOCK_MESSAGE_BUFFER as the
+	message buffer.
+
+	* sysdeps/viengoos/pt-thread-start.c (__pthread_thread_start):
+	Don't set the first thread's L4 user-defined handler here.
+	(__pthread_thread_start): Update use of rm_thread_exregs according
+	to be consistent with new interface.
+	* sysdeps/viengoos/pt-thread-halt.c (__pthread_thread_halt): If
+	THREAD is the current thread, call vg_suspend.
+
+	* sysdeps/viengoos/pt-setactivity-np.c (pthread_setactivity_np):
+	Update use of rm_thread_exregs according to be consistent with new
+	interface.
+	* sysdeps/viengoos/ia32/signal-dispatch-lowlevel.c
+	(signal_dispatch_lowlevel): Use __builtin_frame_address to get the
+	current stack frame's start.  Update use of rm_thread_exregs
+	according to be consistent with new interface.
+
+2008-12-11  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/generic/bits/spin-lock-inline.h: New file.
 
 2008-12-11  Neal H. Walfield  <neal@gnu.org>

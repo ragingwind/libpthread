@@ -1,4 +1,4 @@
-/* Block a thread.  Viengoos version.
+/* pt-hurd-utcb-np.c: Return the calling thread's utcb.
    Copyright (C) 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -19,24 +19,10 @@
 
 #include <pt-internal.h>
 
-#include <hurd/stddef.h>
-#include <hurd/futex.h>
-
-/* Block THREAD.  */
-void
-__pthread_block (struct __pthread *thread)
+struct vg_utcb *
+pthread_hurd_utcb_np (void)
 {
-  assert (thread->lock_message_buffer);
-
-  struct hurd_message_buffer *mb = thread->lock_message_buffer;
-#ifndef NDEBUG
-  /* Try to detect recursive locks, which we don't handle.  */
-  thread->lock_message_buffer = NULL;
-#endif
-
-  futex_wait_using (mb, &thread->threadid, thread->threadid);
-
-#ifndef NDEBUG
-  thread->lock_message_buffer = mb;
-#endif
+  struct __pthread *thread = _pthread_self ();
+  return thread->utcb;
 }
+

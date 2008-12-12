@@ -25,6 +25,7 @@
 #include <hurd/storage.h>
 #include <hurd/as.h>
 #include <hurd/addr.h>
+#include <hurd/message-buffer.h>
 
 #include <pt-internal.h>
 
@@ -38,45 +39,24 @@ __pthread_thread_alloc (struct __pthread *thread)
   if (thread->have_kernel_resources)
     return 0;
 
+  thread->lock_message_buffer = hurd_message_buffer_alloc_long ();
 
   /* The main thread is already running of course.  */
   if (__pthread_num_threads == 1)
     {
       thread->object = __hurd_startup_data->thread;
       thread->threadid = l4_myself ();
+
+      l4_set_user_defined_handle ((l4_word_t) thread);
+
+      /* Get the thread's UTCB and stash it.  */
+      thread->utcb = hurd_utcb ();
+      /* Override the utcb fetch function.  */
+      hurd_utcb = pthread_hurd_utcb_np;
+      assert (thread->utcb == hurd_utcb ());
     }
   else
     {
-      addr_t exception_area = as_alloc (EXCEPTION_AREA_SIZE_LOG2, 1, true);
-
-      thread->exception_area_va
-	= ADDR_TO_PTR (addr_extend (exception_area,
-				    0, EXCEPTION_AREA_SIZE_LOG2));
-
-      int i;
-      for (i = 0; i < EXCEPTION_AREA_SIZE / PAGESIZE; i ++)
-	{
-	  addr_t slot = addr_chop (PTR_TO_ADDR (thread->exception_area_va
-						+ i * PAGESIZE),
-				   PAGESIZE_LOG2);
-	  as_ensure (slot);
-
-	  struct storage storage = storage_alloc (ADDR_VOID, cap_page,
-						  STORAGE_LONG_LIVED,
-						  OBJECT_POLICY_DEFAULT,
-						  slot);
-	  if (ADDR_IS_VOID (storage.addr))
-	    {
-	      int j;
-	      for (j = 0; j < i; j ++)
-		storage_free (thread->exception_area[j], false);
-	      as_free (exception_area, false);
-	      return EAGAIN;
-	    }
-
-	  thread->exception_area[i] = storage.addr;
-	}
-
       struct storage storage;
       storage = storage_alloc (meta_data_activity, cap_thread,
 			       /* Threads are rarely shortly lived.  */
@@ -84,14 +64,33 @@ __pthread_thread_alloc (struct __pthread *thread)
 			       ADDR_VOID);
       if (ADDR_IS_VOID (storage.addr))
 	{
-	  int j;
-	  for (j = 0; j < EXCEPTION_AREA_SIZE / PAGESIZE; j ++)
-	    storage_free (thread->exception_area[j], false);
-	  as_free (exception_area, false);
+	  debug (0, DEBUG_BOLD ("Out of memory"));
 	  return EAGAIN;
 	}
 
       thread->object = storage.addr;
+
+      error_t err;
+      err = hurd_activation_state_alloc (thread->object, &thread->utcb);
+      if (unlikely (err))
+	panic ("Failed to initialize thread's activation state: %d", err);
+
+      err = rm_cap_copy (ADDR_VOID,
+			 thread->lock_message_buffer->receiver,
+			 ADDR (VG_MESSENGER_THREAD_SLOT,
+			       VG_MESSENGER_SLOTS_LOG2),
+			 ADDR_VOID, thread->object,
+			 0, CAP_PROPERTIES_DEFAULT);
+      if (err)
+	panic ("Failed to set lock messenger's thread");
+
+      /* Unblock the lock messenger.  */
+      err = vg_ipc (VG_IPC_RECEIVE | VG_IPC_RECEIVE_ACTIVATE
+		    | VG_IPC_RETURN,
+		    ADDR_VOID, thread->lock_message_buffer->receiver, ADDR_VOID,
+		    ADDR_VOID, ADDR_VOID, ADDR_VOID, ADDR_VOID);
+      if (err)
+	panic ("Failed to unblock messenger's thread");
     }
 
   thread->have_kernel_resources = true;

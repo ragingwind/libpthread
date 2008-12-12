@@ -113,8 +113,9 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
 
   if (self)
     {
-      /* The return address is just before the first argument.  */
-      intr_sp = (uintptr_t) &ss - 4;
+      /* The return address is 4 bytes offset from the start of the
+	 stack frame.  */
+      intr_sp = (uintptr_t) __builtin_frame_address (0) + 4;
       assert (* (void **) intr_sp == __builtin_return_address (0));
     }
   else
@@ -127,7 +128,8 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
       err = rm_thread_exregs (ADDR_VOID, thread->object,
 			      HURD_EXREGS_STOP | HURD_EXREGS_ABORT_IPC
 			      | HURD_EXREGS_GET_REGS,
-			      in, &out);
+			      in, ADDR_VOID, ADDR_VOID, ADDR_VOID, ADDR_VOID,
+			      &out, NULL, NULL, NULL, NULL);
       if (err)
 	panic ("Failed to modify thread " ADDR_FMT,
 	       ADDR_PRINTF (thread->object));
@@ -208,6 +210,7 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
       rm_thread_exregs (ADDR_VOID, thread->object,
 			HURD_EXREGS_SET_SP_IP
 			| HURD_EXREGS_START | HURD_EXREGS_ABORT_IPC,
-			in, &out);
+			in, ADDR_VOID, ADDR_VOID, ADDR_VOID, ADDR_VOID,
+			&out, NULL, NULL, NULL, NULL);
     }
 }

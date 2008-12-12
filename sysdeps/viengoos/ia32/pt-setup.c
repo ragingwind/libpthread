@@ -73,7 +73,7 @@ stack_setup (struct __pthread *thread,
   top = (uintptr_t *) ((uintptr_t) thread->stackaddr + thread->stacksize);
 
   /* Align on 0x10 for MMX operations.  */
-  top = (uintptr_t) top & ~0xf;
+  top = (uintptr_t *) ((uintptr_t) top & ~0xf);
 
   if (start_routine)
     {
@@ -83,6 +83,12 @@ stack_setup (struct __pthread *thread,
       *--top = 0;		/* Fake return address.  */
       *--top = (uintptr_t) entry_point;
     }
+
+  /* We need 4 pages of stack to avoid faulting before we have set up
+     the activation area.  Make it so.  */
+  int i;
+  for (i = 1; i < 4; i ++)
+    top[-i * PAGESIZE] = 0;
 
   return top;
 }
@@ -95,23 +101,5 @@ __pthread_setup (struct __pthread *thread,
   thread->mcontext.pc = (void *) &_pthread_entry_point;
   thread->mcontext.sp = (void *) stack_setup (thread, start_routine, arg,
 					      entry_point);
-
-  if (__pthread_num_threads == 1)
-    return 0;
-
-  assert (! ADDR_IS_VOID (thread->exception_area[0]));
-
-  struct exception_page *exception_page = thread->exception_area_va;
-
-  /* SP is set to the end of the exception area minus one word, which
-     is the location of the exception page.  */
-  exception_page->exception_handler_sp
-    = (uintptr_t) thread->exception_area_va + EXCEPTION_AREA_SIZE;
-  exception_page->exception_handler_sp -= sizeof (void *);
-  * (void **) exception_page->exception_handler_sp = thread->exception_area_va;
-
-  exception_page->exception_handler_ip = (uintptr_t) &exception_handler_entry;
-  exception_page->exception_handler_end = (uintptr_t) &exception_handler_end;
-
   return 0;
 }
