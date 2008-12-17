@@ -125,14 +125,14 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
       struct hurd_thread_exregs_out out;
 
       error_t err;
-      err = rm_thread_exregs (ADDR_VOID, thread->object,
+      err = rm_thread_exregs (VG_ADDR_VOID, thread->object,
 			      HURD_EXREGS_STOP | HURD_EXREGS_ABORT_IPC
 			      | HURD_EXREGS_GET_REGS,
-			      in, ADDR_VOID, ADDR_VOID, ADDR_VOID, ADDR_VOID,
+			      in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);
       if (err)
-	panic ("Failed to modify thread " ADDR_FMT,
-	       ADDR_PRINTF (thread->object));
+	panic ("Failed to modify thread " VG_ADDR_FMT,
+	       VG_ADDR_PRINTF (thread->object));
 
       intr_sp = out.sp;
 
@@ -207,10 +207,10 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
       in.sp = sp;
       in.ip = (uintptr_t) &_signal_dispatch_entry;
 
-      rm_thread_exregs (ADDR_VOID, thread->object,
+      rm_thread_exregs (VG_ADDR_VOID, thread->object,
 			HURD_EXREGS_SET_SP_IP
 			| HURD_EXREGS_START | HURD_EXREGS_ABORT_IPC,
-			in, ADDR_VOID, ADDR_VOID, ADDR_VOID, ADDR_VOID,
+			in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
 			&out, NULL, NULL, NULL, NULL);
     }
 }

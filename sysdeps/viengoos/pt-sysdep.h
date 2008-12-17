@@ -34,7 +34,7 @@
 #include <hurd/message-buffer.h>
 
 #define PTHREAD_SYSDEP_MEMBERS					\
-  addr_t object;						\
+  vg_addr_t object;						\
   vg_thread_id_t threadid;					\
   struct hurd_utcb *utcb;					\
   struct hurd_message_buffer *lock_message_buffer;		\

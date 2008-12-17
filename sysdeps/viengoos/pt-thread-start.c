@@ -41,24 +41,24 @@ __pthread_thread_start (struct __pthread *thread)
       struct hurd_thread_exregs_in in;
       struct hurd_thread_exregs_out out;
 
-      addr_t aspace = ADDR (0, 0);
-      in.aspace_cap_properties = CAP_PROPERTIES_VOID;
-      in.aspace_cap_properties_flags = CAP_COPY_COPY_SOURCE_GUARD;
+      vg_addr_t aspace = VG_ADDR (0, 0);
+      in.aspace_cap_properties = VG_CAP_PROPERTIES_VOID;
+      in.aspace_cap_properties_flags = VG_CAP_COPY_COPY_SOURCE_GUARD;
 
-      addr_t activity = ADDR_VOID;
+      vg_addr_t activity = VG_ADDR_VOID;
 
       in.sp = (l4_word_t) thread->mcontext.sp;
       in.ip = (l4_word_t) thread->mcontext.pc;
 
       in.user_handle = (l4_word_t) thread;
-      err = rm_thread_exregs (ADDR_VOID, thread->object,
+      err = rm_thread_exregs (VG_ADDR_VOID, thread->object,
 			      HURD_EXREGS_SET_ASPACE
 			      | HURD_EXREGS_SET_ACTIVITY
 			      | HURD_EXREGS_SET_SP_IP
 			      | HURD_EXREGS_SET_USER_HANDLE
 			      | HURD_EXREGS_START
 			      | HURD_EXREGS_ABORT_IPC,
-			      in, aspace, activity, ADDR_VOID, ADDR_VOID,
+			      in, aspace, activity, VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);
       assert (err == 0);
     }

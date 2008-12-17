@@ -34,7 +34,7 @@ __pthread_block (struct __pthread *thread)
   thread->lock_message_buffer = NULL;
 #endif
 
-  futex_wait_using (mb, &thread->threadid, thread->threadid);
+  vg_futex_wait_using (mb, &thread->threadid, thread->threadid);
 
 #ifndef NDEBUG
   thread->lock_message_buffer = mb;

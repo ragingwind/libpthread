@@ -31,7 +31,7 @@
 
 extern struct hurd_startup_data *__hurd_startup_data;
 
-extern addr_t meta_data_activity;
+extern vg_addr_t meta_data_activity;
 
 int
 __pthread_thread_alloc (struct __pthread *thread)
@@ -58,11 +58,11 @@ __pthread_thread_alloc (struct __pthread *thread)
   else
     {
       struct storage storage;
-      storage = storage_alloc (meta_data_activity, cap_thread,
+      storage = storage_alloc (meta_data_activity, vg_cap_thread,
 			       /* Threads are rarely shortly lived.  */
-			       STORAGE_MEDIUM_LIVED, OBJECT_POLICY_DEFAULT,
-			       ADDR_VOID);
-      if (ADDR_IS_VOID (storage.addr))
+			       STORAGE_MEDIUM_LIVED, VG_OBJECT_POLICY_DEFAULT,
+			       VG_ADDR_VOID);
+      if (VG_ADDR_IS_VOID (storage.addr))
 	{
 	  debug (0, DEBUG_BOLD ("Out of memory"));
 	  return EAGAIN;
@@ -75,20 +75,20 @@ __pthread_thread_alloc (struct __pthread *thread)
       if (unlikely (err))
 	panic ("Failed to initialize thread's activation state: %d", err);
 
-      err = rm_cap_copy (ADDR_VOID,
+      err = rm_cap_copy (VG_ADDR_VOID,
 			 thread->lock_message_buffer->receiver,
-			 ADDR (VG_MESSENGER_THREAD_SLOT,
+			 VG_ADDR (VG_MESSENGER_THREAD_SLOT,
 			       VG_MESSENGER_SLOTS_LOG2),
-			 ADDR_VOID, thread->object,
-			 0, CAP_PROPERTIES_DEFAULT);
+			 VG_ADDR_VOID, thread->object,
+			 0, VG_CAP_PROPERTIES_DEFAULT);
       if (err)
 	panic ("Failed to set lock messenger's thread");
 
       /* Unblock the lock messenger.  */
       err = vg_ipc (VG_IPC_RECEIVE | VG_IPC_RECEIVE_ACTIVATE
 		    | VG_IPC_RETURN,
-		    ADDR_VOID, thread->lock_message_buffer->receiver, ADDR_VOID,
-		    ADDR_VOID, ADDR_VOID, ADDR_VOID, ADDR_VOID);
+		    VG_ADDR_VOID, thread->lock_message_buffer->receiver, VG_ADDR_VOID,
+		    VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID);
       if (err)
 	panic ("Failed to unblock messenger's thread");
     }

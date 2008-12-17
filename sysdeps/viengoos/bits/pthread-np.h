@@ -27,7 +27,7 @@
 #include <viengoos/addr.h>
 #include <hurd/thread.h>
 
-int pthread_setactivity_np (addr_t activity);
+int pthread_setactivity_np (vg_addr_t activity);
 
 /* Returns the caller's activation state block.  */
 struct hurd_utcb *pthread_hurd_utcb_np (void) __attribute__ ((pure));

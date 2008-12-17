@@ -23,15 +23,15 @@
 #include <viengoos/thread.h>
 
 int
-pthread_setactivity_np (addr_t activity)
+pthread_setactivity_np (vg_addr_t activity)
 {
   struct __pthread *self = _pthread_self ();
 
   struct hurd_thread_exregs_in in;
   struct hurd_thread_exregs_out out;
-  int err = rm_thread_exregs (ADDR_VOID, self->object,
+  int err = rm_thread_exregs (VG_ADDR_VOID, self->object,
 			      HURD_EXREGS_SET_ACTIVITY,
-			      in, ADDR_VOID, activity, ADDR_VOID, ADDR_VOID,
+			      in, VG_ADDR_VOID, activity, VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);
 
   return err;

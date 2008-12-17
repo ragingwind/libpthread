@@ -42,10 +42,10 @@ __pthread_thread_halt (struct __pthread *thread)
 	}
       else
 	{
-	  error_t err = thread_stop (thread->object);
+	  error_t err = vg_thread_stop (thread->object);
 	  if (err)
-	    panic ("Failed to halt " ADDR_FMT ": %d",
-		   ADDR_PRINTF (thread->object), err);
+	    panic ("Failed to halt " VG_ADDR_FMT ": %d",
+		   VG_ADDR_PRINTF (thread->object), err);
 	}
     }
 }
