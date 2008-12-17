@@ -1,5 +1,12 @@
 2008-12-17  Neal H. Walfield  <neal@gnu.org>
 
+	* signal/signal-dispatch.c: Include <viengoos/math.h>.
+	(signal_dispatch): Use vg_lsb64, not l4_lsb64.
+	* sysdeps/viengoos/pt-sigstate.c (__pthread_sigstate): Likewise.
+	* signal/sigwaitinfo.c (sigwaitinfo): Use vg_msb64, not l4_msb64.
+
+2008-12-17  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/viengoos/bits/pthread-np.h (pthread_hurd_utcb_np):
 	Return a struct hurd_utcb *, not a struct vg_utcb *.
 	* sysdeps/viengoos/pt-sysdep.h (PTHREAD_SYSDEP_MEMBERS): Change

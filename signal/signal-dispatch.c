@@ -20,6 +20,8 @@
 
 #include "sig-internal.h"
 
+#include <viengoos/math.h>
+
 /* This is the signal handler entry point.  A thread is forced into
    this state when it receives a signal.  We need to save the thread's
    state and then invoke the high-level signal dispatcher.  SS->LOCK
@@ -107,7 +109,7 @@ signal_dispatch (struct signal_state *ss, siginfo_t *si)
       sigset_t pending = ~ss->blocked & ss->pending;
       if (! pending)
 	pending = ~ss->blocked & process_pending;
-      signo = l4_lsb64 (pending);
+      signo = vg_lsb64 (pending);
     }
   while (signo);
 

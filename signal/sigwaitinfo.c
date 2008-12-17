@@ -43,7 +43,7 @@ sigwaitinfo (const sigset_t *restrict set, siginfo_t *restrict info)
 
       assert (extant);
 
-      int signo = l4_msb64 (extant);
+      int signo = vg_msb64 (extant);
 
       if (info)
 	{

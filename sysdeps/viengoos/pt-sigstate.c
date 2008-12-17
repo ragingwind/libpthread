@@ -20,6 +20,7 @@
 #include <pthread.h>
 #include <assert.h>
 #include <signal.h>
+#include <viengoos/math.h>
 
 #include <pt-internal.h>
 
@@ -75,7 +76,7 @@ __pthread_sigstate (struct __pthread *thread, int how,
   pthread_mutex_unlock (&ss->lock);
 
   if (extant)
-    raise (l4_lsb64 (extant));
+    raise (vg_lsb64 (extant));
 
   return 0;
 }
