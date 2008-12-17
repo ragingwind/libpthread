@@ -1,5 +1,9 @@
 2008-12-17  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/generic/bits/memory.h: New file.
+
+2008-12-17  Neal H. Walfield  <neal@gnu.org>
+
 	* signal/signal-dispatch.c: Include <viengoos/math.h>.
 	(signal_dispatch): Use vg_lsb64, not l4_lsb64.
 	* sysdeps/viengoos/pt-sigstate.c (__pthread_sigstate): Likewise.
