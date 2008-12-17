@@ -1,5 +1,20 @@
 2008-12-17  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/viengoos/ia32/pt-setup.c: Don't include
+	<hurd/exceptions.h> or <viengoos/thread.h>.
+	* sysdeps/viengoos/pt-startup.c (__pthread_startup): Don't include
+	<l4.h> or <hurd/exceptions.h>.  Include <hurd/thread.h>.
+	(__pthread_startup): Set pthread->threadid using hurd_myself.
+	* sysdeps/viengoos/pt-sysdep.h: Don't cinlude
+	<hurd/exceptions.h>.  Include <hurd/thread.h>.
+	* sysdeps/viengoos/pt-thread-dealloc.c: Don't include
+	<hurd/exceptions.h>.  Include <hurd/thread.h>.
+	* sysdeps/viengoos/pt-thread-start.c: Don't include
+	<viengoos/thread.h> or <hurd/exceptions.h>.  Include
+	<hurd/thread.h>.
+
+2008-12-17  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/generic/bits/spin-lock.h: New file.
 
 2008-12-17  Neal H. Walfield  <neal@gnu.org>

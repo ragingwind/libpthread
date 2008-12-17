@@ -22,7 +22,7 @@
 
 #include <pt-internal.h>
 
-#include <hurd/exceptions.h>
+#include <hurd/thread.h>
 #include <hurd/mutex.h>
 #include <hurd/as.h>
 #include <viengoos/addr.h>

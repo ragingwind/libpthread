@@ -30,7 +30,7 @@
 /* The default stack size: 2MB.  */
 #define PTHREAD_STACK_DEFAULT	(2 * 1024 * 1024)
 
-#include <hurd/exceptions.h>
+#include <hurd/thread.h>
 #include <hurd/message-buffer.h>
 
 #define PTHREAD_SYSDEP_MEMBERS					\

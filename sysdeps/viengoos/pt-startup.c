@@ -1,5 +1,5 @@
-/* Thread initialization.  Hurd/L4 version.
-   Copyright (C) 2007 Free Software Foundation, Inc.
+/* Thread initialization.  Viengoos version.
+   Copyright (C) 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,14 +17,13 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <l4.h>
 #include <pt-internal.h>
 
-#include <hurd/exceptions.h>
+#include <hurd/thread.h>
 
 void
 __pthread_startup (void)
 {
   struct __pthread *pthread = _pthread_self ();
-  pthread->threadid = l4_myself ();
+  pthread->threadid = hurd_myself ();
 }

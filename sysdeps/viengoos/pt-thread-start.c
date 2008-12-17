@@ -20,8 +20,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
-#include <viengoos/thread.h>
-#include <hurd/exceptions.h>
+#include <hurd/thread.h>
 
 #include <pt-internal.h>
 
