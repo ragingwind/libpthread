@@ -1,3 +1,10 @@
+2008-12-17  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/viengoos/bits/pthread-np.h (pthread_hurd_utcb_np):
+	Return a struct hurd_utcb *, not a struct vg_utcb *.
+	* sysdeps/viengoos/pt-sysdep.h (PTHREAD_SYSDEP_MEMBERS): Change
+	utcb's type to a struct hurd_utcb *.
+
 2008-12-11  Neal H. Walfield  <neal@gnu.org>
 
 	Update to new RPC interfaces, IPC semantics.

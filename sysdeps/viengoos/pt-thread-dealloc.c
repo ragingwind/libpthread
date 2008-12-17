@@ -25,7 +25,7 @@
 #include <hurd/exceptions.h>
 #include <hurd/mutex.h>
 #include <hurd/as.h>
-#include <hurd/addr.h>
+#include <viengoos/addr.h>
 #include <hurd/message-buffer.h>
 
 void

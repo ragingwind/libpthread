@@ -21,7 +21,7 @@
 #include <pt-internal.h>
 #include <sig-internal.h>
 
-#include <hurd/thread.h>
+#include <viengoos/thread.h>
 #include <pthread.h>
 #include <stdint.h>
 #include <atomic.h>

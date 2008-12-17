@@ -19,8 +19,8 @@
 
 #include <pt-internal.h>
 
-#include <hurd/addr.h>
-#include <hurd/thread.h>
+#include <viengoos/addr.h>
+#include <viengoos/thread.h>
 
 int
 pthread_setactivity_np (addr_t activity)

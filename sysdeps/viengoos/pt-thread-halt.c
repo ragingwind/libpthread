@@ -22,7 +22,7 @@
 
 #include <pt-internal.h>
 
-#include <hurd/thread.h>
+#include <viengoos/thread.h>
 
 void
 __pthread_thread_halt (struct __pthread *thread)

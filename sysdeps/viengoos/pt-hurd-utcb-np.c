@@ -19,7 +19,7 @@
 
 #include <pt-internal.h>
 
-struct vg_utcb *
+struct hurd_utcb *
 pthread_hurd_utcb_np (void)
 {
   struct __pthread *thread = _pthread_self ();

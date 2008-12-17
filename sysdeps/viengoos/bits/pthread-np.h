@@ -24,12 +24,12 @@
 #ifndef _BITS_PTHREAD_NP_H
 #define _BITS_PTHREAD_NP_H	1
 
-#include <hurd/addr.h>
-#include <hurd/exceptions.h>
+#include <viengoos/addr.h>
+#include <hurd/thread.h>
 
 int pthread_setactivity_np (addr_t activity);
 
 /* Returns the caller's activation state block.  */
-struct vg_utcb *pthread_hurd_utcb_np (void) __attribute__ ((pure));
+struct hurd_utcb *pthread_hurd_utcb_np (void) __attribute__ ((pure));
 
 #endif /* bits/pthread-np.h */

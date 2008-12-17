@@ -24,7 +24,7 @@
 #include <hurd/startup.h>
 #include <hurd/storage.h>
 #include <hurd/as.h>
-#include <hurd/addr.h>
+#include <viengoos/addr.h>
 #include <hurd/message-buffer.h>
 
 #include <pt-internal.h>

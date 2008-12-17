@@ -20,7 +20,7 @@
 #include <l4.h>
 
 #include <pt-internal.h>
-#include <hurd/thread.h>
+#include <viengoos/thread.h>
 #include <hurd/exceptions.h>
 
 /* The stack layout used on the i386 is:

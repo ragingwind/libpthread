@@ -20,7 +20,7 @@
 
 #include "sig-internal.h"
 
-#include <hurd/futex.h>
+#include <viengoos/futex.h>
 
 struct sigwaiter *sigwaiters;
 

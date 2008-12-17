@@ -36,7 +36,7 @@
 #define PTHREAD_SYSDEP_MEMBERS					\
   addr_t object;						\
   vg_thread_id_t threadid;					\
-  struct vg_utcb *utcb;						\
+  struct hurd_utcb *utcb;					\
   struct hurd_message_buffer *lock_message_buffer;		\
   /* If the above fields are valid.  */				\
   bool have_kernel_resources;					\

@@ -20,7 +20,7 @@
 #include <pt-internal.h>
 
 #include <hurd/stddef.h>
-#include <hurd/futex.h>
+#include <viengoos/futex.h>
 #include <stdint.h>
 
 /* Wakeup THREAD.  */
