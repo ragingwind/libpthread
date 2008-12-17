@@ -78,7 +78,7 @@ __pthread_thread_alloc (struct __pthread *thread)
       err = vg_cap_copy (VG_ADDR_VOID,
 			 thread->lock_message_buffer->receiver,
 			 VG_ADDR (VG_MESSENGER_THREAD_SLOT,
-			       VG_MESSENGER_SLOTS_LOG2),
+				  VG_MESSENGER_SLOTS_LOG2),
 			 VG_ADDR_VOID, thread->object,
 			 0, VG_CAP_PROPERTIES_DEFAULT);
       if (err)

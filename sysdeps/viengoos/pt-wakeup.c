@@ -40,7 +40,7 @@ __pthread_wakeup (struct __pthread *thread)
   long ret;
   do
     {
-      ret = vg_futex_wake_using (self->lock_message_buffer,
+      ret = futex_wake_using (self->lock_message_buffer,
 			      &thread->threadid, INT_MAX);
       assertx (ret <= 1, "tid: %x, ret: %d", thread->threadid, ret);
 

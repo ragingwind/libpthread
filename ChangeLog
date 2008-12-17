@@ -1,5 +1,12 @@
 2008-12-17  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/viengoos/pt-block.c (__pthread_block): Use
+	futex_wait_using, not vg_futex_wait_using.
+	* sysdeps/viengoos/pt-wakeup.c (__pthread_wakeup): Use
+	futex_wake_using, not vg_futex_wake_using.
+
+2008-12-17  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/viengoos/ia32/pt-setup.c: Don't include
 	<hurd/exceptions.h> or <viengoos/thread.h>.
 	* sysdeps/viengoos/pt-startup.c (__pthread_startup): Don't include
