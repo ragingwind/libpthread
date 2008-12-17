@@ -1,5 +1,9 @@
 2008-12-17  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/generic/bits/spin-lock.h: New file.
+
+2008-12-17  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/generic/bits/memory.h: New file.
 
 2008-12-17  Neal H. Walfield  <neal@gnu.org>
