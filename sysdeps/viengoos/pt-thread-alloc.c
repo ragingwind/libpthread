@@ -75,7 +75,7 @@ __pthread_thread_alloc (struct __pthread *thread)
       if (unlikely (err))
 	panic ("Failed to initialize thread's activation state: %d", err);
 
-      err = rm_cap_copy (VG_ADDR_VOID,
+      err = vg_cap_copy (VG_ADDR_VOID,
 			 thread->lock_message_buffer->receiver,
 			 VG_ADDR (VG_MESSENGER_THREAD_SLOT,
 			       VG_MESSENGER_SLOTS_LOG2),

@@ -50,7 +50,7 @@ __pthread_thread_start (struct __pthread *thread)
       in.ip = (l4_word_t) thread->mcontext.pc;
 
       in.user_handle = (l4_word_t) thread;
-      err = rm_thread_exregs (VG_ADDR_VOID, thread->object,
+      err = vg_thread_exregs (VG_ADDR_VOID, thread->object,
 			      HURD_EXREGS_SET_ASPACE
 			      | HURD_EXREGS_SET_ACTIVITY
 			      | HURD_EXREGS_SET_SP_IP

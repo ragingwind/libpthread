@@ -29,7 +29,7 @@ pthread_setactivity_np (vg_addr_t activity)
 
   struct hurd_thread_exregs_in in;
   struct hurd_thread_exregs_out out;
-  int err = rm_thread_exregs (VG_ADDR_VOID, self->object,
+  int err = vg_thread_exregs (VG_ADDR_VOID, self->object,
 			      HURD_EXREGS_SET_ACTIVITY,
 			      in, VG_ADDR_VOID, activity, VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);

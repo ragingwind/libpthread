@@ -125,7 +125,7 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
       struct hurd_thread_exregs_out out;
 
       error_t err;
-      err = rm_thread_exregs (VG_ADDR_VOID, thread->object,
+      err = vg_thread_exregs (VG_ADDR_VOID, thread->object,
 			      HURD_EXREGS_STOP | HURD_EXREGS_ABORT_IPC
 			      | HURD_EXREGS_GET_REGS,
 			      in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
@@ -207,7 +207,7 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
       in.sp = sp;
       in.ip = (uintptr_t) &_signal_dispatch_entry;
 
-      rm_thread_exregs (VG_ADDR_VOID, thread->object,
+      vg_thread_exregs (VG_ADDR_VOID, thread->object,
 			HURD_EXREGS_SET_SP_IP
 			| HURD_EXREGS_START | HURD_EXREGS_ABORT_IPC,
 			in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
