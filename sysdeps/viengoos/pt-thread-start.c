@@ -37,8 +37,8 @@ __pthread_thread_start (struct __pthread *thread)
     }
   else
     {
-      struct hurd_thread_exregs_in in;
-      struct hurd_thread_exregs_out out;
+      struct vg_thread_exregs_in in;
+      struct vg_thread_exregs_out out;
 
       vg_addr_t aspace = VG_ADDR (0, 0);
       in.aspace_cap_properties = VG_CAP_PROPERTIES_VOID;
@@ -51,12 +51,12 @@ __pthread_thread_start (struct __pthread *thread)
 
       in.user_handle = (l4_word_t) thread;
       err = vg_thread_exregs (VG_ADDR_VOID, thread->object,
-			      HURD_EXREGS_SET_ASPACE
-			      | HURD_EXREGS_SET_ACTIVITY
-			      | HURD_EXREGS_SET_SP_IP
-			      | HURD_EXREGS_SET_USER_HANDLE
-			      | HURD_EXREGS_START
-			      | HURD_EXREGS_ABORT_IPC,
+			      VG_EXREGS_SET_ASPACE
+			      | VG_EXREGS_SET_ACTIVITY
+			      | VG_EXREGS_SET_SP_IP
+			      | VG_EXREGS_SET_USER_HANDLE
+			      | VG_EXREGS_START
+			      | VG_EXREGS_ABORT_IPC,
 			      in, aspace, activity, VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);
       assert (err == 0);

@@ -120,14 +120,14 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
     }
   else
     {
-      struct hurd_thread_exregs_in in;
+      struct vg_thread_exregs_in in;
       memset (&in, 0, sizeof (in));
-      struct hurd_thread_exregs_out out;
+      struct vg_thread_exregs_out out;
 
       error_t err;
       err = vg_thread_exregs (VG_ADDR_VOID, thread->object,
-			      HURD_EXREGS_STOP | HURD_EXREGS_ABORT_IPC
-			      | HURD_EXREGS_GET_REGS,
+			      VG_EXREGS_STOP | VG_EXREGS_ABORT_IPC
+			      | VG_EXREGS_GET_REGS,
 			      in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);
       if (err)
@@ -201,15 +201,15 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
     ((void (*) (uintptr_t)) &_signal_dispatch_entry_self) ((uintptr_t) sp);
   else
     {
-      struct hurd_thread_exregs_in in;
-      struct hurd_thread_exregs_out out;
+      struct vg_thread_exregs_in in;
+      struct vg_thread_exregs_out out;
 
       in.sp = sp;
       in.ip = (uintptr_t) &_signal_dispatch_entry;
 
       vg_thread_exregs (VG_ADDR_VOID, thread->object,
-			HURD_EXREGS_SET_SP_IP
-			| HURD_EXREGS_START | HURD_EXREGS_ABORT_IPC,
+			VG_EXREGS_SET_SP_IP
+			| VG_EXREGS_START | VG_EXREGS_ABORT_IPC,
 			in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
 			&out, NULL, NULL, NULL, NULL);
     }
