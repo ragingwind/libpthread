@@ -1,7 +1,8 @@
 2008-12-21  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	* sysdeps/mach/pt-timedblock.c (__pthread_timedblock):
-	Fix timeout computation from abstime and now.
+	* sysdeps/mach/pt-timedblock.c (__pthread_timedblock):  Fix timeout
+	computation from abstime and now.
+	* include/pthread/pthread.h (PTHREAD_RWLOCK_INITIALIZER): New macro.
 
 2008-10-02  Neal H. Walfield  <neal@gnu.org>
 

@@ -521,6 +521,7 @@ extern int pthread_rwlockattr_setpshared (pthread_rwlockattr_t *attr,
 
 #include <bits/rwlock.h>
 
+#define PTHREAD_RWLOCK_INITIALIZER __PTHREAD_RWLOCK_INITIALIZER
 /* Create a rwlock object with attributes given by ATTR and strore the
    result in *RWLOCK.  */
 extern int pthread_rwlock_init (pthread_rwlock_t *__restrict rwlock,
