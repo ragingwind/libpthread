@@ -1,5 +1,5 @@
 /* Definitions of user-visible names for spin locks.
-   Copyright (C) 1994, 1997, 2002, 2008 Free Software Foundation, Inc.
+   Copyright (C) 1994, 1997, 2002, 2008, 2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@ __PT_SPIN_INLINE int __pthread_spin_init (__pthread_spinlock_t *__lock,
 __PT_SPIN_INLINE int
 __pthread_spin_init (__pthread_spinlock_t *__lock, int __pshared)
 {
-  *__lock = __SPIN_LOCK_INITIALIZER;
+  *__lock = __PTHREAD_SPIN_LOCK_INITIALIZER;
   return 0;
 }
 

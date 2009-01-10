@@ -1,5 +1,5 @@
 /* Definitions of user-visible names for spin locks.
-   Copyright (C) 1994, 1997, 2002, 2008 Free Software Foundation, Inc.
+   Copyright (C) 1994, 1997, 2002, 2008, 2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -29,8 +29,8 @@ __BEGIN_DECLS
 typedef __spin_lock_t __pthread_spinlock_t;
 
 /* Initializer for a spin lock object.  */
-#ifndef __SPIN_LOCK_INITIALIZER
-#error __SPIN_LOCK_INITIALIZER undefined: should be defined by <lock-intern.h>.
+#ifndef __PTHREAD_SPIN_LOCK_INITIALIZER
+#error __PTHREAD_SPIN_LOCK_INITIALIZER undefined: should be defined by <lock-intern.h>.
 #endif
 
 __END_DECLS

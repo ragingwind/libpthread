@@ -1,5 +1,5 @@
 /* Machine-specific definitions for spin locks.  i386 version.
-   Copyright (C) 2000, 2005, 2008 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005, 2008, 2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@ __PT_SPIN_INLINE int __pthread_spin_init (__pthread_spinlock_t *__lock,
 __PT_SPIN_INLINE int
 __pthread_spin_init (__pthread_spinlock_t *__lock, int __pshared)
 {
-  *__lock = __SPIN_LOCK_INITIALIZER;
+  *__lock = __PTHREAD_SPIN_LOCK_INITIALIZER;
   return 0;
 }
 

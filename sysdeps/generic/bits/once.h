@@ -1,5 +1,5 @@
 /* Dynamic package initialization data structures.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -29,6 +29,6 @@ struct __pthread_once
 };
 
 #define __PTHREAD_ONCE_INIT \
-	{ 0, __SPIN_LOCK_INITIALIZER }
+	{ 0, __PTHREAD_SPIN_LOCK_INITIALIZER }
 
 #endif /* bits/once.h */

@@ -1,5 +1,5 @@
 /* rwlock type.  Generic version.
-   Copyright (C) 2002, 2005, 2006, 2007 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005, 2006, 2007, 2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ struct __pthread_rwlock
 
 /* Initializer for a rwlock.  */
 #define __PTHREAD_RWLOCK_INITIALIZER \
-    { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0 }
+    { __PTHREAD_SPIN_LOCK_INITIALIZER, __PTHREAD_SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0 }
 
 
 #endif /* bits/rwlock.h */

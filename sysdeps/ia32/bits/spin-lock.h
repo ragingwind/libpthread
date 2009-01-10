@@ -1,5 +1,5 @@
 /* Machine-specific definitions for spin locks.  i386 version.
-   Copyright (C) 2000, 2005, 2008 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005, 2008, 2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ __BEGIN_DECLS
 typedef __volatile int __pthread_spinlock_t;
 
 /* Initializer for a spin lock object.  */
-# define __SPIN_LOCK_INITIALIZER ((__pthread_spinlock_t) 0)
+# define __PTHREAD_SPIN_LOCK_INITIALIZER ((__pthread_spinlock_t) 0)
 
 __END_DECLS
 

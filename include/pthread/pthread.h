@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2002, 2005, 2006, 2007, 2008
+/* Copyright (C) 2000, 2002, 2005, 2006, 2007, 2008, 2009
      Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -433,7 +433,7 @@ extern int pthread_cond_timedwait (pthread_cond_t *__restrict __cond,
 
 # include <bits/spin-lock.h>
 
-#define PTHREAD_SPINLOCK_INITIALIZER __SPIN_LOCK_INITIALIZER
+#define PTHREAD_SPINLOCK_INITIALIZER __PTHREAD_SPIN_LOCK_INITIALIZER
 
 /* Destroy the spin lock object LOCK.  */
 extern int pthread_spin_destroy (pthread_spinlock_t *__lock);
