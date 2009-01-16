@@ -20,6 +20,9 @@
 if ARCH_IA32
   arch=ia32
 endif
+if ARCH_X86_64
+  arch=x86_64
+endif
 if ARCH_POWERPC
   arch=powerpc
 endif

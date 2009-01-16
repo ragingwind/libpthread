@@ -1,5 +1,13 @@
 2009-01-16  Neal H. Walfield  <neal@gnu.org>
 
+	* Makefile.am (arch) [ARCH_X86_64]: Define.
+	* sysdeps/x86_64/pt-machdep.h: New stub file.
+	* sysdeps/viengoos/x86_64/pt-machdep.c: Likewise.
+	* sysdeps/viengoos/x86_64/signal-dispatch-lowlevel.c: Likewise.
+	* sysdeps/viengoos/x86_64/pt-setup.c: Likewise.
+
+2009-01-16  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/viengoos/pt-spin.c [USE_L4]: Only include <l4.h> in this
 	case.
 	(_pthread_spin_lock): Only implement exponential back off if a
