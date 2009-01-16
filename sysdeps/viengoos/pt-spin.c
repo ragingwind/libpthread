@@ -1,5 +1,5 @@
-/* Spin locks.  L4 version.
-   Copyright (C) 2000, 2004 Free Software Foundation, Inc.
+/* Spin locks.  Viengoos version.
+   Copyright (C) 2000, 2004, 2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,7 +17,9 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <l4.h>
+#ifdef USE_L4
+# include <l4.h>
+#endif
 
 #include <pthread.h>
 #include <sched.h>
@@ -38,12 +40,16 @@ int __pthread_spin_count = __PTHREAD_SPIN_COUNT;
 int
 _pthread_spin_lock (__pthread_spinlock_t *lock)
 {
-  l4_time_t timeout;
   int i;
 
+#ifdef USE_L4
   /* Start with a small timeout of 2 microseconds, then back off
      exponentially.  */
+  l4_time_t timeout;
   timeout = l4_time_period (2);
+#else
+# warning Don't know how to sleep on this platform.
+#endif
 
   while (1)
     {
@@ -52,11 +58,14 @@ _pthread_spin_lock (__pthread_spinlock_t *lock)
 	  if (__pthread_spin_trylock (lock) == 0)
 	    return 0;
 	}
+
+#ifdef USE_L4
       l4_sleep (timeout);
 
       timeout = l4_time_mul2 (timeout);
       if (timeout == L4_NEVER)
 	timeout = L4_TIME_PERIOD_MAX;
+#endif
     }
 }
 

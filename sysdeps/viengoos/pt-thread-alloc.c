@@ -45,9 +45,13 @@ __pthread_thread_alloc (struct __pthread *thread)
   if (__pthread_num_threads == 1)
     {
       thread->object = __hurd_startup_data->thread;
-      thread->threadid = l4_myself ();
+      thread->threadid = hurd_myself ();
 
+#ifdef USE_L4
       l4_set_user_defined_handle ((l4_word_t) thread);
+#else
+      assert (0);
+#endif
 
       /* Get the thread's UTCB and stash it.  */
       thread->utcb = hurd_utcb ();

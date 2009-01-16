@@ -26,7 +26,11 @@
 int
 sched_yield (void)
 {
+#ifdef USE_L4
   l4_yield ();
+#else
+# warning Not ported to this platform.
+#endif
   return 0;
 }
 
@@ -56,6 +60,11 @@ init_routine (void (*entry) (void *), void *arg)
   assert_perror (err);
 
   /* Switch stacks.  */
+#ifdef USE_L4
   l4_start_sp_ip (l4_myself (), thread->mcontext.sp,
 		  thread->mcontext.pc);
+#else
+# warning Not ported to this platform.
+  assert (0);
+#endif
 }

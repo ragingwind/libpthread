@@ -20,7 +20,10 @@
 #ifndef _PT_SYSDEP_H
 #define _PT_SYSDEP_H	1
 
-#include <l4.h>
+#ifdef USE_L4
+# include <l4.h>
+#endif
+
 #include <hurd/storage.h>
 #include <sys/mman.h>
 
@@ -46,7 +49,11 @@ extern inline struct __pthread *
 __attribute__((__always_inline__))
 _pthread_self (void)
 {
+#if USE_L4
   return (struct __pthread *) l4_user_defined_handle ();
+#else
+  assert (0);
+#endif
 }
 
 extern inline void

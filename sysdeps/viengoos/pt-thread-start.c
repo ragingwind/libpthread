@@ -33,7 +33,7 @@ __pthread_thread_start (struct __pthread *thread)
     /* The main thread is already running of course.  */
     {
       assert (__pthread_total == 1);
-      assert (l4_is_thread_equal (l4_myself (), thread->threadid));
+      assert (hurd_myself () == thread->threadid);
     }
   else
     {
@@ -46,10 +46,10 @@ __pthread_thread_start (struct __pthread *thread)
 
       vg_addr_t activity = VG_ADDR_VOID;
 
-      in.sp = (l4_word_t) thread->mcontext.sp;
-      in.ip = (l4_word_t) thread->mcontext.pc;
+      in.sp = (uintptr_t) thread->mcontext.sp;
+      in.ip = (uintptr_t) thread->mcontext.pc;
 
-      in.user_handle = (l4_word_t) thread;
+      in.user_handle = (uintptr_t) thread;
       err = vg_thread_exregs (VG_ADDR_VOID, thread->object,
 			      VG_EXREGS_SET_ASPACE
 			      | VG_EXREGS_SET_ACTIVITY

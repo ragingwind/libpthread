@@ -18,6 +18,8 @@
    License along with this program.  If not, see
    <http://www.gnu.org/licenses/>.  */
 
+
+#ifdef USE_L4
 #include <l4.h>
 #include <string.h>
 
@@ -67,3 +69,11 @@ utcb_state_restore (struct utcb *buffer)
 
 #define SIGNAL_DISPATCH_EXIT \
   utcb_state_restore (&buffer);
+
+#else
+
+#warning Signal dispatch entry and exit unimplemented for this platform.
+#define SIGNAL_DISPATCH_ENTRY assert (0)
+#define SIGNAL_DISPATCH_EXIT assert (0)
+
+#endif

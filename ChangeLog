@@ -1,3 +1,25 @@
+2009-01-16  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/viengoos/pt-spin.c [USE_L4]: Only include <l4.h> in this
+	case.
+	(_pthread_spin_lock): Only implement exponential back off if a
+	sleep function is available.
+	* sysdeps/viengoos/pt-stack-alloc.c: Don't include <l4.h>.
+	* sysdeps/viengoos/pt-sysdep.c (sched_yield) [! USE_L4]: Just
+	return.
+	(init_routine) [USE_L4]: Abort.
+	* sysdeps/viengoos/pt-sysdep.h [USE_L4]: Only include <l4.h> in
+	this case.
+	(_pthread_self) [! USE_L4]: Abort.
+	* sysdeps/viengoos/pt-thread-alloc.c (__pthread_thread_alloc): Use
+	hurd_myself, not l4_myself.
+	[! USE_L4]: Abort.
+	* sysdeps/viengoos/pt-thread-start.c (__pthread_thread_start): Use
+	hurd_myself, not l4_myself.  use uintptr_t, not l4_word_t.
+	* sysdeps/viengoos/sig-sysdep.h (SIGNAL_DISPATCH_ENTRY)
+	[! USE_L4]: Abort.
+	(SIGNAL_DISPATCH_EXIT) [! USE_L4]: Likewise.
+
 2008-11-19  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/generic/bits/memory.h: New file.
