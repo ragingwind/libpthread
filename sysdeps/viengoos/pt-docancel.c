@@ -32,10 +32,18 @@ __pthread_do_cancel (struct __pthread *p)
   assert (p->cancel_pending == 1);
   assert (p->cancel_state == PTHREAD_CANCEL_ENABLE);
 
-  if (l4_is_thread_equal (l4_myself (), p->threadid))
+  if (hurd_myself () == p->threadid)
     call_exit ();
   else
-    thread_start_sp_ip (p->object,
-			p->mcontext.sp, (uintptr_t) call_exit);
+    {
+#ifdef USE_L4
+      thread_start_sp_ip (p->object,
+			  p->mcontext.sp, (uintptr_t) call_exit);
+#else
+# warning Unimplemented on this platform.
+      assert (0);
+#endif
+    }
+
   return 0;
 }

@@ -44,8 +44,10 @@ __pthread_wakeup (struct __pthread *thread)
 			      &thread->threadid, INT_MAX);
       assertx (ret <= 1, "tid: %x, ret: %d", thread->threadid, ret);
 
+#ifdef USE_L4
       if (ret == 0)
 	l4_thread_switch (thread->threadid);
+#endif
     }
   while (ret == 0);
 }
