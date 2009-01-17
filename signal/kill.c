@@ -20,6 +20,8 @@
 
 #include "sig-internal.h"
 
+#include <string.h>
+
 int
 kill (pid_t pid, int signo)
 {

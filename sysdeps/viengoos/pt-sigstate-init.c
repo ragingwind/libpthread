@@ -21,6 +21,7 @@
 
 #include <pt-internal.h>
 #include <sig-internal.h>
+#include <string.h>
 
 error_t
 __pthread_sigstate_init (struct __pthread *thread)
