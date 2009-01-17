@@ -48,7 +48,7 @@ _pthread_spin_lock (__pthread_spinlock_t *lock)
   l4_time_t timeout;
   timeout = l4_time_period (2);
 #else
-# warning Don't know how to sleep on this platform.
+# warning Do not know how to sleep on this platform.
 #endif
 
   while (1)

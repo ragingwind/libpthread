@@ -1,3 +1,8 @@
+2009-01-18  Neal H. Walfield  <neal@gnu.org>
+
+	* sysdeps/viengoos/pt-spin.c (_pthread_spin_lock): Don't use a '
+	in the #warning.
+
 2009-01-17  Neal H. Walfield  <neal@gnu.org>
 
 	* sysdeps/viengoos/pt-docancel.c (__pthread_do_cancel): Use
