@@ -1,5 +1,13 @@
 2009-01-17  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/viengoos/pt-docancel.c (__pthread_do_cancel): Use
+	hurd_myself, not l4_myself.
+	[! USE_L4]: Abort.
+	* sysdeps/viengoos/pt-wakeup.c (__pthread_wakeup) [! USE_L4]:
+	Don't call l4_thread_switch.
+
+2009-01-17  Neal H. Walfield  <neal@gnu.org>
+
 	* signal/kill.c: Include <string.h>.
 	* sysdeps/viengoos/pt-sigstate-init.c: Likewise.
 
