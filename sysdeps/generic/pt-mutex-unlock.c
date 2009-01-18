@@ -38,7 +38,7 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
 	{
 	  assert (mutex->owner);
 	  assertx (mutex->owner == _pthread_self (),
-		   "%p(%x) != %p(%x)",
+		   "%p("VG_THREAD_ID_FMT") != %p("VG_THREAD_ID_FMT")",
 		   mutex->owner,
 		   ((struct __pthread *) mutex->owner)->threadid,
 		   _pthread_self (),

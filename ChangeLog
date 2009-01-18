@@ -1,5 +1,11 @@
 2009-01-18  Neal H. Walfield  <neal@gnu.org>
 
+	* sysdeps/generic/pt-mutex-unlock.c (__pthread_mutex_unlock): Use
+	correct printf format specifiers.
+	* sysdeps/viengoos/pt-wakeup.c (__pthread_wakeup): Likewise.
+
+2009-01-18  Neal H. Walfield  <neal@gnu.org>
+
 	* sysdeps/viengoos/pt-spin.c (_pthread_spin_lock): Don't use a '
 	in the #warning.
 

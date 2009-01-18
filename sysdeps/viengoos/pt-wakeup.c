@@ -42,7 +42,8 @@ __pthread_wakeup (struct __pthread *thread)
     {
       ret = futex_wake_using (self->lock_message_buffer,
 			      &thread->threadid, INT_MAX);
-      assertx (ret <= 1, "tid: %x, ret: %d", thread->threadid, ret);
+      assertx (ret <= 1, "tid: "VG_THREAD_ID_FMT", ret: %ld",
+	       thread->threadid, ret);
 
 #ifdef USE_L4
       if (ret == 0)
