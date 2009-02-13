@@ -59,12 +59,18 @@ init_routine (void (*entry) (void *), void *arg)
 				   (void *(*)(void *)) entry, arg);
   assert_perror (err);
 
-  /* Switch stacks.  */
-#ifdef USE_L4
-  l4_start_sp_ip (l4_myself (), thread->mcontext.sp,
-		  thread->mcontext.pc);
+  /* Switch stacks and jump to THREAD->MCONTEXT.PC.  */
+#ifdef __x86_64
+  uintptr_t sp = (uintptr_t) thread->mcontext.sp - sizeof (uintptr_t);
+  *(uintptr_t *) sp = thread->mcontext.pc;
+
+  asm ("mov %0, %%rsp\n\t"
+       "ret\n\t" :: "r" (sp));
 #else
-# warning Not ported to this platform.
-  assert (0);
+  /* There is nothing wrong with using vg_thread_start_sp_ip to
+     implement the above: it just means an extra kernel entry.  */
+  err = vg_thread_start_sp_ip (thread->object, thread->mcontext.sp,
+			       thread->mcontext.pc);
 #endif
+  panic ("Failed to set new IP: %d.", err);
 }

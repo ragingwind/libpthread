@@ -73,7 +73,7 @@ utcb_state_restore (struct utcb *buffer)
 #else
 
 #warning Signal dispatch entry and exit unimplemented for this platform.
-#define SIGNAL_DISPATCH_ENTRY assert (0)
-#define SIGNAL_DISPATCH_EXIT assert (0)
+#define SIGNAL_DISPATCH_ENTRY do {} while (0)
+#define SIGNAL_DISPATCH_EXIT do {} while (0)
 
 #endif

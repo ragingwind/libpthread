@@ -17,8 +17,6 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <l4.h>
-
 #include <pt-internal.h>
 
 /* The stack layout used on the i386 is:
@@ -35,7 +33,7 @@
 
   We do the following: setup the stack to return to the entry routine.
 
-  
+  On x86-64, it's similar expect the first argument is stored in RDI.
 */
 
 /* The stack contains:
@@ -46,15 +44,22 @@
     C entry_point
 */
 extern uintptr_t _pthread_entry_point;
-__asm__ ("\n\
-	.globl	_pthread_entry_point, __pthread_entry_point\n\
-_pthread_entry_point:\n\
-__pthread_entry_point:\n\
-	pushl	$0\n\
-	popf\n\
-\n\
-	xor %ebp, %ebp\n\
-	ret\n");
+__asm__ (".globl	_pthread_entry_point, __pthread_entry_point\n\t"
+	 "_pthread_entry_point:\n\t"
+	 "__pthread_entry_point:\n\t"
+	 /* Clear the flags.  */
+	 "push $0\n\t"
+	 "popf\n\t"
+#ifdef __x86_64
+	 /* The arguments belong in RDI and RSI, not on the stack.  */
+	 "popq %rdi\n\t"
+	 "popq %rsi\n\t"
+	 /* Clear the frame pointer.  */
+	 "xor %rbp, %rbp\n\t"
+#else
+	 "xor %ebp, %ebp\n\t"
+#endif
+	 "ret\n\t");
 
 /* Set up the stack for THREAD, such that it appears as if
    START_ROUTINE and ARG were passed to the new thread's entry-point.
@@ -76,10 +81,17 @@ stack_setup (struct __pthread *thread,
   if (start_routine)
     {
       /* Set up call frame.  */
+#ifdef __x86_64
+      *--top = 0;		/* Fake return address.  */
+      *--top = (uintptr_t) entry_point;
+      *--top = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
+      *--top = (uintptr_t) start_routine;
+#else
       *--top = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
       *--top = (uintptr_t) start_routine;
       *--top = 0;		/* Fake return address.  */
       *--top = (uintptr_t) entry_point;
+#endif
     }
 
   /* We need 4 pages of stack to avoid faulting before we have set up

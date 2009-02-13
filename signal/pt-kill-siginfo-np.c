@@ -75,7 +75,8 @@ pthread_kill_siginfo_np (pthread_t tid, siginfo_t si)
 	  || (ss->stack.ss_flags & SS_DISABLE)
 	  || (ss->stack.ss_flags & SS_ONSTACK)))
     /* We are sending a signal to ourself and we don't use an
-       alternate stack.  */
+       alternate stack.  (Recall: SA_ONSTACK means use the alt
+       stack.)  */
     signal_dispatch (ss, &si);
   else
     signal_dispatch_lowlevel (ss, tid, si);

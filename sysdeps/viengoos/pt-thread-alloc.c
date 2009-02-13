@@ -47,17 +47,10 @@ __pthread_thread_alloc (struct __pthread *thread)
       thread->object = __hurd_startup_data->thread;
       thread->threadid = hurd_myself ();
 
-#ifdef USE_L4
-      l4_set_user_defined_handle ((l4_word_t) thread);
-#else
-      assert (0);
-#endif
-
       /* Get the thread's UTCB and stash it.  */
       thread->utcb = hurd_utcb ();
-      /* Override the utcb fetch function.  */
-      hurd_utcb = pthread_hurd_utcb_np;
-      assert (thread->utcb == hurd_utcb ());
+
+      thread->utcb->pthread = thread;
     }
   else
     {
@@ -78,6 +71,8 @@ __pthread_thread_alloc (struct __pthread *thread)
       err = hurd_activation_state_alloc (thread->object, &thread->utcb);
       if (unlikely (err))
 	panic ("Failed to initialize thread's activation state: %d", err);
+
+      thread->utcb->pthread = thread;
 
       err = vg_cap_copy (VG_ADDR_VOID,
 			 thread->lock_message_buffer->receiver,

@@ -25,79 +25,172 @@
 #include <pthread.h>
 #include <stdint.h>
 #include <atomic.h>
+#include <string.h>
+
+#ifdef __x86_64
+# define WS "8"
+#else
+# define WS "4"
+#endif
+
+#ifdef __x86_64
+# define R(reg) "%r" #reg
+#else
+# define R(reg) "%e" #reg
+#endif
 
 extern char _signal_dispatch_entry;
-/* - 0(%esp) a pointer to the thread's struct signal_state.
-   - 4(%esp) a pointer to a siginfo_t.
-   - 8(%esp) is a pointer to the ss_flags field (or NULL).
-   - 12(%esp)+4 is the value of the sp when the thread was interrupted (intr_sp)
-     - 0(intr_sp) is the value of the ip when the thread was interrupted.
-   - 16(%esp) - 16 byte register save area
-*/
-__asm__ ("\n\
-	.globl _signal_dispatch_entry\n\
-_signal_dispatch_entry:\n\
-	/* Save caller saved registers (16 bytes).  */\n\
-	mov %eax, 16(%esp)\n\
-	mov %ecx, 16+4(%esp)\n\
-	mov %edx, 16+8(%esp)\n\
-	pushf\n\
-	popl %eax\n\
-	mov %eax, 16+12(%esp)\n\
-\n\
-	/* Reset EFLAGS.  */\n\
-	cld\n\
-	call signal_dispatch\n\
-\n\
-	/* Get the original stack and begin restoration.  */\n\
-	mov 12(%esp), %edx\n\
-\n\
-	/* Move the saved registers to the user stack.  */\n\
-	sub $16, %edx\n\
-	/* eax.  */\n\
-	mov 16+0(%esp), %ecx\n\
-	mov %ecx, 0(%edx)\n\
-	/* ecx.  */\n\
-	mov 16+4(%esp), %ecx\n\
-	mov %ecx, 4(%edx)\n\
-	/* edx.  */\n\
-	mov 16+8(%esp), %ecx\n\
-	mov %ecx, 8(%edx)\n\
-	/* eflags.  */\n\
-	mov 16+12(%esp), %ecx\n\
-	mov %ecx, 12(%edx)\n\
-\n\
-	/* Get the pointer to the sigaltstack flags.  */\n\
-	mov 8(%esp), %ecx\n\
-\n\
-	/* Restore the user stack.  */\n\
-	mov %edx, %esp\n\
-\n\
-	/* Clear the SA_ONSTACK flag.  */\n\
-	and %ecx, %ecx\n\
-	jz after_clear\n\
-	lock; and $~1, 0(%ecx)\n\
-after_clear:\n\
-\n\
-	/* Restore eflags, the scratch regs and the original sp and ip.  */\n\
-	popl %eax\n\
-	popl %ecx\n\
-	popl %edx\n\
-	popf\n\
-	ret\n");
+/* Stack layout:
+
+ x86 x86-64
+  7   13    rflags
+  6   12    dx
+  5   11    cx
+  4   10    ax
+  3    9    interrupted context's sp - WS  (Note: *(intr_sp - WS) = intr_ip)
+  2    8    &ss->stack.ss_flags (or NULL, if not on an alternative stack)
+       7    r11  -.
+       6    r10    \
+       5    r9       x86-64
+       4    r8       only
+       3    rdi    /
+       2    rsi  -'
+  1    1    &si
+  0    0    ss ._
+               |\
+                  entry sp
+
+ */
+__asm__ (".globl _signal_dispatch_entry\n\t"
+	 "_signal_dispatch_entry:\n\t"
+
+	 /* Save the callee saved registers that we use (when we
+	    return, we need to fully restore the register state to its
+	    interrupted context--we may have forced a remote thread
+	    into this function).  */
+#ifdef __x86_64
+	 "mov %rsi, 2*"WS"(%rsp)\n\t"
+	 "mov %rdi, 3*"WS"(%rsp)\n\t"
+	 "mov %r8, 4*"WS"(%rsp)\n\t"
+	 "mov %r9, 5*"WS"(%rsp)\n\t"
+	 "mov %r10, 6*"WS"(%rsp)\n\t"
+	 "mov %r11, 7*"WS"(%rsp)\n\t"
+	 /* Skip 8 and 9.  */
+	 "mov "R(ax)", 10*"WS"("R(sp)")\n\t"
+	 "mov "R(cx)", 11*"WS"("R(sp)")\n\t"
+	 "mov "R(dx)", 12*"WS"("R(sp)")\n\t"
+	 "pushf\n\t"
+	 "pop %rcx\n\t"
+	 "mov %rcx, 13*"WS"("R(sp)")\n\t"
+#else
+	 "mov "R(ax)", 4*"WS"("R(sp)")\n\t"
+	 "mov "R(cx)", 5*"WS"("R(sp)")\n\t"
+	 "mov "R(dx)", 6*"WS"("R(sp)")\n\t"
+	 "pushf\n\t"
+	 "pop %ecx\n\t"
+	 "mov %ecx, 7*"WS"("R(sp)")\n\t"
+#endif
+
+	 /* On x86-64, the first two arguments are passed in
+	    registers.  On x86, on the stack.  */
+#ifdef __x86_64
+	 "pop %rdi\n\t"
+	 "pop %rsi\n\t"
+#endif
+
+	 "cld\n\t"
+	 "call signal_dispatch\n\t"
+
+#ifndef __x86_64
+	 /* Fix up the stack.  */
+	 "add $(2*"WS"), %esp"
+#endif
+
+	 /* Restore the registers in the first save area.  */
+#ifdef __x86_64
+	 "pop %rsi\n\t"
+	 "pop %rdi\n\t"
+	 "pop %r8\n\t"
+	 "pop %r9\n\t"
+	 "pop %r10\n\t"
+	 "pop %r11\n\t"
+#endif
+
+	 /* Set cx to the pointer to the sigaltstack flags.  */
+	 "pop "R(cx)"\n\t"
+	 /* Set dx to the interrupted context's sp.  */
+	 "pop "R(dx)"\n\t"
+
+	 "and "R(cx)", "R(cx)"\n\t"
+	 "jz after_move\n\t"
+
+	 /* We need to move the remaining state to the interrupted
+	    stack.  */
+
+	 /* Make some space on that stack (which may be this stack!).  */
+	 "sub $(4*"WS"), "R(dx)"\n\t"
+
+	 /* Move the saved registers to the user stack.  */
+	 /* ax.  */
+	 "pop 0*"WS"("R(dx)")\n\t"
+	 /* cx.  */
+	 "pop 1*"WS"("R(dx)")\n\t"
+	 /* dx.  */
+	 "pop 2*"WS"("R(dx)")\n\t"
+	 /* Flags.  */
+	 "pop 3*"WS"("R(dx)")\n\t"
+
+
+	 /* Restore the interrupted context's sp - 5 * WS (the four
+	    saved registers above and the interrupted context's
+	    IP).  */
+	 "mov "R(dx)", "R(sp)"\n\t"
+
+	 /* Clear the SA_ONSTACK flag.  */
+	 "lock; and $~1, 0("R(cx)")\n\t"
+
+	 "after_move:\n\t"
+	 /* Restore the flag register, the scratch regs and the
+	    original sp and ip.  */
+	 "pop "R(ax)"\n\t"
+	 "pop "R(cx)"\n\t"
+	 "pop "R(dx)"\n\t"
+	 "popf\n\t"
+	 "ret\n\t");
 
 extern char _signal_dispatch_entry_self;
-/* - 0(%esp) is the return address (we ignore it)
-   - 4(%esp) is the sp to load
+/* x86-64:
 
-   Since we are returning to signal_dispatch_lowlevel's caller, we
-   also need to restore its frame pointer.  */
-__asm__ ("\n\
-	.globl _signal_dispatch_entry_self\n\
-_signal_dispatch_entry_self:\n\
-	mov 0(%ebp), %ebp\n\
-	mov 4(%esp), %esp\n\
-	jmp _signal_dispatch_entry\n");
+     - 0(%rsp) is the return address
+     - %rdi is the sp to load
+
+   ia32:
+
+     - 0(%esp) is the return address
+     - 4(%esp) is the sp to load
+
+   We need to move the return IP to *(original sp).  */
+__asm__ (".globl _signal_dispatch_entry_self\n\t"
+	 "_signal_dispatch_entry_self:\n\t"
+
+#ifdef __x86_64
+	 /* Save the current SP.  */
+	 "mov %rsp, 9*"WS"(%rdi)\n\t"
+	 /* sp = new sp.  */
+	 "mov %rdi, %rsp\n\t"
+#else
+	 /* eax, ecx and edx are caller saved.  */
+
+	 /* Save the current SP.  */
+	 "mov 4(%esp), %eax\n\t"
+	 "mov %esp, 3*"WS"(%eax)\n\t"
+
+	 /* sp = new sp.  */
+	 "mov %eax, %esp\n\t"
+#endif
+
+	 "jmp _signal_dispatch_entry\n\t");
+
 
 void
 signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
@@ -109,16 +202,17 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
 
   bool self = tid == pthread_self ();
 
-  uintptr_t intr_sp;
+  bool altstack = (ss->actions[si.si_signo - 1].sa_flags & SA_ONSTACK)
+    && !(ss->stack.ss_flags & SS_DISABLE)
+    && !(ss->stack.ss_flags & SS_ONSTACK);
 
-  if (self)
-    {
-      /* The return address is 4 bytes offset from the start of the
-	 stack frame.  */
-      intr_sp = (uintptr_t) __builtin_frame_address (0) + 4;
-      assert (* (void **) intr_sp == __builtin_return_address (0));
-    }
-  else
+  if (self && ! altstack)
+    return signal_dispatch (ss, &si);
+
+  uintptr_t intr_sp = 0;
+  uintptr_t intr_ip = 0;
+  if (! self)
+    /* Suspend the thread and get its current stack.  */
     {
       struct vg_thread_exregs_in in;
       memset (&in, 0, sizeof (in));
@@ -126,91 +220,86 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
 
       error_t err;
       err = vg_thread_exregs (VG_ADDR_VOID, thread->object,
-			      VG_EXREGS_STOP | VG_EXREGS_ABORT_IPC
+			      VG_EXREGS_STOP
 			      | VG_EXREGS_GET_REGS,
-			      in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
+			      in, VG_ADDR_VOID, VG_ADDR_VOID,
+			      VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);
       if (err)
 	panic ("Failed to modify thread " VG_ADDR_FMT,
 	       VG_ADDR_PRINTF (thread->object));
 
       intr_sp = out.sp;
-
-      /* Push the ip on the user stack.  */
-      intr_sp -= 4;
-      * (uintptr_t *) intr_sp = out.ip;
+      intr_ip = out.ip;
     }
 
-  bool altstack = false;
-  uintptr_t sp;
-  if (! (ss->actions[si.si_signo - 1].sa_flags & SA_ONSTACK)
-      || (ss->stack.ss_flags & SS_DISABLE)
-      || (ss->stack.ss_flags & SS_ONSTACK))
-    {
-      assert (! self);
-      sp = intr_sp;
-    }
-  else
+  uintptr_t *sp;
+  if (altstack)
     {
       /* The stack grows down.  */
-      sp = (uintptr_t) ss->stack.ss_sp + ss->stack.ss_size;
+      sp = (uintptr_t *) ((void *) ss->stack.ss_sp + ss->stack.ss_size);
 
       /* We know intimately that SS_ONSTACK is the least significant
 	 bit.  */
-      assert (SS_ONSTACK == 1);
+      build_assert (SS_ONSTACK == 1);
       atomic_bit_set (&ss->stack.ss_flags, 0);
+    }
+  else
+    {
+      assert (! self);
 
-      altstack = true;
+      sp = (uintptr_t *) intr_sp;
+      /* Allocate space for the interrupted context's IP.  */
+      sp --;
     }
 
   /* Set up the call frame for a call to signal_dispatch_entry.  */
 
-  /* Allocate a siginfo structure on the stack.  */
-  sp = sp - sizeof (siginfo_t);
-  siginfo_t *sip = (void *) sp;
-  /* Copy the user supplied values.  */
-  *sip = si;
-
-  /* Add space for the 4 caller saved registers.  */
-  sp -= 4 * sizeof (uintptr_t);
-
-  /* Save the interrupted sp.  */
+  /* Allocate save area 1.  */
   sp -= 4;
-  * (uintptr_t *) sp = intr_sp;
 
-  /* Address of the ss_flags.  */
-  sp -= 4;
+  /* The interrupted context's sp - WS.  (In the case where INTR_SP is
+     NULL, i.e., when we are dealing with a self signal on an
+     alternate stack, we will fix it signal_dispatch_entry_self.)  */
+  * -- sp = intr_sp - sizeof (uintptr_t);
+
+  /* The address of the ss_flags.  */
   if (altstack)
-    * (uintptr_t *) sp = (uintptr_t) &ss->stack.ss_flags;
+    * -- sp = (uintptr_t) &ss->stack.ss_flags;
   else
-    * (uintptr_t *) sp = 0;
+    * -- sp = 0;
 
-  /* Push the parameters to signal_dispatch.  */
+  /* Allocate save area 2.  */
+#ifdef __x86_64
+  sp -= 6;
+#endif
 
-  /* signal info structure.  */
-  sp -= 4;
-  * (uintptr_t *) sp = (uintptr_t) sip;
+  /* A pointer to the siginfo structure.  */
+  * -- sp = (uintptr_t) &si;
 
   /* The ss.  */
-  sp -= 4;
-  * (uintptr_t *) sp = (uintptr_t) ss;
+  * -- sp = (uintptr_t) ss;
 
   pthread_mutex_transfer_np (&ss->lock, tid);
 
   if (self)
-    ((void (*) (uintptr_t)) &_signal_dispatch_entry_self) ((uintptr_t) sp);
+    ((void (*) (uintptr_t *)) &_signal_dispatch_entry_self) (sp);
   else
     {
+      /* Set INTR_SP[-1] to the interrupted context's ip.  */
+      ((uintptr_t *) intr_sp)[-1] = intr_ip;
+
       struct vg_thread_exregs_in in;
       struct vg_thread_exregs_out out;
 
-      in.sp = sp;
+      in.sp = (uintptr_t) sp;
       in.ip = (uintptr_t) &_signal_dispatch_entry;
 
       vg_thread_exregs (VG_ADDR_VOID, thread->object,
 			VG_EXREGS_SET_SP_IP
-			| VG_EXREGS_START | VG_EXREGS_ABORT_IPC,
-			in, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID, VG_ADDR_VOID,
+			| VG_EXREGS_START,
+			in, VG_ADDR_VOID, VG_ADDR_VOID,
+			VG_ADDR_VOID, VG_ADDR_VOID,
 			&out, NULL, NULL, NULL, NULL);
     }
 }

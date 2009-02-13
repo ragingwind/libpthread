@@ -49,11 +49,9 @@ extern inline struct __pthread *
 __attribute__((__always_inline__))
 _pthread_self (void)
 {
-#if USE_L4
-  return (struct __pthread *) l4_user_defined_handle ();
-#else
-  assert (0);
-#endif
+  struct hurd_utcb *utcb = hurd_utcb ();
+  assert (utcb);
+  return utcb->pthread;
 }
 
 extern inline void

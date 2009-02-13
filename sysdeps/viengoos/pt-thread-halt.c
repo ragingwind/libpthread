@@ -38,7 +38,10 @@ __pthread_thread_halt (struct __pthread *thread)
       if (thread == _pthread_self ())
 	{
 	  while (1)
-	    vg_suspend ();
+	    {
+	      vg_suspend ();
+	      assert (! "Failed to suspend self.");
+	    }
 	}
       else
 	{

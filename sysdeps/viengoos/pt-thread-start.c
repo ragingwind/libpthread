@@ -49,14 +49,11 @@ __pthread_thread_start (struct __pthread *thread)
       in.sp = (uintptr_t) thread->mcontext.sp;
       in.ip = (uintptr_t) thread->mcontext.pc;
 
-      in.user_handle = (uintptr_t) thread;
       err = vg_thread_exregs (VG_ADDR_VOID, thread->object,
 			      VG_EXREGS_SET_ASPACE
 			      | VG_EXREGS_SET_ACTIVITY
 			      | VG_EXREGS_SET_SP_IP
-			      | VG_EXREGS_SET_USER_HANDLE
-			      | VG_EXREGS_START
-			      | VG_EXREGS_ABORT_IPC,
+			      | VG_EXREGS_START,
 			      in, aspace, activity, VG_ADDR_VOID, VG_ADDR_VOID,
 			      &out, NULL, NULL, NULL, NULL);
       assert (err == 0);

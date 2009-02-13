@@ -36,13 +36,19 @@ __pthread_do_cancel (struct __pthread *p)
     call_exit ();
   else
     {
-#ifdef USE_L4
-      thread_start_sp_ip (p->object,
-			  p->mcontext.sp, (uintptr_t) call_exit);
-#else
-# warning Unimplemented on this platform.
-      assert (0);
-#endif
+      struct vg_thread_exregs_in in;
+      struct vg_thread_exregs_out out;
+
+      in.sp = (uintptr_t) p->mcontext.sp;
+      in.ip = (uintptr_t) call_exit;
+
+      error_t err;
+      err = vg_thread_exregs (VG_ADDR_VOID, p->object,
+			      VG_EXREGS_SET_SP_IP,
+			      in, VG_ADDR_VOID, VG_ADDR_VOID,
+			      VG_ADDR_VOID, VG_ADDR_VOID,
+			      &out, NULL, NULL, NULL, NULL);
+      assert (err == 0);
     }
 
   return 0;

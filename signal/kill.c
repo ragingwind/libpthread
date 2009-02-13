@@ -67,6 +67,12 @@ kill (pid_t pid, int signo)
      current thread has blocked the signal, the correct thing to do is
      to iterate over all the other threads and find on that hasn't
      blocked it.  */
+
+  extern int __pthread_num_threads;
+  if (__pthread_num_threads == 0)
+    panic ("signal %d received before pthread library is able to handle it",
+	   signo);
+
   return pthread_kill (pthread_self (), signo);
 }
 
