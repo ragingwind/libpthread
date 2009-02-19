@@ -43,6 +43,9 @@ extern char _signal_dispatch_entry;
 /* Stack layout:
 
  x86 x86-64
+            \
+             > sig_info_t structure.
+  8   14    /
   7   13    rflags
   6   12    dx
   5   11    cx
@@ -121,38 +124,45 @@ __asm__ (".globl _signal_dispatch_entry\n\t"
 	 /* Set dx to the interrupted context's sp.  */
 	 "pop "R(dx)"\n\t"
 
-	 "and "R(cx)", "R(cx)"\n\t"
-	 "jz after_move\n\t"
-
 	 /* We need to move the remaining state to the interrupted
 	    stack.  */
 
-	 /* Make some space on that stack (which may be this stack!).  */
-	 "sub $(4*"WS"), "R(dx)"\n\t"
+	 /* Make some space on that stack.  As that stack may be this
+	    stack, we need to be careful: this will overwrite the
+	    siginfo structure and possibly part of the first save
+	    area.  */
+	 "sub $(3*"WS"), "R(dx)"\n\t"
 
-	 /* Move the saved registers to the user stack.  */
-	 /* ax.  */
-	 "pop 0*"WS"("R(dx)")\n\t"
+	 /* Move the saved flags, dx and cx to the user stack and
+	    restore ax.  */
+	 /* flags.  */
+	 "mov 3*"WS"("R(sp)"), "R(ax)"\n\t"
+	 "mov "R(ax)", 2*"WS"("R(dx)")\n\t"
+
+	 /* dx. */
+	 "mov 2*"WS"("R(sp)"), "R(ax)"\n\t"
+	 "mov "R(ax)", 1*"WS"("R(dx)")\n\t"
+
+	 /* We don't need rax any more.  We can restore it.  */
+	 "pop "R(ax)"\n\t"
+
 	 /* cx.  */
-	 "pop 1*"WS"("R(dx)")\n\t"
-	 /* dx.  */
-	 "pop 2*"WS"("R(dx)")\n\t"
-	 /* Flags.  */
-	 "pop 3*"WS"("R(dx)")\n\t"
-
+	 "pop 0*"WS"("R(dx)")\n\t"
 
 	 /* Restore the interrupted context's sp - 5 * WS (the four
 	    saved registers above and the interrupted context's
 	    IP).  */
 	 "mov "R(dx)", "R(sp)"\n\t"
 
-	 /* Clear the SA_ONSTACK flag.  */
+	 /* Clear the SA_ONSTACK flag, if required (i.e., &SS_FLAGS is
+	    not NULL).  */
+	 "and "R(cx)", "R(cx)"\n\t"
+	 "jz after_clear\n\t"
 	 "lock; and $~1, 0("R(cx)")\n\t"
+	 "after_clear:\n\t"
 
-	 "after_move:\n\t"
-	 /* Restore the flag register, the scratch regs and the
-	    original sp and ip.  */
-	 "pop "R(ax)"\n\t"
+	 /* Restore the flag register, cx, dx, and the original sp and
+	    ip.  */
 	 "pop "R(cx)"\n\t"
 	 "pop "R(dx)"\n\t"
 	 "popf\n\t"
@@ -255,7 +265,13 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
 
   /* Set up the call frame for a call to signal_dispatch_entry.  */
 
-  /* Allocate save area 1.  */
+  /* Copy the signinfo structure onto the target stack.  */
+  siginfo_t *sip;
+  sp -= (sizeof (si) + sizeof (uintptr_t) - 1) / sizeof (uintptr_t);
+  sip = sp;
+  * sip = si;
+
+  /* Allocate save area 1, which requires space for 4 registers.  */
   sp -= 4;
 
   /* The interrupted context's sp - WS.  (In the case where INTR_SP is
@@ -269,13 +285,14 @@ signal_dispatch_lowlevel (struct signal_state *ss, pthread_t tid,
   else
     * -- sp = 0;
 
-  /* Allocate save area 2.  */
+  /* Allocate save area 2, which requires space for 6 registers on
+     x86-64.  */
 #ifdef __x86_64
   sp -= 6;
 #endif
 
   /* A pointer to the siginfo structure.  */
-  * -- sp = (uintptr_t) &si;
+  * -- sp = (uintptr_t) sip;
 
   /* The ss.  */
   * -- sp = (uintptr_t) ss;
