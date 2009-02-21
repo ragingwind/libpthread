@@ -20,17 +20,14 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <viengoos/misc.h>
 
 #include <pt-internal.h>
 
 int
 sched_yield (void)
 {
-#ifdef USE_L4
-  l4_yield ();
-#else
-# warning Not ported to this platform.
-#endif
+  // vg_sleep (VG_ADDR_VOID, VG_ADDR_VOID, 0);
   return 0;
 }
 

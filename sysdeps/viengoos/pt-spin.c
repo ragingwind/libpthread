@@ -17,12 +17,9 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#ifdef USE_L4
-# include <l4.h>
-#endif
-
 #include <pthread.h>
 #include <sched.h>
+#include <viengoos/misc.h>
 
 /* The default for single processor machines; don't spin, it's
    pointless.  */
@@ -42,14 +39,9 @@ _pthread_spin_lock (__pthread_spinlock_t *lock)
 {
   int i;
 
-#ifdef USE_L4
   /* Start with a small timeout of 2 microseconds, then back off
      exponentially.  */
-  l4_time_t timeout;
-  timeout = l4_time_period (2);
-#else
-# warning Do not know how to sleep on this platform.
-#endif
+  uint64_t timeout = 2000;
 
   while (1)
     {
@@ -59,13 +51,10 @@ _pthread_spin_lock (__pthread_spinlock_t *lock)
 	    return 0;
 	}
 
-#ifdef USE_L4
-      l4_sleep (timeout);
-
-      timeout = l4_time_mul2 (timeout);
-      if (timeout == L4_NEVER)
-	timeout = L4_TIME_PERIOD_MAX;
-#endif
+      vg_sleep (VG_ADDR_VOID, VG_ADDR_VOID, timeout);
+      /* Sleep for at most 200 milliseconds.  */
+      if (timeout < 100 * 1000 * 1000)
+	timeout *= 2;
     }
 }
 
