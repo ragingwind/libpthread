@@ -25,6 +25,7 @@
 #include <hurd/storage.h>
 #include <hurd/as.h>
 #include <viengoos/addr.h>
+#include <viengoos/folio.h>
 #include <hurd/message-buffer.h>
 
 #include <pt-internal.h>
@@ -54,6 +55,21 @@ __pthread_thread_alloc (struct __pthread *thread)
     }
   else
     {
+      if (__pthread_num_threads == 2)
+	/* This is the second thread.  We are now really
+	   multithreaded.  There is a problem with sharing address
+	   space roots, which is that if one thread changes its root,
+	   it needs to synchronize the new root with other threads.
+	   This can be done but requires adding a lot of logic.
+	   Alternatively, we can try to ensure that this never happens
+	   by making the common cappage very uncompressed.  By ensure
+	   that a slot close to the root (in terms of depth) is
+	   available, we achieve this.  */
+	{
+	  as_ensure (VG_ADDR (VG_FOLIO_OBJECTS - 1,
+			      VG_ADDR_BITS - (PAGESIZE_LOG2 + 7 + 8 * 3)));
+	}
+
       struct storage storage;
       storage = storage_alloc (meta_data_activity, vg_cap_thread,
 			       /* Threads are rarely shortly lived.  */
