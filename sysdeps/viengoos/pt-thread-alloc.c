@@ -66,8 +66,8 @@ __pthread_thread_alloc (struct __pthread *thread)
 	   that a slot close to the root (in terms of depth) is
 	   available, we achieve this.  */
 	{
-	  as_ensure (VG_ADDR (VG_FOLIO_OBJECTS - 1,
-			      VG_ADDR_BITS - (PAGESIZE_LOG2 + 7 + 8 * 3)));
+	  int depth = VG_ADDR_BITS - (PAGESIZE_LOG2 + 7 + 8 * 3);
+	  as_ensure (vg_addr_add (VG_ADDR (0, depth), VG_FOLIO_OBJECTS - 1));
 	}
 
       struct storage storage;
