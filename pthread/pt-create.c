@@ -1,5 +1,5 @@
 /* Thread creation.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -44,6 +44,8 @@ entry_point (void *(*start_routine)(void *), void *arg)
   /* A fresh thread needs to be bound to the global locale.  */
   uselocale (LC_GLOBAL_LOCALE);
 #endif
+
+  __pthread_startup ();
 
   pthread_exit (start_routine (arg));
 }
@@ -200,7 +202,7 @@ __pthread_create_internal (struct __pthread **thread,
   _dl_deallocate_tls (pthread->tcb, 1);
  failed_thread_tls_alloc:
   __pthread_thread_dealloc (pthread);
-  __pthread_thread_halt (pthread, 0);
+  __pthread_thread_halt (pthread);
  failed_thread_alloc:
   __pthread_stack_dealloc (pthread->stackaddr, pthread->stacksize);
   pthread->stack = 0;

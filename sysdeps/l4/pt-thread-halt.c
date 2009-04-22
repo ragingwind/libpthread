@@ -1,5 +1,5 @@
-/* Deallocate the kernel thread resources.  Mach version.
-   Copyright (C) 2000,02 Free Software Foundation, Inc.
+/* Deallocate the kernel thread resources.  L4version.
+   Copyright (C) 2000, 2002, 2004 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -19,20 +19,27 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <mach.h>
 
 #include <pt-internal.h>
 
-extern L4_ThreadId_t __task_server;
-
 /* Deallocate the kernel thread resources associated with THREAD.  */
 void
-__pthread_thread_halt (struct __pthread *thread)
+__pthread_thread_halt (struct __pthread *thread, int need_dealloc)
 {
-  CORBA_Environment env = idl4_default_environment;
-  L4_Word_t *t = (L4_Word_t *) &thread->threadid;
+  l4_thread_id_t tid = thread->threadid;
 
-  assert (*t);
-  assert (thread_terminate (__task_server, *t, &env));
-  *t = 0;
+  if (need_dealloc)
+    __pthread_dealloc (thread);
+
+  /* There is potential race here: once if TID is the current thread,
+     then once we add TID to the pool, someone can reallocate it
+     before we call stop.  However, to start the thread, the caller
+     atomically starts and sets the sp and ip, thus, if the stop has
+     not yet executed at that point, it won't.  */
+
+  if (tid != l4_myself ())
+    l4_stop (tid);
+  pthread_pool_add_np (tid);
+  if (tid == l4_myself ())
+    l4_stop (tid);
 }

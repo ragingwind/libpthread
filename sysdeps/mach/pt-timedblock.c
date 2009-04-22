@@ -51,11 +51,11 @@ __pthread_timedblock (struct __pthread *thread,
   timeout = (abstime->tv_sec - now.tv_sec) * 1000;
 
   if (((abstime->tv_nsec + 999) / 1000) >= now.tv_usec)
-    timeout -= (((abstime->tv_nsec + 999) / 1000) - now.tv_usec + 999) / 1000;
+    timeout += (((abstime->tv_nsec + 999) / 1000) - now.tv_usec + 999) / 1000;
   else
     /* Need to do a carry.  */
-    timeout -= 1000 + ((abstime->tv_nsec + 999999) / 1000000)
-      - (now.tv_usec + 999) / 1000;
+    timeout -= (now.tv_usec + 999) / 1000 -
+      ((abstime->tv_nsec + 999999) / 1000000);
 
   err = __mach_msg (&msg, MACH_RCV_MSG | MACH_RCV_TIMEOUT, 0,
 		    sizeof msg, thread->wakeupmsg.msgh_remote_port,

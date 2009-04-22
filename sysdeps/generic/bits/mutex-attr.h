@@ -1,5 +1,5 @@
 /* Mutex attribute type.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -20,6 +20,10 @@
 #ifndef _BITS_MUTEX_ATTR_H
 #define _BITS_MUTEX_ATTR_H	1
 
+enum __pthread_mutex_protocol;
+enum __pthread_process_shared;
+enum __pthread_mutex_type;
+
 /* This structure describes the attributes of a POSIX mutex
    attribute.  */
 struct __pthread_mutexattr
@@ -29,5 +33,8 @@ struct __pthread_mutexattr
   enum __pthread_process_shared pshared;
   enum __pthread_mutex_type mutex_type;
 };
+
+/* Attributes for a recursive mutex.  */
+extern const struct __pthread_mutexattr __pthread_recursive_mutexattr;
 
 #endif /* bits/mutex-attr.h */

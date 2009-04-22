@@ -1,5 +1,5 @@
 /* Lock a mutex with a timeout.  Generic version.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -36,6 +36,20 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
   if (__pthread_spin_trylock (&mutex->__held) == 0)
     /* Successfully acquired the lock.  */
     {
+#ifdef ALWAYS_TRACK_MUTEX_OWNER
+#ifndef NDEBUG
+      self = _pthread_self ();
+      if (self)
+	/* The main thread may take a lock before the library is fully
+	   initialized, in particular, before the main thread has a
+	   TCB.  */
+	{
+	  assert (! mutex->owner);
+	  mutex->owner = _pthread_self ();
+	}
+#endif
+#endif
+
       if (mutex->attr)
 	switch (mutex->attr->mutex_type)
 	  {
@@ -59,14 +73,18 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
   /* The lock is busy.  */
 
   self = _pthread_self ();
+  assert (self);
 
-  if (mutex->attr)
+  if (! mutex->attr || mutex->attr->mutex_type == PTHREAD_MUTEX_NORMAL)
+    {
+#if defined(ALWAYS_TRACK_MUTEX_OWNER)
+      assert (mutex->owner != self);
+#endif
+    }
+  else
     {
       switch (mutex->attr->mutex_type)
 	{
-	case PTHREAD_MUTEX_NORMAL:
-	  break;
-
 	case PTHREAD_MUTEX_ERRORCHECK:
 	  if (mutex->owner == self)
 	    {
@@ -88,6 +106,11 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
 	  LOSE;
 	}
     }
+
+#if !defined(ALWAYS_TRACK_MUTEX_OWNER)
+  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+#endif
+    assert (mutex->owner);
 
   if (abstime && (abstime->tv_nsec < 0 || abstime->tv_nsec >= 1000000000))
     return EINVAL;
@@ -122,6 +145,13 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
     }
   else
     __pthread_block (self);
+
+#if !defined(ALWAYS_TRACK_MUTEX_OWNER)
+  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+#endif
+    {
+      assert (mutex->owner == self);
+    }
 
   if (mutex->attr)
     switch (mutex->attr->mutex_type)

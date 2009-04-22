@@ -1,5 +1,5 @@
 /* System dependent pthreads code.  Hurd version.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -23,36 +23,39 @@
 
 #include <pt-internal.h>
 
+int
+sched_yield (void)
+{
+  l4_yield ();
+  return 0;
+}
+
 /* Forward.  */
-static void *init_routine (void);
+static void init_routine (void (*) (void *), void *)
+  __attribute__ ((noreturn));
 
 /* OK, the name of this variable isn't really appropriate, but I don't
    want to change it yet.  */
-void *(*_pthread_init_routine)(void) = &init_routine;
+void (*_pthread_init_routine)(void (*) (void *), void *) = &init_routine;
 
 /* This function is called from the Hurd-specific startup code.  It
    should return a new stack pointer for the main thread.  The caller
    will switch to this new stack before doing anything serious.  */
-static void * 
-init_routine (void)
+static void
+init_routine (void (*entry) (void *), void *arg)
 {
-  struct __pthread *thread;
-  int err;
-
   /* Initialize the library.  */
   __pthread_initialize ();
 
+  struct __pthread *thread;
+  int err;
+
   /* Create the pthread structure for the main thread (i.e. us).  */
-  err = __pthread_create_internal (&thread, 0, 0, 0);
+  err = __pthread_create_internal (&thread, 0,
+				   (void *(*)(void *)) entry, arg);
   assert_perror (err);
 
-  __pthread_initialize ();
-
-  /* Decrease the number of threads, to take into account that the
-     signal thread (which will be created by the startup code when we
-     return from here) shouldn't be seen as a user thread.  */
-#warning Need to implement the signal thread.
-  // __pthread_total--;
-
-  return (void *) thread->mcontext.sp;
+  /* Switch stacks.  */
+  l4_start_sp_ip (l4_myself (), thread->mcontext.sp,
+		  thread->mcontext.pc);
 }

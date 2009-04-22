@@ -1,5 +1,5 @@
-/* Internal defenitions for pthreads library.
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+/* Internal definitions for pthreads library.
+   Copyright (C) 2000, 2002, 2005, 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -20,33 +20,42 @@
 #ifndef _PT_SYSDEP_H
 #define _PT_SYSDEP_H	1
 
-#include <l4/l4.h>
-#include <task_client.h>
-#include <machine/vmparam.h>
+#include <l4.h>
+#include <hurd/storage.h>
+#include <sys/mman.h>
 
 /* XXX */
 #define _POSIX_THREAD_THREADS_MAX	64
 
-/* The default stack size.  */
-#define PTHREAD_STACK_DEFAULT	(PAGE_SIZE)
+/* The default stack size: 2MB.  */
+#define PTHREAD_STACK_DEFAULT	(2 * 1024 * 1024)
+
+#include <hurd/exceptions.h>
+
+#define EXCEPTION_AREA_SIZE EXCEPTION_STACK_SIZE
+#define EXCEPTION_AREA_SIZE_LOG2 EXCEPTION_STACK_SIZE_LOG2
+/* The exception page is the first object.  */
+#define EXCEPTION_PAGE 0
 
 #define PTHREAD_SYSDEP_MEMBERS \
-  L4_ThreadId_t threadid; \
-  L4_Word_t my_errno;
+  addr_t object; \
+  l4_thread_id_t threadid; \
+  addr_t exception_area[EXCEPTION_AREA_SIZE / PAGESIZE]; \
+  void *exception_area_va; \
+  l4_word_t my_errno;
 
 extern inline struct __pthread *
 __attribute__((__always_inline__))
 _pthread_self (void)
 {
-  return (struct __pthread *) L4_MyUserDefinedHandle ();
+  return (struct __pthread *) l4_user_defined_handle ();
 }
 
 extern inline void
-__pthread_stack_dealloc (void *stackaddr, size_t stacksize)
 __attribute__((__always_inline__))
+__pthread_stack_dealloc (void *stackaddr, size_t stacksize)
 {
-  /* XXX: can only implement this once we have a working memory manager.  */
-  return;
+  munmap (stackaddr, stacksize);
 }
 
 #endif /* pt-sysdep.h */

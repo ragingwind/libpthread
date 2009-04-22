@@ -13,10 +13,6 @@
   platforms.
 
 * Implementation details
-** Feature test macros
-   This is most likely wrong.  We need a standards expert to really
-   look over this or someone who can outline what I need to do.
-
 ** pthread_atfork
    This cannot be implemented without either changing glibc to export
    some hooks (c.f. libc/sysdeps/mach/hurd/fork.c) or by providing a

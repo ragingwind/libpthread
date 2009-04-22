@@ -1,0 +1,4 @@
+This directory provides a signal implementation, which is appropriate
+for operating systems where signals are managed at user-level.  It is
+up to the run-time to catch the signals and forward them to the
+implementation via, e.g., the pthread_kill_info_np call.

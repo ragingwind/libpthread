@@ -1,5 +1,5 @@
-/* Memory barrier operations.  i386 version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* Block a thread.  Viengoos version.
+   Copyright (C) 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,24 +17,14 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#ifndef _BITS_MEMORY_H
-#define _BITS_MEMORY_H	1
+#include <pt-internal.h>
 
-/* Prevent read and write reordering across this function.  */
-inline void
-__memory_barrier (void)
+#include <hurd/stddef.h>
+#include <hurd/futex.h>
+
+/* Block THREAD.  */
+void
+__pthread_block (struct __pthread *thread)
 {
-  int i;
-
-  /* Any lock'ed instruction will do.  We just do a simple
-     increment.  */
-  __asm__ __volatile ("lock; incl %0" : "=m" (i) : "m" (i));
+  futex_wait (&thread->threadid, thread->threadid);
 }
-
-/* Prevent read reordering across this function.  */
-#define __memory_read_barrier __memory_barrier
-
-/* Prevent write reordering across this function.  */
-#define __memory_write_barrier __memory_barrier
-
-#endif

@@ -28,7 +28,7 @@
 
 
 /* Terminate the current thread and make STATUS available to any
-   thread that might join us.  */
+   thread that might join it.  */
 void
 pthread_exit (void *status)
 {
@@ -72,7 +72,6 @@ pthread_exit (void *status)
 
   if (self->tcb)
     _dl_deallocate_tls (self->tcb, 1);
-  __pthread_thread_dealloc (self);
 
   switch (self->state)
     {
@@ -88,7 +87,8 @@ pthread_exit (void *status)
          deallocate our own stack.  However, it will eventually be
          reused when this thread structure is recycled.  */
       __pthread_mutex_unlock (&self->state_lock);
-      need_dealloc = 1;
+
+      __pthread_dealloc (self);
 
       break;
 
@@ -105,7 +105,6 @@ pthread_exit (void *status)
          waiting to join us.  */
       pthread_cond_broadcast (&self->state_cond);
       __pthread_mutex_unlock (&self->state_lock);
-      need_dealloc = 0;
 
       break;
     }
@@ -115,7 +114,7 @@ pthread_exit (void *status)
      This means that before freeing any resources, such a thread
      should make sure that this thread is really halted.  */
   
-  __pthread_thread_halt (self, need_dealloc);
+  __pthread_thread_halt (self);
 
   /* NOTREACHED */
   abort ();

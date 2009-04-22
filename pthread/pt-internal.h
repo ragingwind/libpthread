@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005, 2006, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -36,9 +36,13 @@
 /* Thread state.  */
 enum pthread_state
 {
+  /* The thread is running and joinable.  */
   PTHREAD_JOINABLE = 0,
+  /* The thread is running and detached.  */
   PTHREAD_DETACHED,
+  /* A joinable thread exited and its return code is available.  */
   PTHREAD_EXITED,
+  /* The thread structure is unallocated and available for reuse.  */
   PTHREAD_TERMINATED
 };
 
@@ -124,15 +128,22 @@ __pthread_dequeue (struct __pthread *thread)
 }
 
 /* Iterate over QUEUE storing each element in ELEMENT.  */
-#define __pthread_queue_iterate(queue, element) \
-	for (element = queue; element; element = element->next)
+#define __pthread_queue_iterate(queue, element)				\
+  for (struct __pthread *__pdi_next = (queue);				\
+       ((element) = __pdi_next)						\
+	 && ((__pdi_next = __pdi_next->next),				\
+	     1);							\
+       )
 
 /* Iterate over QUEUE dequeuing each element, storing it in
    ELEMENT.  */
-#define __pthread_dequeuing_iterate(queue, element) \
-	for (element = queue; \
-	     element && ((element->prevp = 0), 1); \
-	     element = element->next)
+#define __pthread_dequeuing_iterate(queue, element)			\
+  for (struct __pthread *__pdi_next = (queue);				\
+       ((element) = __pdi_next)						\
+	 && ((__pdi_next = __pdi_next->next),				\
+	     ((element)->prevp = 0),					\
+	     1);							\
+       )
 
 /* The total number of threads currently active.  */
 extern __atomic_t __pthread_total;
@@ -210,23 +221,27 @@ extern int __pthread_setup (struct __pthread *__restrict thread,
    resources) for THREAD; it must not be placed on the run queue.  */
 extern int __pthread_thread_alloc (struct __pthread *thread);
 
-/* Deallocate any kernel resources associated with THREAD except don't
-   halt the thread itself.  On return, the thread will be marked as
-   dead and __pthread_halt will be called.  */
+/* Deallocate any kernel resources associated with THREAD.  The thread
+   must not be running (that is, if __pthread_thread_start was called,
+   __pthread_thread_halt must first be called).  This function will
+   never be called by a thread on itself.  In the case that a thread
+   exits, its thread structure will be cached and cleaned up
+   later.  */
 extern void __pthread_thread_dealloc (struct __pthread *thread);
 
 /* Start THREAD making it eligible to run.  */
 extern int __pthread_thread_start (struct __pthread *thread);
 
-/* Stop the kernel thread associated with THREAD.  If NEED_DEALLOC is
-   true, the function must call __pthread_dealloc on THREAD.
+/* Stop the kernel thread associated with THREAD.  This function may
+   be called by two threads in parallel.  In particular, by the thread
+   itself and another thread trying to join it.  This function must be
+   implemented such that this is safe.  */
+extern void __pthread_thread_halt (struct __pthread *thread);
 
-   NB: The thread executing this function may be the thread which is
-   being halted, thus the last action should be halting the thread
-   itself.  */
-extern void __pthread_thread_halt (struct __pthread *thread,
-				   int need_dealloc);
 
+/* Called by a thread just before it calls the provided start
+   routine.  */
+extern void __pthread_startup (void);
 
 /* Block THREAD.  */
 extern void __pthread_block (struct __pthread *thread);

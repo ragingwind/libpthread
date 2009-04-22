@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 Free Software Foundation, Inc.
+/* Copyright (C) 2005, 2007 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -45,10 +45,12 @@ extern int sem_wait (sem_t *sem);
    without blocking.  */
 extern int sem_trywait (sem_t *sem);
 
+#ifdef __USE_XOPEN2K
 /* Perform a down operation on semaphore *SEM but don't wait longer
    than TIMEOUT.  */
 extern int sem_timedwait (sem_t *__restrict sem,
 			  const struct timespec *__restrict timeout);
+#endif
 
 /* Perform an up operation on semaphore *SEM.  */
 extern int sem_post (sem_t *sem);

@@ -1,6 +1,6 @@
 #
-#   Copyright (C) 1994,95,96,97,2000,02, 2004, 2005, 2006
-#     Free Software Foundation, Inc.
+#   Copyright (C) 1994, 1995, 1996, 1997, 2000, 2002, 2004, 2005, 2006, 2007,
+#     2008 Free Software Foundation, Inc.
 #
 #   This program is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU General Public License as
@@ -45,6 +45,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 									    \
 	pt-alloc.c							    \
 	pt-create.c							    \
+	pt-getattr.c							    \
 	pt-equal.c							    \
 	pt-dealloc.c							    \
 	pt-detach.c							    \
@@ -70,6 +71,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 	pt-mutex-init.c pt-mutex-destroy.c				    \
 	pt-mutex-lock.c pt-mutex-trylock.c pt-mutex-timedlock.c		    \
 	pt-mutex-unlock.c						    \
+	pt-mutex-transfer-np.c						    \
 	pt-mutex-getprioceiling.c pt-mutex-setprioceiling.c		    \
 									    \
 	pt-rwlock-attr.c						    \
@@ -98,6 +100,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 	pt-thread-dealloc.c						    \
 	pt-thread-start.c						    \
 	pt-thread-halt.c						    \
+	pt-startup.c							    \
 									    \
 	pt-getconcurrency.c pt-setconcurrency.c				    \
 									    \
@@ -136,13 +139,16 @@ libname = libpthread
 sysdeps_headers =				\
               pthread.h				\
               pthread/pthread.h			\
+              pthread/pthreadtypes.h		\
 	      semaphore.h			\
 						\
               bits/pthread.h			\
+              bits/pthread-np.h			\
               bits/mutex.h			\
               bits/condition.h			\
               bits/condition-attr.h		\
               bits/spin-lock.h			\
+              bits/spin-lock-inline.h		\
               bits/cancelation.h		\
               bits/thread-attr.h		\
               bits/barrier-attr.h		\
@@ -154,12 +160,12 @@ sysdeps_headers =				\
               bits/rwlock-attr.h		\
 	      bits/semaphore.h
 
-SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/i386	\
-	 $(srcdir)/sysdeps/$(MICROKERNEL)/i386			\
+SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/ia32	\
+	 $(srcdir)/sysdeps/$(MICROKERNEL)/ia32			\
+	 $(srcdir)/sysdeps/ia32					\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/hurd			\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)			\
 	 $(srcdir)/sysdeps/hurd					\
-	 $(srcdir)/sysdeps/i386					\
 	 $(srcdir)/sysdeps/generic				\
 	 $(srcdir)/sysdeps/posix				\
 	 $(srcdir)/pthread					\
@@ -169,15 +175,16 @@ VPATH += $(SYSDEP_PATH)
 
 HURDLIBS = ihash
 
-CFLAGS := -D_IO_MTSAFE_IO				\
-	   $(addprefix -I, $(SYSDEP_PATH))		\
+installhdrs :=
+installhdrsubdir := .
+
+include ../Makeconf
+
+CPPFLAGS += \
+	  $(addprefix -I, $(SYSDEP_PATH))		\
 	  -imacros $(srcdir)/include/libc-symbols.h	\
 	  -imacros $(srcdir)/not-in-libc.h
 
-installhdrs :=
-installhdrsubdir = .
-
-include ../Makeconf
 
 install: install-headers $(libdir)/libpthread2.a $(libdir)/libpthread2_pic.a
 install-headers: $(addprefix $(includedir)/, $(sysdeps_headers))

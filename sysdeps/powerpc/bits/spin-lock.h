@@ -1,5 +1,5 @@
-/* Machine-specific definitions for spin locks.  i386 version.
-   Copyright (C) 2000, 2005 Free Software Foundation, Inc.
+/* Machine-specific definitions for spin locks.  PowerPC version.
+   Copyright (C) 2003 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ __BEGIN_DECLS
 typedef __volatile int __pthread_spinlock_t;
 
 /* Initializer for a spin lock object.  */
-# define __SPIN_LOCK_INITIALIZER (0)
+# define __SPIN_LOCK_INITIALIZER ((__pthread_spinlock_t) 0)
 
 #if defined __USE_EXTERN_INLINES || defined _FORCE_INLINES
 
@@ -68,16 +68,19 @@ __PT_SPIN_INLINE int __pthread_spin_trylock (__pthread_spinlock_t *__lock);
 __PT_SPIN_INLINE int
 __pthread_spin_trylock (__pthread_spinlock_t *__lock)
 {
-  int __locked;
-  __asm__ __volatile ("xchgl %0, %1"
-		      : "=&r" (__locked), "=m" (*__lock) : "0" (1));
-  return __locked ? __EBUSY : 0;
+  long int __rtn;
+  __asm__ __volatile__ ("\
+0:	lwarx	%0,0,%1\n\
+	stwcx.	%2,0,%1\n\
+	bne-	0b\n\
+" : "=&r" (__rtn) : "r" (__lock), "r" (1) : "cr0");
+  return __rtn ? __EBUSY : 0;
 }
 
-extern __inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
+extern inline int __pthread_spin_lock (__pthread_spinlock_t *__lock);
 extern int _pthread_spin_lock (__pthread_spinlock_t *__lock);
 
-extern __inline int
+extern inline int
 __pthread_spin_lock (__pthread_spinlock_t *__lock)
 {
   if (__pthread_spin_trylock (__lock))
@@ -90,10 +93,12 @@ __PT_SPIN_INLINE int __pthread_spin_unlock (__pthread_spinlock_t *__lock);
 __PT_SPIN_INLINE int
 __pthread_spin_unlock (__pthread_spinlock_t *__lock)
 {
-  int __unlocked;
-  __asm__ __volatile ("xchgl %0, %1"
-		      : "=&r" (__unlocked), "=m" (*__lock) : "0" (0));
-  return 0;
+  long int __locked;
+  __asm__ __volatile__ ("\
+0:	lwarx	%0,0,%1\n\
+	stwcx.	%2,0,%1\n\
+	bne-	0b\n\
+" : "=&r" (__locked) : "r" (__lock), "r" (0) : "cr0");
 }
 
 #endif /* Use extern inlines or force inlines.  */

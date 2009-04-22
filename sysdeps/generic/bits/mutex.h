@@ -1,5 +1,8 @@
 /* Mutex type.  Generic version.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+
+   Copyright (C) 2000, 2002, 2005, 2006, 2007, 2008, 2009
+     Free Software Foundation, Inc.
+
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -52,88 +55,13 @@ struct __pthread_mutex
 /* Initializer for a mutex.  N.B.  this also happens to be compatible
    with the cthread mutex initializer.  */
 #  define __PTHREAD_MUTEX_INITIALIZER \
-    { __SPIN_LOCK_INITIALIZER, __SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0, 0 }
+    { __PTHREAD_SPIN_LOCK_INITIALIZER, __PTHREAD_SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0, 0 }
+
+#  define __PTHREAD_RECURSIVE_MUTEX_INITIALIZER \
+    { __PTHREAD_SPIN_LOCK_INITIALIZER, __PTHREAD_SPIN_LOCK_INITIALIZER, 0, 0,	\
+	(struct __pthread_mutexattr *) &__pthread_recursive_mutexattr, 0, 0, 0 }
 
 # endif
 #endif /* Not __pthread_mutex_defined.  */
-
-#ifdef _BITS_MUTEX_H
-
-#include <errno.h>
-#include <stddef.h>
-
-#ifdef __USE_EXTERN_INLINES
-
-# ifndef _EXTERN_INLINE
-#  define _EXTERN_INLINE extern __inline
-# endif
-
-_EXTERN_INLINE int
-pthread_mutex_init (struct __pthread_mutex *__restrict __mutex,
-		    const pthread_mutexattr_t *__restrict attr)
-{
-  struct __pthread_mutex initialized_mutex = __PTHREAD_MUTEX_INITIALIZER;
-
-  extern int _pthread_mutex_init (struct __pthread_mutex *,
-				  const pthread_mutexattr_t *);
-
-  if (attr)
-    return _pthread_mutex_init (__mutex, attr);
-
-  *__mutex = initialized_mutex;
-  return 0;
-}
-
-_EXTERN_INLINE int
-pthread_mutex_destroy (struct __pthread_mutex *__mutex)
-{
-  extern int _pthread_mutex_destroy (struct __pthread_mutex *);
-
-  if (__mutex->attr || __mutex->data)
-    return _pthread_mutex_destroy (__mutex);
-
-  return 0;
-}
-
-_EXTERN_INLINE int
-__pthread_mutex_lock (struct __pthread_mutex *__mutex)
-{
-  extern int _pthread_mutex_lock (struct __pthread_mutex *);
-  
-  if (__mutex->attr == NULL
-      && __mutex->data == NULL
-      && __pthread_spin_trylock (&__mutex->__held) == 0)
-    return 0;
-
-  return _pthread_mutex_lock (__mutex);
-}
-
-extern __inline int
-__pthread_mutex_trylock (struct __pthread_mutex *__mutex)
-{
-  extern int _pthread_mutex_trylock (struct __pthread_mutex *);
-  
-  if (__mutex->attr == NULL
-      && __mutex->data == NULL)
-    return __pthread_spin_trylock (&__mutex->__held);
-
-  return _pthread_mutex_trylock (__mutex);
-}
-
-extern __inline int
-pthread_mutex_lock (struct __pthread_mutex *__mutex)
-{
-  return __pthread_mutex_lock (__mutex);
-}
-
-extern __inline int
-pthread_mutex_trylock (struct __pthread_mutex *__mutex)
-{
-  return __pthread_mutex_trylock (__mutex);
-}
-
-#endif /* Use extern inlines.  */
-
-#endif
 
 #endif /* bits/mutex.h */

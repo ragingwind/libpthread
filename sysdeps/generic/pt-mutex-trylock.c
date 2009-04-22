@@ -1,5 +1,5 @@
 /* Try to Lock a mutex.  Generic version.
-   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -34,6 +34,18 @@ __pthread_mutex_trylock (struct __pthread_mutex *mutex)
   if (__pthread_spin_trylock (&mutex->__held) == 0)
     /* Acquired the lock.  */
     {
+#ifndef NDEBUG
+      self = _pthread_self ();
+      if (self)
+	/* The main thread may take a lock before the library is fully
+	   initialized, in particular, before the main thread has a
+	   TCB.  */
+	{
+	  assert (! mutex->owner);
+	  mutex->owner = _pthread_self ();
+	}
+#endif
+
       if (mutex->attr)
 	switch (mutex->attr->mutex_type)
 	  {

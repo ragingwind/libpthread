@@ -1,5 +1,5 @@
-/* Thread barrier attribute type.  Generic version.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+/* Initialize the signal state.  Hurd on L4 version.
+   Copyright (C) 2003, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,14 +17,28 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#ifndef _BITS_THREAD_BARRIER_H
-#define _BITS_THREAD_BARRIER_H	1
+#include <pthread.h>
 
-/* This structure describes the attributes of a POSIX thread barrier.
-   Note that not all of them are supported on all systems.  */
-struct __pthread_attr
+#include <pt-internal.h>
+#include <sig-internal.h>
+
+error_t
+__pthread_sigstate_init (struct __pthread *thread)
 {
-  enum __
-};
+  struct signal_state *ss = &thread->ss;
 
-#endif /* bits/thread-barrier.h */
+  memset (ss, 0, sizeof (*ss));
+
+  ss->stack.ss_flags = SS_DISABLE;
+
+  int signo;
+  for (signo = 1; signo < NSIG; ++signo)
+    {
+      sigemptyset (&ss->actions[signo - 1].sa_mask);
+      ss->actions[signo - 1].sa_flags = SA_RESTART;
+      ss->actions[signo - 1].sa_handler = SIG_DFL;
+      ss->lock = (pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
+    }
+
+  return 0;
+}

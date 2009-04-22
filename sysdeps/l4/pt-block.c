@@ -17,13 +17,31 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <l4/l4.h>
+#include <l4.h>
 
 #include <pt-internal.h>
+
+#include <hurd/stddef.h>
 
 /* Block THREAD.  */
 void
 __pthread_block (struct __pthread *thread)
 {
-  L4_Receive (L4_anylocalthread);
+  debug (5, "%x.%x/%x blocking",
+	 l4_thread_no (thread->threadid), l4_version (thread->threadid),
+	 thread->threadid);
+
+  l4_accept (L4_UNTYPED_WORDS_ACCEPTOR);
+  l4_msg_tag_t tag = l4_receive (l4_anythread);
+  if (l4_ipc_failed (tag))
+    {
+      debug (1, "%x.%x failed to block: %d, offset: %x",
+	     l4_thread_no (l4_myself ()), l4_version (l4_myself ()),
+	     (l4_error_code () >> 1) & 0x7,
+	     l4_error_code () >> 4);
+      assert (! l4_ipc_failed (tag));
+    }
+  else
+    debug (5, "%x.%x unblocked",
+	   l4_thread_no (thread->threadid), l4_version (thread->threadid));
 }

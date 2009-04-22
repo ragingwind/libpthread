@@ -1,5 +1,5 @@
 /* Start thread.  Mach version.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -63,6 +63,9 @@ create_wakeupmsg (struct __pthread *thread)
 int
 __pthread_thread_alloc (struct __pthread *thread)
 {
+  if (thread->have_kernel_resources)
+    return 0;
+
   error_t err;
 
   err = create_wakeupmsg (thread);
@@ -96,6 +99,8 @@ __pthread_thread_alloc (struct __pthread *thread)
       if (err)
 	return EAGAIN;
     }
+
+  thread->have_kernel_resources = 1;
 
   return 0;
 }

@@ -1,5 +1,5 @@
 /* Setup thread stack.  Hurd/i386 version.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -58,13 +58,15 @@ stack_setup (struct __pthread *thread,
   top -= __hurd_threadvar_max;
 
   /* Save the self pointer.  */
-  top[_HURD_THREADVAR_THREAD] = (void *) thread;
+  top[_HURD_THREADVAR_THREAD] = (uintptr_t) thread;
 
   if (start_routine)
     {
       /* And then the call frame.  */
-      *--top = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
-      *--top = (uintptr_t) start_routine;
+      top -= 2;
+      top = (uintptr_t) top & ~0xf;
+      top[1] = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
+      top[0] = (uintptr_t) start_routine;
       *--top = 0;		/* Fake return address.  */
     }
 
