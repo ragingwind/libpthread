@@ -57,9 +57,17 @@ struct __pthread_mutex
 #  define __PTHREAD_MUTEX_INITIALIZER \
     { __PTHREAD_SPIN_LOCK_INITIALIZER, __PTHREAD_SPIN_LOCK_INITIALIZER, 0, 0, 0, 0, 0, 0 }
 
+#  define __PTHREAD_ERRORCHECK_MUTEXATTR ((struct __pthread_mutexattr *) ((unsigned long) __PTHREAD_MUTEX_ERRORCHECK + 1))
+
+#  define __PTHREAD_ERRORCHECK_MUTEX_INITIALIZER \
+    { __PTHREAD_SPIN_LOCK_INITIALIZER, __PTHREAD_SPIN_LOCK_INITIALIZER, 0, 0,	\
+	__PTHREAD_ERRORCHECK_MUTEXATTR, 0, 0, 0 }
+
+#  define __PTHREAD_RECURSIVE_MUTEXATTR ((struct __pthread_mutexattr *) ((unsigned long) __PTHREAD_MUTEX_RECURSIVE + 1))
+
 #  define __PTHREAD_RECURSIVE_MUTEX_INITIALIZER \
     { __PTHREAD_SPIN_LOCK_INITIALIZER, __PTHREAD_SPIN_LOCK_INITIALIZER, 0, 0,	\
-	(struct __pthread_mutexattr *) &__pthread_recursive_mutexattr, 0, 0, 0 }
+	__PTHREAD_RECURSIVE_MUTEXATTR, 0, 0, 0 }
 
 # endif
 #endif /* Not __pthread_mutex_defined.  */

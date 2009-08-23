@@ -313,6 +313,8 @@ extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr,
 /* Static initializer for recursive mutexes.  */
 
 #ifdef __USE_GNU
+# define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP \
+  __PTHREAD_ERRORCHECK_MUTEX_INITIALIZER
 # define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP \
   __PTHREAD_RECURSIVE_MUTEX_INITIALIZER
 #endif

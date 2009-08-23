@@ -31,6 +31,12 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
 				    const struct timespec *abstime)
 {
   struct __pthread *self;
+  const struct __pthread_mutexattr *attr = mutex->attr;
+
+  if (attr == __PTHREAD_ERRORCHECK_MUTEXATTR)
+    attr = &__pthread_errorcheck_mutexattr;
+  if (attr == __PTHREAD_RECURSIVE_MUTEXATTR)
+    attr = &__pthread_recursive_mutexattr;
 
   __pthread_spin_lock (&mutex->__lock);
   if (__pthread_spin_trylock (&mutex->__held) == 0)
@@ -50,8 +56,8 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
 #endif
 #endif
 
-      if (mutex->attr)
-	switch (mutex->attr->mutex_type)
+      if (attr)
+	switch (attr->mutex_type)
 	  {
 	  case PTHREAD_MUTEX_NORMAL:
 	    break;
@@ -75,7 +81,7 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
   self = _pthread_self ();
   assert (self);
 
-  if (! mutex->attr || mutex->attr->mutex_type == PTHREAD_MUTEX_NORMAL)
+  if (! attr || attr->mutex_type == PTHREAD_MUTEX_NORMAL)
     {
 #if defined(ALWAYS_TRACK_MUTEX_OWNER)
       assert (mutex->owner != self);
@@ -83,7 +89,7 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
     }
   else
     {
-      switch (mutex->attr->mutex_type)
+      switch (attr->mutex_type)
 	{
 	case PTHREAD_MUTEX_ERRORCHECK:
 	  if (mutex->owner == self)
@@ -108,7 +114,7 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
     }
 
 #if !defined(ALWAYS_TRACK_MUTEX_OWNER)
-  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+  if (attr && attr->mutex_type != PTHREAD_MUTEX_NORMAL)
 #endif
     assert (mutex->owner);
 
@@ -147,14 +153,14 @@ __pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,
     __pthread_block (self);
 
 #if !defined(ALWAYS_TRACK_MUTEX_OWNER)
-  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+  if (attr && attr->mutex_type != PTHREAD_MUTEX_NORMAL)
 #endif
     {
       assert (mutex->owner == self);
     }
 
-  if (mutex->attr)
-    switch (mutex->attr->mutex_type)
+  if (attr)
+    switch (attr->mutex_type)
       {
       case PTHREAD_MUTEX_NORMAL:
 	break;

@@ -28,10 +28,16 @@ int
 __pthread_mutex_unlock (pthread_mutex_t *mutex)
 {
   struct __pthread *wakeup;
-  
+  const struct __pthread_mutexattr *attr = mutex->attr;
+
+  if (attr == __PTHREAD_ERRORCHECK_MUTEXATTR)
+    attr = &__pthread_errorcheck_mutexattr;
+  if (attr == __PTHREAD_RECURSIVE_MUTEXATTR)
+    attr = &__pthread_recursive_mutexattr;
+
   __pthread_spin_lock (&mutex->__lock);
 
-  if (! mutex->attr || mutex->attr->mutex_type == PTHREAD_MUTEX_NORMAL)
+  if (! attr || attr->mutex_type == PTHREAD_MUTEX_NORMAL)
     {
 #if defined(ALWAYS_TRACK_MUTEX_OWNER)
 # ifndef NDEBUG
@@ -45,7 +51,7 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
 #endif
     }
   else
-    switch (mutex->attr->mutex_type)
+    switch (attr->mutex_type)
       {
       case PTHREAD_MUTEX_ERRORCHECK:
       case PTHREAD_MUTEX_RECURSIVE:
@@ -55,7 +61,7 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
 	    return EPERM;
 	  }
 
-	if (mutex->attr->mutex_type == PTHREAD_MUTEX_RECURSIVE)
+	if (attr->mutex_type == PTHREAD_MUTEX_RECURSIVE)
 	  if (--mutex->locks > 0)
 	    {
 	      __pthread_spin_unlock (&mutex->__lock);
@@ -82,7 +88,7 @@ __pthread_mutex_unlock (pthread_mutex_t *mutex)
 
 #ifndef NDEBUG
 # if !defined (ALWAYS_TRACK_MUTEX_OWNER)
-  if (mutex->attr && mutex->attr->mutex_type != PTHREAD_MUTEX_NORMAL)
+  if (attr && attr->mutex_type != PTHREAD_MUTEX_NORMAL)
 # endif
     {
       mutex->owner = wakeup;
