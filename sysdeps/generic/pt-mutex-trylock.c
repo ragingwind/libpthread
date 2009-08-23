@@ -34,6 +34,7 @@ __pthread_mutex_trylock (struct __pthread_mutex *mutex)
   if (__pthread_spin_trylock (&mutex->__held) == 0)
     /* Acquired the lock.  */
     {
+#if defined(ALWAYS_TRACK_MUTEX_OWNER)
 #ifndef NDEBUG
       self = _pthread_self ();
       if (self)
@@ -44,6 +45,7 @@ __pthread_mutex_trylock (struct __pthread_mutex *mutex)
 	  assert (! mutex->owner);
 	  mutex->owner = _pthread_self ();
 	}
+#endif
 #endif
 
       if (mutex->attr)
