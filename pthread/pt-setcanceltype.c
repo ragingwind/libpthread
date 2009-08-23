@@ -35,7 +35,8 @@ pthread_setcanceltype (int type, int *oldtype)
       break;
     }
 
-  *oldtype = p->cancel_type;
+  if (oldtype)
+    *oldtype = p->cancel_type;
   p->cancel_type = type;
 
   return 0;

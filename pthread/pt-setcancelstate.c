@@ -35,7 +35,8 @@ pthread_setcancelstate (int state, int *oldstate)
       break;
     }
 
-  *oldstate = p->cancel_state;
+  if (oldstate)
+    *oldstate = p->cancel_state;
   p->cancel_state = state;
 
   return 0;
