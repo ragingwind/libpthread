@@ -38,9 +38,9 @@ struct __pthread_cancelation_handler **__pthread_get_cleanup_stack (void);
 	    = __pthread_get_cleanup_stack (); \
 	  struct __pthread_cancelation_handler __handler = \
 	    { \
-	      handler: (rt), \
-	      arg: (rtarg), \
-	      next: *__handlers \
+	      (rt), \
+	      (rtarg), \
+	      *__handlers \
 	    }; \
 	  *__handlers = &__handler;
 	  
