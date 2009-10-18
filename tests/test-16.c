@@ -33,7 +33,7 @@ test (void *arg)
 }
 
 static void
-handler (int sig, siginfo_t *info, void *context)
+handler (int sig)
 {
   assert (pthread_equal (pthread_self (), testthread));
   printf ("handler: %d\n", pthread_self ());
