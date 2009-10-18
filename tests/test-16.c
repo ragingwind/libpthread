@@ -21,9 +21,13 @@ test (void *arg)
 
   printf ("test: %d\n", pthread_self ());
 
+  err = pthread_kill (pthread_self (), 0);
+  if (err)
+    error (1, err, "pthread_kill (pthread_self (), 0)");
+
   err = pthread_kill (pthread_self (), SIGUSR1);
   if (err)
-    error (1, err, "pthread_kill");
+    error (1, err, "pthread_kill (pthread_self (), SIGUSR1)");
 
   /* To avoid using condition variables in a signal handler.  */
   while (i == 0)
@@ -48,6 +52,10 @@ main (int argc, char **argv)
   void *ret;
 
   printf ("main: %d\n", pthread_self ());
+
+  err = pthread_kill (pthread_self (), 0);
+  if (err)
+    error (1, err, "pthread_kill (pthread_self (), 0)");
 
   sa.sa_handler = handler;
   sa.sa_mask = 0;
