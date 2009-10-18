@@ -21,7 +21,7 @@ test (void *arg)
 
   printf ("test: %d\n", pthread_self ());
 
-  err = pthread_kill (pthread_self (), SIGINFO);
+  err = pthread_kill (pthread_self (), SIGUSR1);
   if (err)
     error (1, err, "pthread_kill");
 
@@ -53,7 +53,7 @@ main (int argc, char **argv)
   sa.sa_mask = 0;
   sa.sa_flags = 0;
 
-  err = sigaction (SIGINFO, &sa, 0);
+  err = sigaction (SIGUSR1, &sa, 0);
   if (err)
     error (1, err, "sigaction");
 
