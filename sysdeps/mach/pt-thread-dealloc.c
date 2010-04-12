@@ -38,4 +38,6 @@ __pthread_thread_dealloc (struct __pthread *thread)
      assert.  */
   __mach_port_destroy (__mach_task_self (),
 		       thread->wakeupmsg.msgh_remote_port);
+
+  thread->have_kernel_resources = 0;
 }

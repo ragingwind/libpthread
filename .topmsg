@@ -1,6 +1,25 @@
+Subject: [PATCH, UNFINISHED] Fix handling of have_kernel_resources on Mach/Hurd.
+
 From: Thomas Schwinge <thomas@schwinge.name>
-Subject: [PATCH] t/fix_have_kernel_resources
 
-<patch description>
+<http://lists.gnu.org/archive/html/bug-hurd/2009-04/msg00028.html>
 
-Signed-off-by: Thomas Schwinge <thomas@schwinge.name>
+Further comments by Neal:
+
+<neal> do you want a reply on the libpthread one inline?
+<neal> the short answer is: yes, that's a bug
+<neal> unfortunately, your fix is not enough
+<neal> the predicate controls two resources: the wakeup port and the thread
+  itself
+<tschwinge> Oh, right, I see.
+<neal> also, there may be a race:
+<neal> set the predicate to free, then kill the thread
+<neal> that's not so good
+<neal> so a proper solution requires a bit more thought
+<tschwinge> I think I wondered about that as well.  But isn't there the same
+  problem with Viengoos?
+<neal> it is difficult as cleanly committing suicide is hard :-)
+<neal> could be
+<neal> on viengoos, I don't actually deallocate the thread in pt-thread-halt.c
+<neal> I just call suspend
+<neal> the thread is only deallocated in pt-thread-dealloc.c
