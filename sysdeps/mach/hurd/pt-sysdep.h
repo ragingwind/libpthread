@@ -60,11 +60,13 @@ __pthread_stack_dealloc (void *stackaddr, size_t stacksize)
   __vm_deallocate (__mach_task_self (), (vm_offset_t) stackaddr, stacksize);
 }
 
-/* Change thread THREAD's program counter to PC if SET_PC is true and
-   its stack pointer to SP if SET_IP is true.  */
-extern int __thread_set_pcsp (thread_t thread,
+/* Change thread THREAD's program counter to PC if SET_PC is true,
+   its stack pointer to SP if SET_IP is true, and its thread pointer
+   to TP if SET_TP is true.  */
+extern int __thread_set_pcsptp (thread_t thread,
 			      int set_pc, void *pc,
-			      int set_sp, void *sp);
+			      int set_sp, void *sp,
+			      int set_tp, void *tp);
 
 
 #endif /* pt-sysdep.h */

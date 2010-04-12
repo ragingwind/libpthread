@@ -1,6 +1,4 @@
-From: Thomas Schwinge <thomas@schwinge.name>
-Subject: [PATCH] t/TLS_support
+Subject: [PATCH] TLS support for libpthread.
 
-<patch description>
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
 
-Signed-off-by: Thomas Schwinge <thomas@schwinge.name>
