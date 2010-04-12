@@ -1,6 +1,14 @@
+Subject: [PATCH] Make libpthread buildable stand-alone.
+    
 From: Thomas Schwinge <thomas@schwinge.name>
-Subject: [PATCH] t/stand-alone
 
-<patch description>
-
-Signed-off-by: Thomas Schwinge <thomas@schwinge.name>
+* AUTHORS: New file.
+* COPYING: Likewise.
+* NEWS: Likewise.
+* README: Likewise.
+* configure.ac: Likewise.
+* package.m4: Likewise.
+* Makefile: Remove file after having merged essential parts into...
+* Makefile.am: ... here.  Switch to using libtool for building both static and
+shared libraries for the GNU system.  Use libtool's versioning infrastructure,
+but maintain a compatibility symlink for the shared library.
