@@ -1,6 +1,7 @@
+Subject: [PATCH] Fix inline usage for recent GCC versions.
+
 From: Thomas Schwinge <thomas@schwinge.name>
-Subject: [PATCH] t/fix_inline
 
-<patch description>
-
-Signed-off-by: Thomas Schwinge <thomas@schwinge.name>
+* sysdeps/l4/hurd/pt-sysdep.h (_pthread_self, __pthread_stack_dealloc): Use
+static inline instead of extern inline.
+* sysdeps/mach/hurd/pt-sysdep.h (__pthread_stack_dealloc): Likewise.
