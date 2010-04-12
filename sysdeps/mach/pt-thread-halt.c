@@ -32,6 +32,21 @@
 void
 __pthread_thread_halt (struct __pthread *thread)
 {
-  error_t err = __thread_terminate (thread->kernel_thread);
-  assert_perror (err);
+  if (thread->have_kernel_resources)
+    {
+      if (thread == _pthread_self ())
+	{
+	  while (1)
+	    {
+	      error_t err = __thread_suspend (thread->kernel_thread);
+	      assert_perror (err);
+	      assert (! "Failed to suspend self.");
+	    }
+	}
+      else
+	{
+	  error_t err = __thread_terminate (thread->kernel_thread);
+	  assert_perror (err);
+	}
+    }
 }
