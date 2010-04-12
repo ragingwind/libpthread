@@ -129,6 +129,11 @@ __pthread_create_internal (struct __pthread **thread,
   if (err)
     goto failed_thread_alloc;
 
+  pthread->tcb = _dl_allocate_tls (NULL);
+  if (!pthread->tcb)
+    goto failed_thread_tls_alloc;
+  pthread->tcb->tcb = pthread->tcb;
+
   /* And initialize the rest of the machine context.  This may include
      additional machine- and system-specific initializations that
      prove convenient.  */
@@ -194,6 +199,8 @@ __pthread_create_internal (struct __pthread **thread,
  failed_sigstate:
   __pthread_sigstate_destroy (pthread);
  failed_setup:
+  _dl_deallocate_tls (pthread->tcb, 1);
+ failed_thread_tls_alloc:
   __pthread_thread_dealloc (pthread);
   __pthread_thread_halt (pthread);
  failed_thread_alloc:

@@ -70,6 +70,9 @@ pthread_exit (void *status)
   if (self->cancel_state == PTHREAD_CANCEL_ENABLE && self->cancel_pending)
     status = PTHREAD_CANCELED;
 
+  if (self->tcb)
+    _dl_deallocate_tls (self->tcb, 1);
+
   switch (self->state)
     {
     default:

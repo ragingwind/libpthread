@@ -54,6 +54,14 @@ enum pthread_state
 # define PTHREAD_SYSDEP_MEMBERS
 #endif
 
+/* Type of the TCB.  */
+typedef struct
+{
+  void *tcb;			/* Points to this structure.  */
+  void *dtv;			/* Vector of pointers to TLS data.  */
+  thread_t self;		/* This thread's control port.  */
+} tcbhead_t;
+
 /* This structure describes a POSIX thread.  */
 struct __pthread
 {
@@ -88,6 +96,8 @@ struct __pthread
   PTHREAD_KEY_MEMBERS
 
   PTHREAD_SYSDEP_MEMBERS
+
+  tcbhead_t *tcb;
 
   struct __pthread *next, **prevp;
 };
@@ -286,5 +296,14 @@ const struct __pthread_rwlockattr __pthread_default_rwlockattr;
 
 /* Default condition attributes.  */
 const struct __pthread_condattr __pthread_default_condattr;
+
+
+/* From glibc.  */
+
+/* Dynamic linker TLS allocation.  */
+extern void *_dl_allocate_tls(void *);
+
+/* Dynamic linker TLS deallocation.  */
+extern void _dl_deallocate_tls(void *, int);
 
 #endif /* pt-internal.h */
