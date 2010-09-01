@@ -20,8 +20,6 @@
 #ifndef _BITS_CANCELATION_H
 #define _BITS_CANCELATION_H	1
 
-#include <assert.h>
-
 struct __pthread_cancelation_handler
 {
   void (*handler)(void *);
@@ -47,7 +45,6 @@ struct __pthread_cancelation_handler **__pthread_get_cleanup_stack (void);
 #define __pthread_cleanup_pop(execute) \
 	  if (execute) \
 	    __handler.handler (__handler.arg); \
-	  assert (*__handlers == &__handler); \
 	  *__handlers = __handler.next; \
 	}
 
