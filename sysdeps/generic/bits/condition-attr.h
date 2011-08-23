@@ -20,7 +20,7 @@
 #ifndef _BITS_CONDITION_ATTR_H
 #define _BITS_CONDITION_ATTR_H	1
 
-#include <time.h>
+#include <bits/types.h>
 
 enum __pthread_process_shared;
 
@@ -28,7 +28,7 @@ enum __pthread_process_shared;
 struct __pthread_condattr
   {
     enum __pthread_process_shared pshared;
-    clockid_t clock;
+    __clockid_t clock;
   };
 
 #endif /* bits/condition.h */
