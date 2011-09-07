@@ -20,7 +20,8 @@
 #ifndef _BITS_THREAD_ATTR_H
 #define _BITS_THREAD_ATTR_H	1
 
-#include <sched.h>
+#define __need_schedparam
+#include <bits/sched.h>
 
 enum __pthread_detachstate;
 enum __pthread_inheritsched;
@@ -30,7 +31,7 @@ enum __pthread_contentionscope;
    that not all of them are supported on all systems.  */
 struct __pthread_attr
 {
-  struct sched_param schedparam;
+  struct __sched_param schedparam;
   void *stackaddr;
   size_t stacksize;
   size_t guardsize;

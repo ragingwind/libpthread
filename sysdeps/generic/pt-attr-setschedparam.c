@@ -30,7 +30,7 @@ pthread_attr_setschedparam (pthread_attr_t *attr,
   if (memcmp (param, &__pthread_default_attr.schedparam,
 	      sizeof *param) == 0)
     {
-      attr->schedparam = *param;
+      memcpy (&attr->schedparam, param, sizeof *param);
       return 0;
     }
 
