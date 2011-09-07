@@ -26,6 +26,6 @@ int
 pthread_attr_getschedparam (const pthread_attr_t *attr,
 			    struct sched_param *param)
 {
-  *param = attr->schedparam;
+  memcpy (param, &attr->schedparam, sizeof *param);
   return 0;
 }
