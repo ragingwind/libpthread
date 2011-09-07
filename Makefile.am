@@ -197,6 +197,7 @@ SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
 	pt-getcpuclockid.c						    \
 									    \
 	pt-getschedparam.c pt-setschedparam.c pt-setschedprio.c		    \
+	pt-yield.c							    \
 									    \
 	sem-close.c sem-destroy.c sem-getvalue.c sem-init.c sem-open.c	    \
 	sem-post.c sem-timedwait.c sem-trywait.c sem-unlink.c		    \
