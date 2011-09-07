@@ -377,11 +377,11 @@ extern int pthread_condattr_destroy (pthread_condattr_t *attr);
 #ifdef __USE_XOPEN2K
 /* Return the value of the clock attribute in *ATTR in *CLOCK_ID.  */
 extern int pthread_condattr_getclock (const pthread_condattr_t *__restrict attr,
-				      clockid_t *__restrict clock_id);
+				      __clockid_t *__restrict clock_id);
 
 /* Set the value of the clock attribute in *ATTR to CLOCK_ID.  */
 extern int pthread_condattr_setclock (pthread_condattr_t *attr,
-				      clockid_t clock_id);
+				      __clockid_t clock_id);
 #endif
 
 
@@ -718,7 +718,7 @@ extern int pthread_kill (pthread_t thread, int signo);
 
 #ifdef __USE_XOPEN2K
 /* Return the thread cpu clock.  */
-extern int pthread_getcpuclockid (pthread_t thread, clockid_t *clock);
+extern int pthread_getcpuclockid (pthread_t thread, __clockid_t *clock);
 #endif
 
 
