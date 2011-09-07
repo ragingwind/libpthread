@@ -19,6 +19,7 @@
 
 #include <pthread.h>
 #include <sched.h>
+#include <string.h>
 
 #include <pt-internal.h>
 
