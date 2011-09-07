@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2002, 2005, 2006, 2007, 2008, 2009
+/* Copyright (C) 2000, 2002, 2005, 2006, 2007, 2008, 2009, 2010
      Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -377,11 +377,11 @@ extern int pthread_condattr_destroy (pthread_condattr_t *attr);
 #ifdef __USE_XOPEN2K
 /* Return the value of the clock attribute in *ATTR in *CLOCK_ID.  */
 extern int pthread_condattr_getclock (const pthread_condattr_t *__restrict attr,
-				      clockid_t *__restrict clock_id);
+				      __clockid_t *__restrict clock_id);
 
 /* Set the value of the clock attribute in *ATTR to CLOCK_ID.  */
 extern int pthread_condattr_setclock (pthread_condattr_t *attr,
-				      clockid_t clock_id);
+				      __clockid_t clock_id);
 #endif
 
 
@@ -718,7 +718,7 @@ extern int pthread_kill (pthread_t thread, int signo);
 
 #ifdef __USE_XOPEN2K
 /* Return the thread cpu clock.  */
-extern int pthread_getcpuclockid (pthread_t thread, clockid_t *clock);
+extern int pthread_getcpuclockid (pthread_t thread, __clockid_t *clock);
 #endif
 
 
@@ -734,6 +734,14 @@ extern int pthread_setschedparam (pthread_t thread, int policy,
 
 /* Set thread THREAD's scheduling priority.  */
 extern int pthread_setschedprio (pthread_t thread, int prio);
+
+#ifdef __USE_GNU
+/* Yield the processor to another thread or process.
+   This function is similar to the POSIX `sched_yield' function but
+   might be differently implemented in the case of a m-on-n thread
+   implementation.  */
+extern int pthread_yield (void);
+#endif
 
 
 /* Kernel-specific interfaces.  */

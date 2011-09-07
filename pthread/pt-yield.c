@@ -1,5 +1,5 @@
-/* Condition attribute type.  Generic version.
-   Copyright (C) 2002, 2008 Free Software Foundation, Inc.
+/* Yield the processor to another thread or process.
+   Copyright (C) 2010 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,18 +17,10 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#ifndef _BITS_CONDITION_ATTR_H
-#define _BITS_CONDITION_ATTR_H	1
+#include <pthread.h>
+#include <sched.h>
 
-#include <bits/types.h>
-
-enum __pthread_process_shared;
-
-/* User visible part of a condition attribute variable.  */
-struct __pthread_condattr
-  {
-    enum __pthread_process_shared pshared;
-    __clockid_t clock;
-  };
-
-#endif /* bits/condition.h */
+int pthread_yield(void)
+{
+  return sched_yield ();
+}

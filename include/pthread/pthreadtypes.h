@@ -25,18 +25,7 @@
 
 #include <features.h>
 
-#define __need_clockid_t
-#include <time.h>
-
-/* If we are in a mode where clockid_t is not automatically defined
-   and another header has already included <time.h> then defining
-   __need_clockid_t was not enough.  */
-#ifndef __clockid_t_defined
-# define __clockid_t_defined    1
-# include <bits/types.h>
-/* Clock ID used in clock and timer functions.  */
-typedef __clockid_t clockid_t;
-#endif
+#include <bits/types.h>
 
 __BEGIN_DECLS
 
