@@ -35,7 +35,6 @@ pthread_exit (void *status)
   struct __pthread *self = _pthread_self ();
   struct __pthread_cancelation_handler **handlers;
   int oldstate;
-  int need_dealloc;
 
   /* Run any cancelation handlers.  According to POSIX, the
      cancellation cleanup handlers should be called with cancellation
