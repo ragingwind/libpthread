@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <error.h>
+#include <assert.h>
 #include <errno.h>
 
 #define THREADS 500

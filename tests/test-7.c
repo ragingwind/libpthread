@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include <pthread.h>
+#include <assert.h>
 #include <stdio.h>
 #include <error.h>
 #include <errno.h>
