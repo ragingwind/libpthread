@@ -19,7 +19,6 @@
 
 #include <assert.h>
 #include <pthread.h>
-#include <stddef.h>
 
 typedef void *cthread_t;
 typedef void *(*cthread_fn_t) (void *arg);
