@@ -48,6 +48,7 @@
 #endif
 
 #include <sched.h>
+#include <time.h>
 
 __BEGIN_DECLS
 
