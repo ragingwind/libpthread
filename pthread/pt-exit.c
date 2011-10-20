@@ -1,5 +1,5 @@
 /* Thread termination.
-   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005, 2007, 2011 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -68,6 +68,11 @@ pthread_exit (void *status)
 
   if (self->cancel_state == PTHREAD_CANCEL_ENABLE && self->cancel_pending)
     status = PTHREAD_CANCELED;
+
+#ifdef ENABLE_TLS
+  if (self->tcb)
+    _dl_deallocate_tls (self->tcb, 1);
+#endif /* ENABLE_TLS */
 
   switch (self->state)
     {
