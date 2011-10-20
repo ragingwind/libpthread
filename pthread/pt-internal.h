@@ -1,5 +1,5 @@
 /* Internal defenitions for pthreads library.
-   Copyright (C) 2000, 2005, 2006, 2008 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -54,6 +54,7 @@ enum pthread_state
 # define PTHREAD_SYSDEP_MEMBERS
 #endif
 
+#ifdef ENABLE_TLS
 /* Type of the TCB.  */
 typedef struct
 {
@@ -61,6 +62,7 @@ typedef struct
   void *dtv;			/* Vector of pointers to TLS data.  */
   thread_t self;		/* This thread's control port.  */
 } tcbhead_t;
+#endif /* ENABLE_TLS */
 
 /* This structure describes a POSIX thread.  */
 struct __pthread
@@ -97,7 +99,9 @@ struct __pthread
 
   PTHREAD_SYSDEP_MEMBERS
 
+#ifdef ENABLE_TLS
   tcbhead_t *tcb;
+#endif /* ENABLE_TLS */
 
   struct __pthread *next, **prevp;
 };
@@ -298,6 +302,8 @@ const struct __pthread_rwlockattr __pthread_default_rwlockattr;
 const struct __pthread_condattr __pthread_default_condattr;
 
 
+#ifdef ENABLE_TLS
+
 /* From glibc.  */
 
 /* Dynamic linker TLS allocation.  */
@@ -305,5 +311,7 @@ extern void *_dl_allocate_tls(void *);
 
 /* Dynamic linker TLS deallocation.  */
 extern void _dl_deallocate_tls(void *, int);
+
+#endif /* ENABLE_TLS */
 
 #endif /* pt-internal.h */
