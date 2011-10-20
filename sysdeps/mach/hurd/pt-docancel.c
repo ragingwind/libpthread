@@ -1,5 +1,5 @@
 /* Cancel a thread.
-   Copyright (C) 2002, 2008 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2007, 2008 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -52,8 +52,8 @@ __pthread_do_cancel (struct __pthread *p)
       err = __thread_abort (p->kernel_thread);
       assert_perror (err);
 
-      err = __thread_set_pcsp (p->kernel_thread,
-			       1, (void *) call_exit, 0, 0);
+      err = __thread_set_pcsptp (p->kernel_thread,
+			       1, (void *) call_exit, 0, 0, 0, 0);
       assert_perror (err);
 
       err = __thread_resume (p->kernel_thread);
