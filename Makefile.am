@@ -1,7 +1,7 @@
 # Makefile.am - Makefile template for libpthread.
 #
 # Copyright (C) 1994, 1995, 1996, 1997, 2000, 2002, 2003, 2004, 2005, 2006,
-#   2007, 2008, 2009 Free Software Foundation, Inc.
+#   2007, 2008, 2009, 2011 Free Software Foundation, Inc.
 #
 # This file is part of the GNU Hurd.
 # 
@@ -71,7 +71,8 @@ libpthread_la_CPPFLAGS = $(CPPFLAGS) \
   -imacros config.h \
   -imacros $(srcdir)/include/libc-symbols.h \
   -imacros $(srcdir)/not-in-libc.h \
-  -D_IO_MTSAFE_IO
+  -D_IO_MTSAFE_IO \
+  -DENABLE_TLS
 libpthread_la_CFLAGS = \
   -Wall \
   -std=gnu99
