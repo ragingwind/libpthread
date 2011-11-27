@@ -100,5 +100,8 @@ __mutex_lock_solid (void *lock)
 void
 __mutex_unlock_solid (void *lock)
 {
+  if (__pthread_spin_trylock (lock) != 0)
+    /* Somebody already got the lock, that one will manage waking up others */
+    return;
   __pthread_mutex_unlock (lock);
 }
