@@ -55,7 +55,7 @@ __sem_timedwait_internal (sem_t *restrict sem,
     {
       error_t err;
 
-      err = __pthread_timedblock (self, timeout);
+      err = __pthread_timedblock (self, timeout, CLOCK_REALTIME);
       if (err)
 	/* We timed out.  We may need to disconnect ourself from the
 	   waiter queue.

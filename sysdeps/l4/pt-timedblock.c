@@ -27,7 +27,8 @@
 /* Block THREAD.  */
 error_t
 __pthread_timedblock (struct __pthread *thread,
-		      const struct timespec *abstime)
+		      const struct timespec *abstime,
+		      clockid_t clock_id)
 {
 #warning Need gettimeofday to implement properly.
   __pthread_block (thread);

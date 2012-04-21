@@ -30,7 +30,8 @@
 /* Block THREAD.  */
 error_t
 __pthread_timedblock (struct __pthread *thread,
-		      const struct timespec *abstime)
+		      const struct timespec *abstime,
+		      clockid_t clock_id)
 {
   error_t err;
   mach_msg_header_t msg;
