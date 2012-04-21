@@ -16,128 +16,147 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+ifeq ($(..),)
+# non-glibc build
+IN_GLIBC = no
+else
+# glibc build
+IN_GLIBC = yes
+endif
+
+ifeq ($(IN_GLIBC),no)
 dir := libpthread
 makemode := library
+else
+subdir := libpthread
+
+pthread-version := 0.3
+
+srcdir = .
+endif
 
 MICROKERNEL := mach
-SYSDEPS := lockfile.c
+SYSDEPS := lockfile
 
-LCLHDRS := 
+LCLHDRS :=
 
-SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
-	pt-attr-getguardsize.c pt-attr-getinheritsched.c		    \
-	pt-attr-getschedparam.c pt-attr-getschedpolicy.c pt-attr-getscope.c \
-	pt-attr-getstack.c pt-attr-getstackaddr.c pt-attr-getstacksize.c    \
-	pt-attr-init.c pt-attr-setdetachstate.c pt-attr-setguardsize.c	    \
-	pt-attr-setinheritsched.c pt-attr-setschedparam.c		    \
-	pt-attr-setschedpolicy.c pt-attr-setscope.c pt-attr-setstack.c	    \
-	pt-attr-setstackaddr.c pt-attr-setstacksize.c			    \
+libpthread-routines := pt-attr pt-attr-destroy pt-attr-getdetachstate	    \
+	pt-attr-getguardsize pt-attr-getinheritsched			    \
+	pt-attr-getschedparam pt-attr-getschedpolicy pt-attr-getscope	    \
+	pt-attr-getstack pt-attr-getstackaddr pt-attr-getstacksize	    \
+	pt-attr-init pt-attr-setdetachstate pt-attr-setguardsize	    \
+	pt-attr-setinheritsched pt-attr-setschedparam			    \
+	pt-attr-setschedpolicy pt-attr-setscope pt-attr-setstack	    \
+	pt-attr-setstackaddr pt-attr-setstacksize			    \
 									    \
-	pt-barrier-destroy.c pt-barrier-init.c pt-barrier-wait.c	    \
-	pt-barrier.c pt-barrierattr-destroy.c pt-barrierattr-init.c	    \
-	pt-barrierattr-getpshared.c pt-barrierattr-setpshared.c		    \
+	pt-barrier-destroy pt-barrier-init pt-barrier-wait		    \
+	pt-barrier pt-barrierattr-destroy pt-barrierattr-init		    \
+	pt-barrierattr-getpshared pt-barrierattr-setpshared		    \
 									    \
-	pt-destroy-specific.c pt-init-specific.c			    \
-	pt-key-create.c pt-key-delete.c					    \
-	pt-getspecific.c pt-setspecific.c				    \
+	pt-destroy-specific pt-init-specific				    \
+	pt-key-create pt-key-delete					    \
+	pt-getspecific pt-setspecific					    \
 									    \
-	pt-once.c							    \
+	pt-once								    \
 									    \
-	pt-alloc.c							    \
-	pt-create.c							    \
-	pt-getattr.c							    \
-	pt-equal.c							    \
-	pt-dealloc.c							    \
-	pt-detach.c							    \
-	pt-exit.c							    \
-	pt-initialize.c							    \
-	pt-join.c							    \
-	pt-self.c							    \
-	pt-sigmask.c							    \
-	pt-spin-inlines.c						    \
-	pt-cleanup.c							    \
-	pt-setcancelstate.c						    \
-	pt-setcanceltype.c						    \
-	pt-testcancel.c							    \
-	pt-cancel.c							    \
+	pt-alloc							    \
+	pt-create							    \
+	pt-getattr							    \
+	pt-equal							    \
+	pt-dealloc							    \
+	pt-detach							    \
+	pt-exit								    \
+	pt-initialize							    \
+	pt-join								    \
+	pt-self								    \
+	pt-sigmask							    \
+	pt-spin-inlines							    \
+	pt-cleanup							    \
+	pt-setcancelstate						    \
+	pt-setcanceltype						    \
+	pt-testcancel							    \
+	pt-cancel							    \
 									    \
-	pt-mutexattr.c							    \
-	pt-mutexattr-destroy.c pt-mutexattr-init.c			    \
-	pt-mutexattr-getprioceiling.c pt-mutexattr-getprotocol.c	    \
-	pt-mutexattr-getpshared.c pt-mutexattr-gettype.c		    \
-	pt-mutexattr-setprioceiling.c pt-mutexattr-setprotocol.c	    \
-	pt-mutexattr-setpshared.c pt-mutexattr-settype.c		    \
+	pt-mutexattr							    \
+	pt-mutexattr-destroy pt-mutexattr-init				    \
+	pt-mutexattr-getprioceiling pt-mutexattr-getprotocol		    \
+	pt-mutexattr-getpshared pt-mutexattr-gettype			    \
+	pt-mutexattr-setprioceiling pt-mutexattr-setprotocol		    \
+	pt-mutexattr-setpshared pt-mutexattr-settype			    \
 									    \
-	pt-mutex-init.c pt-mutex-destroy.c				    \
-	pt-mutex-lock.c pt-mutex-trylock.c pt-mutex-timedlock.c		    \
-	pt-mutex-unlock.c						    \
-	pt-mutex-transfer-np.c						    \
-	pt-mutex-getprioceiling.c pt-mutex-setprioceiling.c		    \
+	pt-mutex-init pt-mutex-destroy					    \
+	pt-mutex-lock pt-mutex-trylock pt-mutex-timedlock		    \
+	pt-mutex-unlock							    \
+	pt-mutex-transfer-np						    \
+	pt-mutex-getprioceiling pt-mutex-setprioceiling			    \
 									    \
-	pt-rwlock-attr.c						    \
-	pt-rwlockattr-init.c pt-rwlockattr-destroy.c			    \
-	pt-rwlockattr-getpshared.c pt-rwlockattr-setpshared.c		    \
+	pt-rwlock-attr							    \
+	pt-rwlockattr-init pt-rwlockattr-destroy			    \
+	pt-rwlockattr-getpshared pt-rwlockattr-setpshared		    \
 									    \
-	pt-rwlock-init.c pt-rwlock-destroy.c				    \
-	pt-rwlock-rdlock.c pt-rwlock-tryrdlock.c			    \
-	pt-rwlock-trywrlock.c pt-rwlock-wrlock.c			    \
-	pt-rwlock-timedrdlock.c pt-rwlock-timedwrlock.c			    \
-	pt-rwlock-unlock.c						    \
+	pt-rwlock-init pt-rwlock-destroy				    \
+	pt-rwlock-rdlock pt-rwlock-tryrdlock				    \
+	pt-rwlock-trywrlock pt-rwlock-wrlock				    \
+	pt-rwlock-timedrdlock pt-rwlock-timedwrlock			    \
+	pt-rwlock-unlock						    \
 									    \
-	pt-cond.c							    \
-	pt-condattr-init.c pt-condattr-destroy.c			    \
-	pt-condattr-getclock.c pt-condattr-getpshared.c			    \
-	pt-condattr-setclock.c pt-condattr-setpshared.c			    \
+	pt-cond								    \
+	pt-condattr-init pt-condattr-destroy				    \
+	pt-condattr-getclock pt-condattr-getpshared			    \
+	pt-condattr-setclock pt-condattr-setpshared			    \
 									    \
-	pt-cond-destroy.c pt-cond-init.c				    \
-	pt-cond-brdcast.c						    \
-	pt-cond-signal.c						    \
-	pt-cond-wait.c							    \
-	pt-cond-timedwait.c						    \
+	pt-cond-destroy pt-cond-init					    \
+	pt-cond-brdcast							    \
+	pt-cond-signal							    \
+	pt-cond-wait							    \
+	pt-cond-timedwait						    \
 									    \
-	pt-stack-alloc.c						    \
-	pt-thread-alloc.c						    \
-	pt-thread-dealloc.c						    \
-	pt-thread-start.c						    \
-	pt-thread-halt.c						    \
-	pt-startup.c							    \
+	pt-stack-alloc							    \
+	pt-thread-alloc							    \
+	pt-thread-dealloc						    \
+	pt-thread-start							    \
+	pt-thread-halt							    \
+	pt-startup							    \
 									    \
-	pt-getconcurrency.c pt-setconcurrency.c				    \
+	pt-getconcurrency pt-setconcurrency				    \
 									    \
-	pt-block.c							    \
-	pt-timedblock.c							    \
-	pt-wakeup.c							    \
-	pt-docancel.c							    \
-	pt-sysdep.c							    \
-	pt-setup.c							    \
-	pt-machdep.c							    \
-	pt-spin.c							    \
+	pt-block							    \
+	pt-timedblock							    \
+	pt-wakeup							    \
+	pt-docancel							    \
+	pt-sysdep							    \
+	pt-setup							    \
+	pt-machdep							    \
+	pt-spin								    \
 									    \
-	pt-sigstate-init.c						    \
-	pt-sigstate-destroy.c						    \
-	pt-sigstate.c							    \
+	pt-sigstate-init						    \
+	pt-sigstate-destroy						    \
+	pt-sigstate							    \
 									    \
-	pt-atfork.c							    \
-	pt-kill.c							    \
-	pt-getcpuclockid.c						    \
+	pt-atfork							    \
+	pt-kill								    \
+	pt-getcpuclockid						    \
 									    \
-	pt-getschedparam.c pt-setschedparam.c pt-setschedprio.c		    \
-	pt-yield.c							    \
+	pt-getschedparam pt-setschedparam pt-setschedprio		    \
+	pt-yield							    \
 									    \
-	sem-close.c sem-destroy.c sem-getvalue.c sem-init.c sem-open.c	    \
-	sem-post.c sem-timedwait.c sem-trywait.c sem-unlink.c		    \
-	sem-wait.c							    \
+	sem-close sem-destroy sem-getvalue sem-init sem-open		    \
+	sem-post sem-timedwait sem-trywait sem-unlink			    \
+	sem-wait							    \
 									    \
-	cthreads-compat.c						    \
+	cthreads-compat							    \
 	$(SYSDEPS)
 
+ifeq ($(IN_GLIBC),no)
+SRCS := $(addsuffix .c,$(libpthread-routines))
 OBJS = $(addsuffix .o,$(basename $(notdir $(SRCS))))
 
 OTHERTAGS = 
 
 libname = libpthread
+endif
 
-sysdeps_headers =				\
+headers :=				\
               pthread.h				\
               pthread/pthread.h			\
               pthread/pthreadtypes.h		\
@@ -161,6 +180,21 @@ sysdeps_headers =				\
               bits/rwlock-attr.h		\
 	      bits/semaphore.h
 
+ifeq ($(IN_GLIBC),yes)
+distribute :=
+
+routines := forward libc_pthread_init
+shared-only-routines = forward
+
+vpath %.c
+
+extra-libs := libpthread
+extra-libs-others := $(extra-libs)
+install-lib-ldscripts := libpthread.so
+
+include ../Makeconfig
+endif
+
 SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/ia32	\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/ia32			\
 	 $(srcdir)/sysdeps/ia32					\
@@ -174,22 +208,41 @@ SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/ia32	\
 
 VPATH += $(SYSDEP_PATH)
 
+ifeq ($(IN_GLIBC),no)
 HURDLIBS = ihash
+else
+LDLIBS-pthread.so = -lihash
+endif
 
+ifeq ($(IN_GLIBC),no)
 installhdrs :=
 installhdrsubdir := .
 
 include ../Makeconf
+endif
 
 CPPFLAGS += \
 	  -DENABLE_TLS					\
 	  $(addprefix -I, $(SYSDEP_PATH))		\
-	  -imacros $(srcdir)/include/libc-symbols.h	\
 	  -imacros $(srcdir)/not-in-libc.h
 
+ifeq ($(IN_GLIBC),no)
+CPPFLAGS += \
+	  -imacros $(srcdir)/include/libc-symbols.h
+else
+CPPFLAGS += \
+	  -imacros libc-symbols.h
+endif
 
+ifeq ($(IN_GLIBC),yes)
+CFLAGS-lockfile.c = -D_IO_MTSAFE_IO
+
+all: # Make this the default target; it will be defined in Rules.
+endif
+
+ifeq ($(IN_GLIBC),no)
 install: install-headers $(libdir)/libpthread2.a $(libdir)/libpthread2_pic.a
-install-headers: $(addprefix $(includedir)/, $(sysdeps_headers))
+install-headers: $(addprefix $(includedir)/, $(headers))
 
 # XXX: If $(libdir)/libpthread2.a is installed and
 # $(libdir)/libpthread is not, we can have some issues.
@@ -206,10 +259,27 @@ $(libdir)/libpthread2.a: $(libdir)/libpthread.a
 $(libdir)/libpthread2_pic.a: $(libdir)/libpthread_pic.a
 	mv $< $@
 	$(INSTALL_DATA) $(srcdir)/libpthread_pic.a $<
+endif
 
-.PHONY: $(addprefix $(includedir)/, $(sysdeps_headers))
+ifeq ($(IN_GLIBC),yes)
+libc-link.so = $(common-objpfx)libc.so
 
-$(addprefix $(includedir)/, $(sysdeps_headers)):
+include ../Rules
+
+# Depend on libc.so so a DT_NEEDED is generated in the shared objects.
+# This ensures they will load libc.so for needed symbols if loaded by
+# a statically-linked program that hasn't already loaded it.
+# Depend on ld.so too to get proper versions of ld.so symbols.
+$(objpfx)libpthread.so: $(libc-link.so) $(common-objpfx)libc_nonshared.a \
+			$(if $(filter yes,$(elf)), $(elfobjdir)/ld.so) \
+			$(common-objpfx)/mach/libmachuser.so \
+			$(common-objpfx)/hurd/libhurduser.so
+endif
+
+ifeq ($(IN_GLIBC),no)
+.PHONY: $(addprefix $(includedir)/, $(headers))
+
+$(addprefix $(includedir)/, $(headers)):
 	@set -e;							\
 	t="$@";								\
 	t=$${t#$(includedir)/};						\
@@ -247,3 +317,4 @@ maintainer.;								\
 #  $(libname).so.$(hurd-version): $(srcdir)/$(libname).map
 #  
 #  endif
+endif
