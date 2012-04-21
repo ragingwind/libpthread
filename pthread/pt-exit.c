@@ -24,7 +24,7 @@
 
 #include <pt-internal.h>
 
-#include <bits/atomic.h>
+#include <bits/pt-atomic.h>
 
 
 /* Terminate the current thread and make STATUS available to any

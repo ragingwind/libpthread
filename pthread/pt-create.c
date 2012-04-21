@@ -22,7 +22,7 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include <bits/atomic.h>
+#include <bits/pt-atomic.h>
 
 #include <pt-internal.h>
 

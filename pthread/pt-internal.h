@@ -26,7 +26,7 @@
 #include <signal.h>
 #include <assert.h>
 
-#include <bits/atomic.h>
+#include <bits/pt-atomic.h>
 
 #include <pt-key.h>
 
