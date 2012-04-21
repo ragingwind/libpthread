@@ -46,9 +46,11 @@ cond_signal (struct __pthread_cond *cond, int *unblocked)
 /* Unblock at least one of the threads that are blocked on condition
    variable COND.  */
 int
-pthread_cond_signal (pthread_cond_t *cond)
+__pthread_cond_signal (pthread_cond_t *cond)
 {
   int unblocked = 0;
 
   return cond_signal (cond, &unblocked);
 }
+
+strong_alias (__pthread_cond_signal, pthread_cond_signal);

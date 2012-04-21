@@ -26,12 +26,14 @@ extern int __pthread_cond_timedwait_internal (pthread_cond_t *cond,
 					      const struct timespec *abstime);
 
 int
-pthread_cond_timedwait (pthread_cond_t *cond,
+__pthread_cond_timedwait (pthread_cond_t *cond,
 			pthread_mutex_t *mutex,
 			const struct timespec *abstime)
 {
   return __pthread_cond_timedwait_internal (cond, mutex, abstime);
 }
+
+strong_alias (__pthread_cond_timedwait, pthread_cond_timedwait);
 
 /* Block on condition variable COND until ABSTIME.  As a GNU
    extension, if ABSTIME is NULL, then wait forever.  MUTEX should be

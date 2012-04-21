@@ -21,8 +21,10 @@
 #include <pt-internal.h>
 
 int
-pthread_getschedparam (pthread_t thread, int *policy,
+__pthread_getschedparam (pthread_t thread, int *policy,
 		       struct sched_param *param)
 {
   return ENOSYS;
 }
+
+strong_alias (__pthread_getschedparam, pthread_getschedparam);

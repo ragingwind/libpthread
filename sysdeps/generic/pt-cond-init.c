@@ -24,7 +24,7 @@
 #include <pt-internal.h>
 
 int
-pthread_cond_init (pthread_cond_t *cond,
+__pthread_cond_init (pthread_cond_t *cond,
 		   const pthread_condattr_t *attr)
 {
   *cond = (pthread_cond_t) __PTHREAD_COND_INITIALIZER;
@@ -43,3 +43,5 @@ pthread_cond_init (pthread_cond_t *cond,
   *cond->__attr = *attr;
   return 0;
 }
+
+strong_alias (__pthread_cond_init, pthread_cond_init);

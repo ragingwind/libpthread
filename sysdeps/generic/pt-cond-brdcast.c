@@ -23,7 +23,7 @@
 
 /* Unblock all threads that are blocked on condition variable COND.  */
 int
-pthread_cond_broadcast (pthread_cond_t *cond)
+__pthread_cond_broadcast (pthread_cond_t *cond)
 {
   struct __pthread *wakeup;
 
@@ -40,3 +40,5 @@ pthread_cond_broadcast (pthread_cond_t *cond)
 
   return 0;
 }
+
+strong_alias (__pthread_cond_broadcast, pthread_cond_broadcast);

@@ -21,7 +21,9 @@
 #include <pt-internal.h>
 
 int
-pthread_condattr_destroy (pthread_condattr_t *cond)
+__pthread_condattr_destroy (pthread_condattr_t *cond)
 {
   return 0;
 }
+
+strong_alias (__pthread_condattr_destroy, pthread_condattr_destroy);

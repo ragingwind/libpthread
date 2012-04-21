@@ -30,7 +30,7 @@
 /* Terminate the current thread and make STATUS available to any
    thread that might join it.  */
 void
-pthread_exit (void *status)
+__pthread_exit (void *status)
 {
   struct __pthread *self = _pthread_self ();
   struct __pthread_cancelation_handler **handlers;
@@ -120,3 +120,5 @@ pthread_exit (void *status)
   /* NOTREACHED */
   abort ();
 }
+
+strong_alias (__pthread_exit, pthread_exit);
