@@ -166,3 +166,5 @@ libpthread_a_SOURCES = pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c \
 	sigwaitinfo.c							    \
 	signal-dispatch-lowlevel.c					    \
 	sigprocmask.c
+
+libpthread_a_LDADD = -lrt
