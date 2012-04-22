@@ -242,27 +242,39 @@ all: # Make this the default target; it will be defined in Rules.
 endif
 
 ifeq ($(IN_GLIBC),no)
-install: install-headers $(libdir)/libpthread2.a $(libdir)/libpthread2_pic.a
+$(inst_libdir) = $(libdir)
+endif
+
+ifeq ($(IN_GLIBC),no)
+install: install-headers
 install-headers: $(addprefix $(includedir)/, $(headers))
 
-# XXX: If $(libdir)/libpthread2.a is installed and
-# $(libdir)/libpthread is not, we can have some issues.
-.PHONY: $(libdir)/libpthread.a $(libdir)/libpthread_pic.a
+install: $(inst_libdir)/libpthread2.a $(inst_libdir)/libpthread2_pic.a
+else
+subdir_install: $(inst_libdir)/libpthread2.a
+endif
+
+# XXX: If $(inst_libdir)/libpthread2.a is installed and
+# $(inst_libdir)/libpthread is not, we can have some issues.
+.PHONY: $(inst_libdir)/libpthread.a $(inst_libdir)/libpthread_pic.a
 
 # XXX: These rules are a hack.  But it is better than messing with
 # ../Makeconf at the moment.  Note that the linker scripts
 # $(srcdir)/libpthread.a and $(srcdir)/libpthread_pic.a get overwritten
 # when building in $(srcdir) and not a seperate build directory.
-$(libdir)/libpthread2.a: $(libdir)/libpthread.a
+$(inst_libdir)/libpthread2.a: $(inst_libdir)/libpthread.a
 	mv $< $@
 	$(INSTALL_DATA) $(srcdir)/libpthread.a $<
 
-$(libdir)/libpthread2_pic.a: $(libdir)/libpthread_pic.a
+$(inst_libdir)/libpthread2_pic.a: $(inst_libdir)/libpthread_pic.a
 	mv $< $@
 	$(INSTALL_DATA) $(srcdir)/libpthread_pic.a $<
-endif
 
 ifeq ($(IN_GLIBC),yes)
+$(inst_libdir)/libpthread.so: $(objpfx)libpthread.so$(libpthread.so-version) \
+			      $(+force)
+	ln -sf libpthread.so$(libpthread.so-version) $@
+
 libc-link.so = $(common-objpfx)libc.so
 
 extra-B-pthread.so = -B$(common-objpfx)libpthread/
