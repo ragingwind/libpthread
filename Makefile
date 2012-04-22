@@ -264,6 +264,8 @@ endif
 ifeq ($(IN_GLIBC),yes)
 libc-link.so = $(common-objpfx)libc.so
 
+extra-B-pthread.so = -B$(common-objpfx)libpthread/
+
 include ../Rules
 
 # Depend on libc.so so a DT_NEEDED is generated in the shared objects.
