@@ -254,7 +254,8 @@ extern void __pthread_block (struct __pthread *thread);
 
 /* Block THREAD until *ABSTIME is reached.  */
 extern error_t __pthread_timedblock (struct __pthread *__restrict thread,
-				     const struct timespec *__restrict abstime);
+				     const struct timespec *__restrict abstime,
+				     clockid_t clock_id);
 
 /* Wakeup THREAD.  */
 extern void __pthread_wakeup (struct __pthread *thread);

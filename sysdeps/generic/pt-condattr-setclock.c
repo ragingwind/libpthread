@@ -23,11 +23,30 @@
 int
 pthread_condattr_setclock (pthread_condattr_t *attr, clockid_t clock)
 {
-  if (__pthread_default_condattr.clock == clock)
+  /* Only a few clocks are allowed.  CLOCK_REALTIME is always allowed.
+     CLOCK_MONOTONIC only if the kernel has the necessary support.  */
+  if (clock == CLOCK_MONOTONIC)
     {
-      attr->clock = clock;
-      return 0;
-    }
+      /* Check whether the clock is available.  */
+      static int avail;
 
-  return EINVAL;
+      if (avail == 0)
+	{
+	  struct timespec ts;
+	  int res;
+
+	  res = clock_getres (CLOCK_MONOTONIC, &ts);
+	  avail = res < 0 ? -1 : 1;
+	}
+
+      if (avail < 0)
+	/* Not available.  */
+	return EINVAL;
+    }
+  else if (clock != CLOCK_REALTIME)
+    return EINVAL;
+
+  attr->clock = clock;
+
+  return 0;
 }
