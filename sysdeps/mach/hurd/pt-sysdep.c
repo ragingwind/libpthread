@@ -45,7 +45,7 @@ init_routine (void)
   int err;
 
   /* Initialize the library.  */
-  __pthread_initialize ();
+  __pthread_init ();
 
   /* Create the pthread structure for the main thread (i.e. us).  */
   err = __pthread_create_internal (&thread, 0, 0, 0);

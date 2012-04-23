@@ -45,7 +45,7 @@ static void
 init_routine (void (*entry) (void *), void *arg)
 {
   /* Initialize the library.  */
-  __pthread_initialize ();
+  __pthread_init();
 
   struct __pthread *thread;
   int err;
