@@ -29,7 +29,6 @@
 DEFINE_HOOK (__pthread_init, (void));
 
 #ifdef IS_IN_libpthread
-#ifdef SHARED
 static const struct pthread_functions pthread_functions =
   {
     .ptr_pthread_attr_destroy = __pthread_attr_destroy,
@@ -66,10 +65,6 @@ static const struct pthread_functions pthread_functions =
     .ptr_pthread_setcanceltype = __pthread_setcanceltype,
     .ptr___pthread_get_cleanup_stack = __pthread_get_cleanup_stack,
   };
-# define ptr_pthread_functions &pthread_functions
-#else
-# define ptr_pthread_functions NULL
-#endif
 #endif /* IS_IN_libpthread */
 
 /* Initialize the pthreads library.  */
@@ -77,7 +72,7 @@ void
 __pthread_init (void)
 {
 #ifdef IS_IN_libpthread
-  __libc_pthread_init(ptr_pthread_functions);
+  __libc_pthread_init(&pthread_functions);
 #endif
   RUN_HOOK (__pthread_init, ());
 }
