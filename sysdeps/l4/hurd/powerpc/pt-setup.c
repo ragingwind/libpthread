@@ -28,6 +28,7 @@
 struct start_info
 {
   void (*entry_point) (void *(*)(void *), void *);
+  struct __pthread *self;
   void *(*start_routine) (void *);
   void *arg;
 };
@@ -41,6 +42,7 @@ first_entry_1:			;\
 	lwz	0, 0(1)		;\
 	lwz	3, 4(1)		;\
 	lwz	4, 8(1)		;\
+	lwz	5, 12(1)	;\
 	mtctr	0		;\
 	bctrl			;\
 ");
@@ -51,7 +53,7 @@ first_entry_1:			;\
    opportunity to install THREAD in our utcb.  */
 static void *
 stack_setup (struct __pthread *thread,
-	     void (*entry_point)(void *(*)(void *), void *),
+	     void (*entry_point)(struct __pthread *, void *(*)(void *), void *),
 	     void *(*start_routine)(void *), void *arg)
 {
   l4_word_t *top;
@@ -68,6 +70,7 @@ stack_setup (struct __pthread *thread,
       struct start_info *info = ((struct start_info *) top) - 1;
 
       info->entry_point = entry_point;
+      info->self = thread;
       info->start_routine = start_routine;
       info->arg = arg;
       return (void *) info;
@@ -77,7 +80,7 @@ stack_setup (struct __pthread *thread,
 
 int
 __pthread_setup (struct __pthread *thread,
-		 void (*entry_point)(void *(*)(void *), void *),
+		 void (*entry_point)(struct __pthread *, void *(*)(void *), void *),
 		 void *(*start_routine)(void *), void *arg)
 {
   thread->mcontext.pc = first_entry_1;
