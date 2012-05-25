@@ -65,7 +65,7 @@ __pthread_entry_point:\n\
 static void *
 stack_setup (struct __pthread *thread,
 	     void *(*start_routine)(void *), void *arg,
-	     void (*entry_point)(void *(*)(void *), void *))
+	     void (*entry_point)(struct __pthread *, void *(*)(void *), void *))
 {
   uintptr_t *top;
 
@@ -80,6 +80,7 @@ stack_setup (struct __pthread *thread,
       /* Set up call frame.  */
       *--top = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
       *--top = (uintptr_t) start_routine;
+      *--top = (uintptr_t) thread;
       *--top = 0;		/* Fake return address.  */
       *--top = (uintptr_t) entry_point;
     }
@@ -89,7 +90,7 @@ stack_setup (struct __pthread *thread,
 
 int
 __pthread_setup (struct __pthread *thread,
-		 void (*entry_point)(void *(*)(void *), void *),
+		 void (*entry_point)(struct __pthread *, void *(*)(void *), void *),
 		 void *(*start_routine)(void *), void *arg)
 {
   thread->mcontext.pc = (void *) &_pthread_entry_point;
