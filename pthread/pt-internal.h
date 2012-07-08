@@ -84,6 +84,8 @@ struct __pthread
   size_t guardsize;		/* Included in STACKSIZE (i.e. total
 				   stack memory is STACKSIZE, not
 				   STACKSIZE + GUARDSIZE).  */
+				/* FIXME: standard says that guardsize is in
+				   addition to stacksize.  */
   int stack;			/* Nonzero if the stack was allocated.  */
 
   /* Exit status.  */
