@@ -244,7 +244,7 @@ all: # Make this the default target; it will be defined in Rules.
 endif
 
 ifeq ($(IN_GLIBC),no)
-$(inst_libdir) = $(libdir)
+inst_libdir = $(libdir)
 endif
 
 ifeq ($(IN_GLIBC),no)
