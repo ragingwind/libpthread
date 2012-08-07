@@ -196,9 +196,9 @@ install-lib-ldscripts := libpthread.so
 include ../Makeconfig
 endif
 
-SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/ia32	\
-	 $(srcdir)/sysdeps/$(MICROKERNEL)/ia32			\
-	 $(srcdir)/sysdeps/ia32					\
+SYSDEP_PATH = $(srcdir)/sysdeps/$(MICROKERNEL)/hurd/i386	\
+	 $(srcdir)/sysdeps/$(MICROKERNEL)/i386			\
+	 $(srcdir)/sysdeps/i386					\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)/hurd			\
 	 $(srcdir)/sysdeps/$(MICROKERNEL)			\
 	 $(srcdir)/sysdeps/hurd					\
