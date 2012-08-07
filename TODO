@@ -142,36 +142,3 @@
 
 ** TLS
   Support for TLS is only implemented for Mach/Hurd (x86).
-
-* L4 Specific Issues
-** Stack
-*** Size
-   The stack size is defined to be a single page in
-   sysdeps/l4/hurd/pt-sysdep.h.  Once we are able to setup regions,
-   this can be expanded to two megs as suggested by the Mach version.
-   Until then, however, we need to allocate too much physical memory.
-*** Deallocation
-   __thread_stack_dealloc currently does not deallocate the stack.
-   For a proper implementation, we need a working memory manager.
-
-** Scheduling
-*** yield
-   [L4] We cannot use yield for spin locks as L4 only yields to threads of
-   priority which are greater than or equal to the yielding thread.
-   If there are threads of lower priority, they are not considered;
-   the yielding thread is just placed back on the processor.  This
-   introduces priority inversion quite quickly.  L4 will not add a
-   priority suppression function call.  As such, we need to do
-   an ipc with a small time out and then use exponential back off to
-   do the actual waiting.  This sucks.
-
-** Stub code
-  [L4] We include <task_client.h> in pt-start.c, however, we need a library
-  so we do not have to play with the corba stuff.
-
-** Root server and Task server
-*** Getting the tids.
-   pt-start.c has a wonderfully evil hack that will never work well.
-
-** Paging
-  We set the pager to the root server. Evil.  Fix this in pt-start.c.
