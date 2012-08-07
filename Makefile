@@ -275,7 +275,7 @@ $(inst_libdir)/libpthread2_pic.a: $(inst_libdir)/libpthread_pic.a
 ifeq ($(IN_GLIBC),yes)
 $(inst_libdir)/libpthread.so: $(objpfx)libpthread.so$(libpthread.so-version) \
 			      $(+force)
-	ln -sf libpthread.so$(libpthread.so-version) $@
+	ln -sf $(slibdir)/libpthread.so$(libpthread.so-version) $@
 
 libc-link.so = $(common-objpfx)libc.so
 
