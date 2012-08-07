@@ -1,3 +1,8 @@
+ifdef INSTALL_ROOT
+INSTALL_ROOT_CPPFLAGS = -isystem $(INSTALL_ROOT)/include
+INSTALL_ROOT_LDFLAGS = -L$(INSTALL_ROOT)/lib -Wl,-rpath,$(INSTALL_ROOT)/lib
+endif
+
 CFLAGS=-Wall -g
 
 LDLIBS = -lpthread
@@ -10,8 +15,14 @@ CHECK_OBJS := $(addsuffix .o,$(basename $(notdir $(CHECK_SRC))))
 CHECK_PROGS := $(basename $(notdir $(CHECK_SRC))) \
 	$(addsuffix -static, $(basename $(CHECK_SRC)))
 
+%.o: %.c
+	$(CC) $(INSTALL_ROOT_CPPFLAGS) $(CPPFLAGS) $(CFLAGS) $< -c -o $@
+
+%: %.o
+	$(CC) $(INSTALL_ROOT_LDFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
+
 %-static: %.o
-	$(CC) -static $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
+	$(CC) -static $(INSTALL_ROOT_LDFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
 
 check: $(CHECK_OBJS) $(CHECK_PROGS)
 	for i in $(CHECK_PROGS); do		\
