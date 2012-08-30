@@ -1,14 +1,7 @@
-Subject: Baseline for our topic branches.
+Subject: [PATCH] tls-threadvar-pthread_self
 
----
+commit 25260994c812050a5d7addf125cdc90c911ca5c1
+Author: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date:   Fri Apr 27 01:32:54 2012 +0000
 
-This need not strictly be a TopGit branch, but it is for easy synchronization
-between different machines.
-
-As the baseline is merged into the topic branches, it is forward-only.
-
-To advance it:
-
-    $ echo [SHA1] > .topdeps
-    $ git commit -m Advance. -- .topdeps
-    $ tg update
+    Store self in __thread variable instead of threadvar
