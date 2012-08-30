@@ -24,7 +24,7 @@
 #include <pt-internal.h>
 
 int
-pthread_attr_setschedparam (pthread_attr_t *attr,
+__pthread_attr_setschedparam (pthread_attr_t *attr,
 			    const struct sched_param *param)
 {
   if (memcmp (param, &__pthread_default_attr.schedparam,
@@ -36,3 +36,5 @@ pthread_attr_setschedparam (pthread_attr_t *attr,
 
   return ENOTSUP;
 }
+
+strong_alias (__pthread_attr_setschedparam, pthread_attr_setschedparam);

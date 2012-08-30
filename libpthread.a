@@ -17,4 +17,4 @@ EXTERN(_cthreads_flockfile)
 EXTERN(_cthreads_funlockfile)
 EXTERN(_cthreads_ftrylockfile)
 
-GROUP(-lpthread2 -lihash)
+GROUP(-lpthread2 -lihash -lrt)

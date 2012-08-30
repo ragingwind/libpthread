@@ -21,9 +21,11 @@
 #include <pt-internal.h>
 
 int
-pthread_attr_getscope (const pthread_attr_t *attr,
+__pthread_attr_getscope (const pthread_attr_t *attr,
 		       int *contentionscope)
 {
   *contentionscope = attr->contentionscope;
   return 0;
 }
+
+strong_alias (__pthread_attr_getscope, pthread_attr_getscope);

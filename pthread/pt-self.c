@@ -23,10 +23,12 @@
 
 /* Return the thread ID of the calling thread.  */
 pthread_t
-pthread_self (void)
+__pthread_self (void)
 {
   struct __pthread *self = _pthread_self ();
   assert (self);
 
   return self->thread;
 }
+
+strong_alias (__pthread_self, pthread_self);

@@ -21,9 +21,11 @@
 #include <pt-internal.h>
 
 int
-pthread_attr_getschedpolicy (const pthread_attr_t *attr,
+__pthread_attr_getschedpolicy (const pthread_attr_t *attr,
 			     int *policy)
 {
   *policy = attr->schedpolicy;
   return 0;
 }
+
+strong_alias (__pthread_attr_getschedpolicy, pthread_attr_getschedpolicy);

@@ -22,7 +22,7 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include <bits/atomic.h>
+#include <bits/pt-atomic.h>
 
 #include <pt-internal.h>
 
@@ -38,8 +38,12 @@ __atomic_t __pthread_total;
 
 /* The entry-point for new threads.  */
 static void
-entry_point (void *(*start_routine)(void *), void *arg)
+entry_point (struct __pthread *self, void *(*start_routine)(void *), void *arg)
 {
+#ifdef ENABLE_TLS
+  ___pthread_self = self;
+#endif
+
 #ifdef HAVE_USELOCALE
   /* A fresh thread needs to be bound to the global locale.  */
   uselocale (LC_GLOBAL_LOCALE);

@@ -26,7 +26,7 @@
 #include <signal.h>
 #include <assert.h>
 
-#include <bits/atomic.h>
+#include <bits/pt-atomic.h>
 
 #include <pt-key.h>
 
@@ -54,6 +54,7 @@ enum pthread_state
 # define PTHREAD_SYSDEP_MEMBERS
 #endif
 
+#ifndef IS_IN_libpthread
 #ifdef ENABLE_TLS
 /* Type of the TCB.  */
 typedef struct
@@ -63,6 +64,7 @@ typedef struct
   thread_t self;		/* This thread's control port.  */
 } tcbhead_t;
 #endif /* ENABLE_TLS */
+#endif /* IS_IN_libpthread */
 
 /* This structure describes a POSIX thread.  */
 struct __pthread
@@ -82,6 +84,8 @@ struct __pthread
   size_t guardsize;		/* Included in STACKSIZE (i.e. total
 				   stack memory is STACKSIZE, not
 				   STACKSIZE + GUARDSIZE).  */
+				/* FIXME: standard says that guardsize is in
+				   addition to stacksize.  */
   int stack;			/* Nonzero if the stack was allocated.  */
 
   /* Exit status.  */
@@ -186,7 +190,7 @@ extern struct __pthread *_pthread_self (void);
 
 
 /* Initialize the pthreads library.  */
-extern void __pthread_initialize (void);
+extern void __pthread_init (void);
 
 /* Internal version of pthread_create.  Rather than return the new
    tid, we return the whole __pthread structure in *PTHREAD.  */
@@ -215,7 +219,8 @@ extern void __pthread_stack_dealloc (void *stackaddr, size_t stacksize);
 
 /* Setup thread THREAD's context.  */
 extern int __pthread_setup (struct __pthread *__restrict thread,
-				  void (*entry_point)(void *(*)(void *),
+				  void (*entry_point)(struct __pthread *,
+						      void *(*)(void *),
 						      void *),
 				  void *(*start_routine)(void *),
 				  void *__restrict arg);
@@ -252,7 +257,8 @@ extern void __pthread_block (struct __pthread *thread);
 
 /* Block THREAD until *ABSTIME is reached.  */
 extern error_t __pthread_timedblock (struct __pthread *__restrict thread,
-				     const struct timespec *__restrict abstime);
+				     const struct timespec *__restrict abstime,
+				     clockid_t clock_id);
 
 /* Wakeup THREAD.  */
 extern void __pthread_wakeup (struct __pthread *thread);

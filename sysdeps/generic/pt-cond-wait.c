@@ -31,7 +31,9 @@ extern int __pthread_cond_timedwait_internal (pthread_cond_t *cond,
    calling thread.  On return, MUTEX will be held by the calling
    thread.  */
 int
-pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mutex)
+__pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mutex)
 {
   return __pthread_cond_timedwait_internal (cond, mutex, 0);
 }
+
+strong_alias (__pthread_cond_wait, pthread_cond_wait);
