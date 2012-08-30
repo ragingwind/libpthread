@@ -1,0 +1,14 @@
+Subject: Baseline for our topic branches.
+
+---
+
+This need not strictly be a TopGit branch, but it is for easy synchronization
+between different machines.
+
+As the baseline is merged into the topic branches, it is forward-only.
+
+To advance it:
+
+    $ echo [SHA1] > .topdeps
+    $ git commit -m Advance. -- .topdeps
+    $ tg update
