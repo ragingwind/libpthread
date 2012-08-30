@@ -8,7 +8,6 @@ From: Thomas Schwinge <thomas@schwinge.name>
 * README: Likewise.
 * configure.ac: Likewise.
 * package.m4: Likewise.
-* Makefile: Remove file after having merged essential parts into...
-* Makefile.am: ... here.  Switch to using libtool for building both static and
-shared libraries for the GNU system.  Use libtool's versioning infrastructure,
-but maintain a compatibility symlink for the shared library.
+* Makefile.am: Merge stuff from Makefile.  Switch to using libtool for building
+both static and shared libraries for the GNU system.  Use libtool's versioning
+infrastructure, but maintain a compatibility symlink for the shared library.
