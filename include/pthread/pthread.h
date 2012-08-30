@@ -240,7 +240,7 @@ extern pthread_t pthread_self (void);
 #define PTHREAD_MUTEX_TIMED_NP __PTHREAD_MUTEX_TIMED
 #define PTHREAD_MUTEX_ERRORCHECK_NP __PTHREAD_MUTEX_ERRORCHECK
 #define PTHREAD_MUTEX_RECURSIVE_NP __PTHREAD_MUTEX_RECURSIVE
-#ifdef __USE_UNIX98
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K8
 #define PTHREAD_MUTEX_NORMAL PTHREAD_MUTEX_TIMED_NP
 #define PTHREAD_MUTEX_ERRORCHECK PTHREAD_MUTEX_ERRORCHECK_NP
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
@@ -295,7 +295,7 @@ extern int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 					int pshared);
 
 
-#ifdef __USE_UNIX98
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K8
 /* Return the value of the type attribute in *ATTR in *TYPE.  */
 extern int pthread_mutexattr_gettype(const pthread_mutexattr_t *__restrict attr,
 				     int *__restrict type);

@@ -57,16 +57,14 @@ stack_setup (struct __pthread *thread,
   /* Next, make room for the TSDs.  */
   top -= __hurd_threadvar_max;
 
-  /* Save the self pointer.  */
-  top[_HURD_THREADVAR_THREAD] = (uintptr_t) thread;
-
   if (start_routine)
     {
       /* And then the call frame.  */
-      top -= 2;
+      top -= 3;
       top = (uintptr_t *) ((uintptr_t) top & ~0xf);
-      top[1] = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
-      top[0] = (uintptr_t) start_routine;
+      top[2] = (uintptr_t) arg;	/* Argument to START_ROUTINE.  */
+      top[1] = (uintptr_t) start_routine;
+      top[0] = (uintptr_t) thread;
       *--top = 0;		/* Fake return address.  */
     }
 
@@ -82,7 +80,7 @@ stack_setup (struct __pthread *thread,
 
 int
 __pthread_setup (struct __pthread *thread,
-		 void (*entry_point)(void *(*)(void *), void *),
+		 void (*entry_point)(struct __pthread *, void *(*)(void *), void *),
 		 void *(*start_routine)(void *), void *arg)
 {
   error_t err;

@@ -26,12 +26,14 @@ extern int __pthread_cond_timedwait_internal (pthread_cond_t *cond,
 					      const struct timespec *abstime);
 
 int
-pthread_cond_timedwait (pthread_cond_t *cond,
+__pthread_cond_timedwait (pthread_cond_t *cond,
 			pthread_mutex_t *mutex,
 			const struct timespec *abstime)
 {
   return __pthread_cond_timedwait_internal (cond, mutex, abstime);
 }
+
+strong_alias (__pthread_cond_timedwait, pthread_cond_timedwait);
 
 /* Block on condition variable COND until ABSTIME.  As a GNU
    extension, if ABSTIME is NULL, then wait forever.  MUTEX should be
@@ -44,6 +46,7 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
 {
   error_t err;
   int canceltype;
+  clockid_t clock_id = __pthread_default_condattr.clock;
 
   void cleanup (void *arg)
     {
@@ -66,6 +69,8 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
   /* Add ourselves to the list of waiters.  */
   __pthread_spin_lock (&cond->__lock);
   __pthread_enqueue (&cond->__queue, self);
+  if (cond->__attr)
+    clock_id = cond->__attr->clock;
   __pthread_spin_unlock (&cond->__lock);
 
   __pthread_mutex_unlock (mutex);
@@ -77,7 +82,7 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
 
   if (abstime)
     {
-      err = __pthread_timedblock (self, abstime);
+      err = __pthread_timedblock (self, abstime, clock_id);
       if (err)
 	/* We timed out.  We may need to disconnect ourself from the
 	   waiter queue.

@@ -35,8 +35,27 @@ pthread_key_delete (pthread_key_t key)
     err = EINVAL;
   else
     {
+      int i;
+
       __pthread_key_destructors[key] = PTHREAD_KEY_INVALID;
       __pthread_key_invalid_count ++;
+
+      pthread_rwlock_rdlock (&__pthread_threads_lock);
+      for (i = 0; i < __pthread_num_threads; ++i)
+	{
+	  struct __pthread *t;
+
+	  t = __pthread_threads[i];
+
+	  if (t == NULL)
+	    continue;
+
+	  /* Just remove the key, no need to care whether it was
+	     already there. */
+	  if (t->thread_specifics)
+	    hurd_ihash_remove (t->thread_specifics, key);
+	}
+      pthread_rwlock_unlock (&__pthread_threads_lock);
     }
 
   __pthread_mutex_unlock (&__pthread_key_lock);

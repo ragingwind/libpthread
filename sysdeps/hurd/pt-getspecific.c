@@ -27,7 +27,9 @@ pthread_getspecific (pthread_key_t key)
 {
   struct __pthread *self;
 
-  assert (key < __pthread_key_count);
+  if (key < 0 || key >= __pthread_key_count
+      || __pthread_key_destructors[key] == PTHREAD_KEY_INVALID)
+    return NULL;
 
   self = _pthread_self ();
   if (! self->thread_specifics)

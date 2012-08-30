@@ -28,6 +28,8 @@
 
 #include <pt-internal.h>
 
+__thread struct __pthread *___pthread_self;
+
 /* Forward.  */
 static void *init_routine (void);
 
@@ -45,14 +47,13 @@ init_routine (void)
   int err;
 
   /* Initialize the library.  */
-  __pthread_initialize ();
+  __pthread_init ();
 
   /* Create the pthread structure for the main thread (i.e. us).  */
   err = __pthread_create_internal (&thread, 0, 0, 0);
   assert_perror (err);
 
-  ((void **) (__hurd_threadvar_stack_offset))[_HURD_THREADVAR_THREAD]
-    = thread;
+  ___pthread_self = thread;
 
   /* Decrease the number of threads, to take into account that the
      signal thread (which will be created by the glibc startup code

@@ -21,8 +21,10 @@
 #include <pt-internal.h>
 
 int
-pthread_condattr_init (pthread_condattr_t *attr)
+__pthread_condattr_init (pthread_condattr_t *attr)
 {
   *attr = __pthread_default_condattr;
   return 0;
 }
+
+strong_alias (__pthread_condattr_init, pthread_condattr_init);
