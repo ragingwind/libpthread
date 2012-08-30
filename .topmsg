@@ -1,7 +1,12 @@
 Subject: [PATCH] tls-threadvar-pthread_self
 
+Was implemented in:
+
 commit 25260994c812050a5d7addf125cdc90c911ca5c1
 Author: Samuel Thibault <samuel.thibault@ens-lyon.org>
 Date:   Fri Apr 27 01:32:54 2012 +0000
 
     Store self in __thread variable instead of threadvar
+
+..., but has been reverted; id:"87wr16xxey.fsf@kepler.schwinge.homeip.net"
+needs to be addressed.
