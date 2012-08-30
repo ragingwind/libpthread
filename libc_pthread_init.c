@@ -1,6 +1,6 @@
-/* Machine-specific function to return the stack pointer.  i386 version.
-   Copyright (C) 1994,97,2001 Free Software Foundation, Inc.
+/* Copyright (C) 2002 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
+   Contributed by Jakub Jelinek <jakub@redhat.com>, 2002.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,15 +17,18 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#ifndef _MACHINE_SP_H
-#define _MACHINE_SP_H
+#include <string.h>
+#include <pthread-functions.h>
 
-/* Return the current stack pointer.  */
-
-#define __thread_stack_pointer() ({					      \
-  void *__sp__;								      \
-  __asm__ ("mr %0, 1" : "=r" (__sp__));					      \
-  __sp__;								      \
-})
-
-#endif	/* machine-sp.h */
+void
+__libc_pthread_init (functions)
+     const struct pthread_functions *functions;
+{
+#ifdef SHARED
+  /* We copy the content of the variable pointed to by the FUNCTIONS
+     parameter to one in libc.so since this means access to the array
+     can be done with one memory access instead of two.  */
+  memcpy (&__libc_pthread_functions, functions,
+	  sizeof (__libc_pthread_functions));
+#endif
+}

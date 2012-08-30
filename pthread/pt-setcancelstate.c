@@ -22,7 +22,7 @@
 #include <pt-internal.h>
 
 int
-pthread_setcancelstate (int state, int *oldstate)
+__pthread_setcancelstate (int state, int *oldstate)
 {
   struct __pthread *p = _pthread_self ();
 
@@ -41,3 +41,5 @@ pthread_setcancelstate (int state, int *oldstate)
 
   return 0;
 }
+
+strong_alias (__pthread_setcancelstate, pthread_setcancelstate);

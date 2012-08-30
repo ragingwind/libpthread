@@ -48,7 +48,7 @@ __pthread_destroy_specific (struct __pthread *thread)
 	  void *value;
 
 	  if (__pthread_key_destructors[i] == PTHREAD_KEY_INVALID)
-	    break;
+	    continue;
 
 	  value = hurd_ihash_find (thread->thread_specifics, i);
 	  if (value)
