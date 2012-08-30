@@ -35,13 +35,15 @@
   mach_msg_header_t wakeupmsg; \
   int have_kernel_resources;
 
-extern __thread struct __pthread *___pthread_self;
+#define _HURD_THREADVAR_THREAD _HURD_THREADVAR_DYNAMIC_USER
+
 #define _pthread_self()                                            \
 	({                                                         \
 	  struct __pthread *thread;                                \
 	                                                           \
 	  assert (__pthread_threads);                              \
-	  thread = ___pthread_self;                                \
+	  thread = *(struct __pthread **)                          \
+	    __hurd_threadvar_location (_HURD_THREADVAR_THREAD);    \
 	                                                           \
 	  assert (thread);                                         \
 	  assert (({ mach_port_t ktid = __mach_thread_self ();     \
