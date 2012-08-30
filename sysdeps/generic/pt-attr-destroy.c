@@ -21,7 +21,8 @@
 #include <pt-internal.h>
 
 int
-pthread_attr_destroy (pthread_attr_t *attr)
+__pthread_attr_destroy (pthread_attr_t *attr)
 {
   return 0;
 }
+strong_alias (__pthread_attr_destroy, pthread_attr_destroy);

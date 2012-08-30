@@ -1,7 +1,7 @@
 # Makefile.am - Makefile template for libpthread.
 #
 # Copyright (C) 1994, 1995, 1996, 1997, 2000, 2002, 2003, 2004, 2005, 2006,
-#   2007, 2008, 2009, 2011 Free Software Foundation, Inc.
+#   2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
 #
 # This file is part of the GNU Hurd.
 # 
@@ -31,18 +31,12 @@ Makefile.stamp: Makefile.pre
 	mv Makefile.new Makefile
 	echo timestamp > $@
 
-if ARCH_IA32
-  arch=ia32
-endif
-if ARCH_POWERPC
-  arch=powerpc
+if ARCH_I386
+  arch=i386
 endif
 
 if OS_GNU
   microkernel=mach
-endif
-if OS_L4
-  microkernel=l4
 endif
 
 # The source files are scattered over several directories.  Add 
@@ -55,12 +49,7 @@ SYSDEP_PATH = $(srcdir)/sysdeps/$(microkernel)/hurd/$(arch) \
 	 $(srcdir)/sysdeps/hurd			\
 	 $(srcdir)/sysdeps/generic		\
 	 $(srcdir)/sysdeps/posix		\
-	 $(srcdir)/pthread
-if OS_L4
-SYSDEP_PATH += \
-	 $(srcdir)/signal
-endif
-SYSDEP_PATH += \
+	 $(srcdir)/pthread			\
 	 $(srcdir)/include
 
 VPATH += $(SYSDEP_PATH)
@@ -78,12 +67,8 @@ libpthread_la_CFLAGS = \
   -std=gnu99
 libpthread_la_LDFLAGS = \
   -version-info 0:0:0 \
-  -lihash
-endif
-if OS_L4
-AM_CPPFLAGS = $(USER_CPPFLAGS) -I$(srcdir)/pthread \
-  $(addprefix -I, $(SYSDEP_PATH)) -imacros $(srcdir)/include/libc-symbols.h
-AM_CFLAGS = $(USER_CFLAGS)
+  -lihash \
+  -lrt
 endif
 
 # Sources.
@@ -91,13 +76,6 @@ endif
 if OS_GNU
 lib_LTLIBRARIES = libpthread.la
 libpthread_la_SOURCES = $(SRCS)
-else
-if OS_L4
-if ! ENABLE_TESTS
-noinst_LIBRARIES = libpthread.a
-endif
-libpthread_a_SOURCES = $(SRCS)
-endif
 endif
 
 SRCS := pt-attr.c pt-attr-destroy.c pt-attr-getdetachstate.c		    \
@@ -209,38 +187,6 @@ SRCS += cthreads-compat.c						    \
 									    \
 	lockfile.c
 endif
-if OS_L4
-SRCS += pt-pool-np.c							    \
-									    \
-	pt-setactivity-np.c						    \
-									    \
-	kill.c								    \
-	killpg.c							    \
-	pt-kill-siginfo-np.c						    \
-	raise.c								    \
-	sigaction.c							    \
-	sigaddset.c							    \
-	sigaltstack.c							    \
-	sigdelset.c							    \
-	sigemptyset.c							    \
-	sigfillset.c							    \
-	sig-internal.c							    \
-	sig-internal.h							    \
-	siginterrupt.c							    \
-	sigismember.c							    \
-	signal.c							    \
-	signal-dispatch.c						    \
-	signal.h							    \
-	sigpending.c							    \
-	sigprocmask.c							    \
-	sigsuspend.c							    \
-	sigtimedwait.c							    \
-	sigwait.c							    \
-	sigwaiter.c							    \
-	sigwaitinfo.c							    \
-	signal-dispatch-lowlevel.c					    \
-	sigprocmask.c
-endif
 
 HEADERS_INSTALL :=				\
               pthread.h				\
@@ -250,6 +196,7 @@ HEADERS_INSTALL :=				\
 						\
               bits/pthread.h			\
               bits/pthread-np.h			\
+              bits/pthreadtypes.h		\
               bits/mutex.h			\
               bits/condition.h			\
               bits/condition-attr.h		\

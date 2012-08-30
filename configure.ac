@@ -1,4 +1,4 @@
-# Copyright (C) 2009 Free Software Foundation, Inc.
+# Copyright (C) 2009, 2012 Free Software Foundation, Inc.
 # 
 # This file is part of the POSIX threading library.
 #
@@ -43,21 +43,16 @@ AC_CHECK_LIB([ihash], [hurd_ihash_create], [:],
 AC_GNU_SOURCE
 
 AC_CANONICAL_HOST
-[arch_ia32=false
-arch_powerpc=false
+[arch_i386=false
 case $host_cpu in
   i386 | i486 | i586 | i686)
-    arch_ia32=true
-    ;;
-  powerpc)
-    arch_powerpc=true
+    arch_i386=true
     ;;
   *)]
     AC_MSG_ERROR([unsupported architecture])
     [;;
 esac]
-AM_CONDITIONAL([ARCH_IA32], [$arch_ia32])
-AM_CONDITIONAL([ARCH_POWERPC], [$arch_powerpc])
+AM_CONDITIONAL([ARCH_I386], [$arch_i386])
 [os_gnu=false
 case $host_os in
   gnu*)
@@ -68,7 +63,6 @@ case $host_os in
     [;;
 esac]
 AM_CONDITIONAL([OS_GNU], [$os_gnu])
-AM_CONDITIONAL([OS_L4], [false])
 
 AM_CONDITIONAL([ENABLE_TESTS], [false])
 

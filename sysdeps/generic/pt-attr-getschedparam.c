@@ -24,9 +24,11 @@
 #include <pt-internal.h>
 
 int
-pthread_attr_getschedparam (const pthread_attr_t *attr,
+__pthread_attr_getschedparam (const pthread_attr_t *attr,
 			    struct sched_param *param)
 {
   memcpy (param, &attr->schedparam, sizeof *param);
   return 0;
 }
+
+strong_alias (__pthread_attr_getschedparam, pthread_attr_getschedparam);
