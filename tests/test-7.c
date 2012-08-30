@@ -42,6 +42,9 @@ main (int argc, char **argv)
       assert ((pthread_t) val == pthread_self ());
     }
 
+  assert (pthread_getspecific ((pthread_key_t) 0) == NULL);
+  assert (pthread_setspecific ((pthread_key_t) 0, (void *) 0x1) == EINVAL);
+
   for (i = 0; i < KEYS; i ++)
     err = pthread_key_create (&key[i], des);
 

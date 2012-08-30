@@ -32,7 +32,7 @@ const struct __pthread_attr __pthread_default_attr =
 #ifdef PAGESIZE
   guardsize: PAGESIZE,
 #else
-  guardsize: 0,
+  guardsize: 1,
 #endif /* PAGESIZE */
   detachstate: PTHREAD_CREATE_JOINABLE,
   inheritsched: PTHREAD_EXPLICIT_SCHED,
