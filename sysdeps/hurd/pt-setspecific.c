@@ -28,6 +28,10 @@ pthread_setspecific (pthread_key_t key, const void *value)
   error_t err;
   struct __pthread *self = _pthread_self ();
 
+  if (key < 0 || key >= __pthread_key_count
+      || __pthread_key_destructors[key] == PTHREAD_KEY_INVALID)
+    return EINVAL;
+
   if (! self->thread_specifics)
     {
       err = hurd_ihash_create (&self->thread_specifics, HURD_IHASH_NO_LOCP);

@@ -24,6 +24,6 @@
 #ifndef _BITS_PTHREADTYPES_H
 #define _BITS_PTHREADTYPES_H    1
 
-#include <pthread.h>
+#include <pthread/pthreadtypes.h>
 
 #endif /* bits/pthreadtypes.h */

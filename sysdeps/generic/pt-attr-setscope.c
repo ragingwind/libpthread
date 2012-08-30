@@ -21,7 +21,7 @@
 #include <pt-internal.h>
 
 int
-pthread_attr_setscope (pthread_attr_t *attr,
+__pthread_attr_setscope (pthread_attr_t *attr,
 		       int contentionscope)
 {
   if (contentionscope == __pthread_default_attr.contentionscope)
@@ -39,3 +39,5 @@ pthread_attr_setscope (pthread_attr_t *attr,
       return EINVAL;
     }
 }
+
+strong_alias (__pthread_attr_setscope, pthread_attr_setscope);

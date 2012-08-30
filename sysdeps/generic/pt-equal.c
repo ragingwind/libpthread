@@ -23,7 +23,9 @@
 /* Return true if __T1 and __T2 both name the same thread.  Otherwise,
    false.  */
 int
-pthread_equal (pthread_t __t1, pthread_t __t2)
+__pthread_equal (pthread_t __t1, pthread_t __t2)
 {
   return __t1 == __t2;
 }
+
+strong_alias (__pthread_equal, pthread_equal);
