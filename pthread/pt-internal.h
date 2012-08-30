@@ -219,8 +219,7 @@ extern void __pthread_stack_dealloc (void *stackaddr, size_t stacksize);
 
 /* Setup thread THREAD's context.  */
 extern int __pthread_setup (struct __pthread *__restrict thread,
-				  void (*entry_point)(struct __pthread *,
-						      void *(*)(void *),
+				  void (*entry_point)(void *(*)(void *),
 						      void *),
 				  void *(*start_routine)(void *),
 				  void *__restrict arg);
