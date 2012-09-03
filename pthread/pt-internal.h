@@ -292,8 +292,9 @@ extern error_t __pthread_sigstate (struct __pthread *__restrict thread, int how,
 				   int clear_pending);
 
 
-/* Default thread attributes.  */
-extern const struct __pthread_attr __pthread_default_attr;
+/* Default thread attributes.
+   FIXME Normally const, see sysdeps/mach/hurd/pt-sysdep.c.  */
+extern struct __pthread_attr __pthread_default_attr;
 
 /* Default barrier attributes.  */
 extern const struct __pthread_barrierattr __pthread_default_barrierattr;

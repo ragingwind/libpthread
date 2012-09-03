@@ -30,6 +30,16 @@
 
 __thread struct __pthread *___pthread_self;
 
+/* Allow programs that know about this library to override the default stack
+   size.
+
+   FIXME Stack sizes should normally be set at thread creation time using the
+   standard interface, but Hurd threadvars have special alignment constraints.
+   Until they are completely replaced with correct TLS, make this hack
+   available.  */
+extern size_t __pthread_stack_default_size;
+weak_extern(__pthread_stack_default_size);
+
 /* Forward.  */
 static void *init_routine (void);
 
@@ -45,6 +55,10 @@ init_routine (void)
 {
   struct __pthread *thread;
   int err;
+
+  /* FIXME */
+  if (&__pthread_stack_default_size != NULL)
+    __pthread_default_attr.stacksize = __pthread_stack_default_size;
 
   /* Initialize the library.  */
   __pthread_init ();
