@@ -114,6 +114,7 @@ libpthread-routines := pt-attr pt-attr-destroy pt-attr-getdetachstate	    \
 	pt-cond-signal							    \
 	pt-cond-wait							    \
 	pt-cond-timedwait						    \
+	pt-hurd-cond-wait						    \
 									    \
 	pt-stack-alloc							    \
 	pt-thread-alloc							    \
