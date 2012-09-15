@@ -66,6 +66,8 @@ pthread_create (pthread_t *thread, const pthread_attr_t *attr,
   err = __pthread_create_internal (&pthread, attr, start_routine, arg);
   if (! err)
     *thread = pthread->thread;
+  else if (err == ENOMEM)
+    err = EAGAIN;
 
   return err;
 }
