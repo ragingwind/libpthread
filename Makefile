@@ -22,6 +22,10 @@ IN_GLIBC = no
 else
 # glibc build
 IN_GLIBC = yes
+# set elf=yes, to retain compatibility with glibc < 2.16
+ifeq ($(elf),)
+elf = yes
+endif
 endif
 
 ifeq ($(IN_GLIBC),no)
