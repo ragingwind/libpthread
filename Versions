@@ -22,10 +22,11 @@ libc {
 }
 
 libpthread {
+  GLIBC_2.2.6 {
+    _IO_flockfile; _IO_ftrylockfile; _IO_funlockfile;
+  }
   GLIBC_2.12 {
     __pthread_errorcheck_mutexattr; __pthread_recursive_mutexattr;
-
-    _IO_flockfile; _IO_ftrylockfile; _IO_funlockfile;
 
     __pthread_get_cleanup_stack;
 
