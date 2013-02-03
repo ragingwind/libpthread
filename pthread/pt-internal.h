@@ -73,6 +73,11 @@ struct __pthread
   pthread_t thread;
 
   /* Cancellation.  */
+  pthread_mutex_t cancel_lock;  /* Protect cancel_xxx members.  */
+  void (*cancel_hook)(void *);	/* Called to unblock a thread blocking
+				   in a cancellation point (namely,
+				   __pthread_cond_timedwait_internal).  */
+  void *cancel_hook_arg;
   int cancel_state;
   int cancel_type;
   int cancel_pending;
@@ -107,6 +112,8 @@ struct __pthread
   tcbhead_t *tcb;
 #endif /* ENABLE_TLS */
 
+  /* Queue links.  Since PREVP is used to determine if a thread has been
+     awaken, it must be protected by the queue lock.  */
   struct __pthread *next, **prevp;
 };
 
@@ -128,6 +135,7 @@ static inline void
 __pthread_dequeue (struct __pthread *thread)
 {
   assert (thread);
+  assert (thread->prevp);
 
   if (thread->next)
     thread->next->prevp = thread->prevp;
@@ -264,7 +272,8 @@ extern error_t __pthread_timedblock (struct __pthread *__restrict thread,
 extern void __pthread_wakeup (struct __pthread *thread);
 
 
-/* Perform a cancelation.  */
+/* Perform a cancelation.  The CANCEL_LOCK member of the given thread must
+   be locked before calling this function, which must unlock it.  */
 extern int __pthread_do_cancel (struct __pthread *thread);
 
 

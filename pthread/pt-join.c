@@ -40,6 +40,8 @@ pthread_join (pthread_t thread, void **status)
   pthread_cleanup_push ((void (*)(void *)) __pthread_mutex_unlock,
 			&pthread->state_lock);
 
+  /* Rely on pthread_cond_wait being a cancellation point to make
+     pthread_join one too.  */
   while (pthread->state == PTHREAD_JOINABLE)
     pthread_cond_wait (&pthread->state_cond, &pthread->state_lock);
 

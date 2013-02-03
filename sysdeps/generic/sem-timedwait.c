@@ -27,6 +27,8 @@ int
 __sem_timedwait_internal (sem_t *restrict sem,
 			  const struct timespec *restrict timeout)
 {
+  error_t err;
+  int drain;
   struct __pthread *self;
 
   __pthread_spin_lock (&sem->__lock);
@@ -52,31 +54,38 @@ __sem_timedwait_internal (sem_t *restrict sem,
 
   /* Block the thread.  */
   if (timeout)
-    {
-      error_t err;
-
-      err = __pthread_timedblock (self, timeout, CLOCK_REALTIME);
-      if (err)
-	/* We timed out.  We may need to disconnect ourself from the
-	   waiter queue.
-
-	   FIXME: What do we do if we get a wakeup message before we
-	   disconnect ourself?  It may remain until the next time we
-	   block.  */
-	{
-	  assert (err == ETIMEDOUT);
-
-	  __pthread_spin_lock (&sem->__lock);
-	  if (self->prevp)
-	    __pthread_dequeue (self);
-	  __pthread_spin_unlock (&sem->__lock);
-
-	  errno = err;
-	  return -1;
-	}
-    }
+    err = __pthread_timedblock (self, timeout, CLOCK_REALTIME);
   else
+    {
+      err = 0;
+      __pthread_block (self);
+    }
+
+  __pthread_spin_lock (&sem->__lock);
+  if (! self->prevp)
+    /* Another thread removed us from the queue, which means a wakeup message
+       has been sent.  It was either consumed while we were blocking, or
+       queued after we timed out and before we acquired the semaphore lock, in
+       which case the message queue must be drained.  */
+    drain = err ? 1 : 0;
+  else
+    {
+      /* We're still in the queue.  Noone attempted to wake us up, i.e. we
+	 timed out.  */
+      __pthread_dequeue (self);
+      drain = 0;
+    }
+  __pthread_spin_unlock (&sem->__lock);
+
+  if (drain)
     __pthread_block (self);
+
+  if (err)
+    {
+      assert (err == ETIMEDOUT);
+      errno = err;
+      return -1;
+    }
 
   return 0;
 }

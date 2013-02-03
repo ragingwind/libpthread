@@ -29,6 +29,8 @@ int
 __pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *rwlock,
 				       const struct timespec *abstime)
 {
+  error_t err;
+  int drain;
   struct __pthread *self;
 
   __pthread_spin_lock (&rwlock->__lock);
@@ -70,32 +72,37 @@ __pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *rwlock,
 
   /* Block the thread.  */
   if (abstime)
-    {
-      error_t err;
-
-      err = __pthread_timedblock (self, abstime, CLOCK_REALTIME);
-      if (err)
-	/* We timed out.  We may need to disconnect ourself from the
-	   waiter queue.
-
-	   FIXME: What do we do if we get a wakeup message before we
-	   disconnect ourself?  It may remain until the next time we
-	   block.  */
-	{
-	  assert (err == ETIMEDOUT);
-
-	  __pthread_spin_lock (&rwlock->__lock);
-	  if (self->prevp)
-	    /* Disconnect ourself.  */
-	    __pthread_dequeue (self);
-	  __pthread_spin_unlock (&rwlock->__lock);
-
-	  return err;
-	}
-    }
+    err = __pthread_timedblock (self, abstime, CLOCK_REALTIME);
   else
+    {
+      err = 0;
+      __pthread_block (self);
+    }
+
+  __pthread_spin_lock (&rwlock->__lock);
+  if (! self->prevp)
+    /* Another thread removed us from the queue, which means a wakeup message
+       has been sent.  It was either consumed while we were blocking, or
+       queued after we timed out and before we acquired the rwlock lock, in
+       which case the message queue must be drained.  */
+    drain = err ? 1 : 0;
+  else
+    {
+      /* We're still in the queue.  Noone attempted to wake us up, i.e. we
+	 timed out.  */
+      __pthread_dequeue (self);
+      drain = 0;
+    }
+  __pthread_spin_unlock (&rwlock->__lock);
+
+  if (drain)
     __pthread_block (self);
 
+  if (err)
+    {
+      assert (err == ETIMEDOUT);
+      return err;
+    }
 
   /* The reader count has already been increment by whoever woke us
      up.  */

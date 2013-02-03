@@ -65,18 +65,15 @@ pthread_rwlock_unlock (pthread_rwlock_t *rwlock)
 
   if (rwlock->readerqueue)
     {
-      __pthread_queue_iterate (rwlock->readerqueue, wakeup)
-	rwlock->readers ++;
+      __pthread_dequeuing_iterate (rwlock->readerqueue, wakeup)
+	{
+	  rwlock->readers ++;
+	  __pthread_wakeup (wakeup);
+	}
 
-      wakeup = rwlock->readerqueue;
       rwlock->readerqueue = 0;
 
       __pthread_spin_unlock (&rwlock->__lock);
-
-      /* We can safely walk the list of waiting threads without holding
-	 the lock since it is now decoupled from the rwlock.  */
-      __pthread_dequeuing_iterate (wakeup, wakeup)
-	__pthread_wakeup (wakeup);
 
       return 0;
     }

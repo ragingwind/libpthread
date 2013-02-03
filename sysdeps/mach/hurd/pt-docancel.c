@@ -36,6 +36,8 @@ __pthread_do_cancel (struct __pthread *p)
   assert (p->cancel_pending == 1);
   assert (p->cancel_state == PTHREAD_CANCEL_ENABLE);
 
+  __pthread_mutex_unlock (&p->cancel_lock);
+
   ktid = __mach_thread_self ();
   me = p->kernel_thread == ktid;
   __mach_port_deallocate (__mach_task_self (), ktid);

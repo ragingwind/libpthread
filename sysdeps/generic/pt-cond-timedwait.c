@@ -35,6 +35,32 @@ __pthread_cond_timedwait (pthread_cond_t *cond,
 
 strong_alias (__pthread_cond_timedwait, pthread_cond_timedwait);
 
+struct cancel_ctx
+  {
+    struct __pthread *wakeup;
+    pthread_cond_t *cond;
+  };
+
+static void
+cancel_hook (void *arg)
+{
+  struct cancel_ctx *ctx = arg;
+  struct __pthread *wakeup = ctx->wakeup;
+  pthread_cond_t *cond = ctx->cond;
+  int unblock;
+
+  __pthread_spin_lock (&cond->__lock);
+  /* The thread only needs to be awaken if it's blocking or about to block.
+     If it was already unblocked, it's not queued any more.  */
+  unblock = wakeup->prevp != NULL;
+  if (unblock)
+    __pthread_dequeue (wakeup);
+  __pthread_spin_unlock (&cond->__lock);
+
+  if (unblock)
+    __pthread_wakeup (wakeup);
+}
+
 /* Block on condition variable COND until ABSTIME.  As a GNU
    extension, if ABSTIME is NULL, then wait forever.  MUTEX should be
    held by the calling thread.  On return, MUTEX will be held by the
@@ -45,67 +71,108 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
 				   const struct timespec *abstime)
 {
   error_t err;
-  int canceltype;
+  int cancelled, oldtype, drain;
   clockid_t clock_id = __pthread_default_condattr.clock;
-
-  void cleanup (void *arg)
-    {
-      struct __pthread *self = _pthread_self ();
-
-      __pthread_spin_lock (&cond->__lock);
-      if (self->prevp)
-	__pthread_dequeue (self);
-      __pthread_spin_unlock (&cond->__lock);
-
-      pthread_setcanceltype (canceltype, &canceltype);
-      __pthread_mutex_lock (mutex);
-    }
 
   if (abstime && (abstime->tv_nsec < 0 || abstime->tv_nsec >= 1000000000))
     return EINVAL;
 
   struct __pthread *self = _pthread_self ();
+  struct cancel_ctx ctx;
+  ctx.wakeup= self;
+  ctx.cond = cond;
 
-  /* Add ourselves to the list of waiters.  */
-  __pthread_spin_lock (&cond->__lock);
-  __pthread_enqueue (&cond->__queue, self);
-  if (cond->__attr)
-    clock_id = cond->__attr->clock;
-  __pthread_spin_unlock (&cond->__lock);
+  /* Test for a pending cancellation request, switch to deferred mode for
+     safer resource handling, and prepare the hook to call in case we're
+     cancelled while blocking.  Once CANCEL_LOCK is released, the cancellation
+     hook can be called by another thread at any time.  Whatever happens,
+     this function must exit with MUTEX locked.
 
+     This function contains inline implementations of pthread_testcancel and
+     pthread_setcanceltype to reduce locking overhead.  */
+  __pthread_mutex_lock (&self->cancel_lock);
+  cancelled = (self->cancel_state == PTHREAD_CANCEL_ENABLE)
+	      && self->cancel_pending;
+
+  if (! cancelled)
+    {
+      self->cancel_hook = cancel_hook;
+      self->cancel_hook_arg = &ctx;
+      oldtype = self->cancel_type;
+
+      if (oldtype != PTHREAD_CANCEL_DEFERRED)
+	self->cancel_type = PTHREAD_CANCEL_DEFERRED;
+
+      /* Add ourselves to the list of waiters.  This is done while setting
+	 the cancellation hook to simplify the cancellation procedure, i.e.
+	 if the thread is queued, it can be cancelled, otherwise it is
+	 already unblocked, progressing on the return path.  */
+      __pthread_spin_lock (&cond->__lock);
+      __pthread_enqueue (&cond->__queue, self);
+      if (cond->__attr)
+	clock_id = cond->__attr->clock;
+      __pthread_spin_unlock (&cond->__lock);
+    }
+  __pthread_mutex_unlock (&self->cancel_lock);
+
+  if (cancelled)
+    pthread_exit (PTHREAD_CANCELED);
+
+  /* Release MUTEX before blocking.  */
   __pthread_mutex_unlock (mutex);
 
-  /* Enter async cancelation mode.  If cancelation is disabled, then
-     this does not change anything which is exactly what we want.  */
-  pthread_cleanup_push (cleanup, 0);
-  pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, &canceltype);
-
+  /* Block the thread.  */
   if (abstime)
-    {
-      err = __pthread_timedblock (self, abstime, clock_id);
-      if (err)
-	/* We timed out.  We may need to disconnect ourself from the
-	   waiter queue.
-
-	   FIXME: What do we do if we get a wakeup message before we
-	   disconnect ourself?  It may remain until the next time we
-	   block.  */
-	{
-	  assert (err == ETIMEDOUT);
-
-	  __pthread_spin_lock (&mutex->__lock);
-	  if (self->prevp)
-	    __pthread_dequeue (self);
-	  __pthread_spin_unlock (&mutex->__lock);
-	}
-    }
+    err = __pthread_timedblock (self, abstime, clock_id);
   else
     {
       err = 0;
       __pthread_block (self);
     }
 
-  pthread_cleanup_pop (1);
+  __pthread_spin_lock (&cond->__lock);
+  if (! self->prevp)
+    {
+      /* Another thread removed us from the list of waiters, which means a
+	 wakeup message has been sent.  It was either consumed while we were
+	 blocking, or queued after we timed out and before we acquired the
+	 condition lock, in which case the message queue must be drained.  */
+      if (! err)
+	drain = 0;
+      else
+	{
+	  assert (err == ETIMEDOUT);
+	  drain = 1;
+	}
+    }
+  else
+    {
+      /* We're still in the list of waiters.  Noone attempted to wake us up,
+	 i.e. we timed out.  */
+      assert (err == ETIMEDOUT);
+      __pthread_dequeue (self);
+      drain = 0;
+    }
+  __pthread_spin_unlock (&cond->__lock);
+
+  if (drain)
+    __pthread_block (self);
+
+  /* We're almost done.  Remove the unblock hook, restore the previous
+     cancellation type, and check for a pending cancellation request.  */
+  __pthread_mutex_lock (&self->cancel_lock);
+  self->cancel_hook = NULL;
+  self->cancel_hook_arg = NULL;
+  self->cancel_type = oldtype;
+  cancelled = (self->cancel_state == PTHREAD_CANCEL_ENABLE)
+	      && self->cancel_pending;
+  __pthread_mutex_unlock (&self->cancel_lock);
+
+  /* Reacquire MUTEX before returning/cancelling.  */
+  __pthread_mutex_lock (mutex);
+
+  if (cancelled)
+    pthread_exit (PTHREAD_CANCELED);
 
   return err;
 }

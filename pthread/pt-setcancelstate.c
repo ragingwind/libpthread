@@ -35,9 +35,11 @@ __pthread_setcancelstate (int state, int *oldstate)
       break;
     }
 
+  __pthread_mutex_lock (&p->cancel_lock);
   if (oldstate)
     *oldstate = p->cancel_state;
   p->cancel_state = state;
+  __pthread_mutex_unlock (&p->cancel_lock);
 
   return 0;
 }

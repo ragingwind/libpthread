@@ -25,7 +25,12 @@ void
 pthread_testcancel (void)
 {
   struct __pthread *p = _pthread_self ();
+  int cancelled;
 
-  if (p->cancel_state == PTHREAD_CANCEL_ENABLE && p->cancel_pending)
+  __pthread_mutex_lock (&p->cancel_lock);
+  cancelled = (p->cancel_state == PTHREAD_CANCEL_ENABLE) && p->cancel_pending;
+  __pthread_mutex_unlock (&p->cancel_lock);
+
+  if (cancelled)
     pthread_exit (PTHREAD_CANCELED);
 }

@@ -21,8 +21,10 @@
 
 #include <pt-internal.h>
 
-static int
-cond_signal (struct __pthread_cond *cond, int *unblocked)
+/* Unblock at least one of the threads that are blocked on condition
+   variable COND.  */
+int
+__pthread_cond_signal (pthread_cond_t *cond)
 {
   struct __pthread *wakeup;
   
@@ -33,24 +35,9 @@ cond_signal (struct __pthread_cond *cond, int *unblocked)
   __pthread_spin_unlock (&cond->__lock);
 
   if (wakeup)
-    {
-      /* We found a thread waiting for the condition to be signalled.
-         Wake it up!  */
-      __pthread_wakeup (wakeup);
-      *unblocked = 1;
-    }
+    __pthread_wakeup (wakeup);
 
   return 0;
-}
-
-/* Unblock at least one of the threads that are blocked on condition
-   variable COND.  */
-int
-__pthread_cond_signal (pthread_cond_t *cond)
-{
-  int unblocked = 0;
-
-  return cond_signal (cond, &unblocked);
 }
 
 strong_alias (__pthread_cond_signal, pthread_cond_signal);

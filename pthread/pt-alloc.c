@@ -55,6 +55,9 @@ initialize_pthread (struct __pthread *new, int recycling)
   if (err)
     return err;
 
+  new->cancel_lock = (pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
+  new->cancel_hook = NULL;
+  new->cancel_hook_arg = NULL;
   new->cancel_state = PTHREAD_CANCEL_ENABLE;
   new->cancel_type = PTHREAD_CANCEL_DEFERRED;
   new->cancel_pending = 0;

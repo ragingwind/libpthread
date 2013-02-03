@@ -28,15 +28,11 @@ __pthread_cond_broadcast (pthread_cond_t *cond)
   struct __pthread *wakeup;
 
   __pthread_spin_lock (&cond->__lock);
+  __pthread_dequeuing_iterate (cond->__queue, wakeup)
+    __pthread_wakeup (wakeup);
 
-  wakeup = cond->__queue;
   cond->__queue = NULL;
   __pthread_spin_unlock (&cond->__lock);
-
-  /* We can safely walk the list of waiting threads without holding
-     the lock since it is now decoupled from the condition.  */
-  __pthread_dequeuing_iterate (wakeup, wakeup)
-    __pthread_wakeup (wakeup);
 
   return 0;
 }

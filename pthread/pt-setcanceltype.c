@@ -35,9 +35,11 @@ __pthread_setcanceltype (int type, int *oldtype)
       break;
     }
 
+  __pthread_mutex_lock (&p->cancel_lock);
   if (oldtype)
     *oldtype = p->cancel_type;
   p->cancel_type = type;
+  __pthread_mutex_unlock (&p->cancel_lock);
 
   return 0;
 }
