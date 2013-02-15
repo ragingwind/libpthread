@@ -132,5 +132,6 @@ libpthread {
   }
   GLIBC_2.17 {
     pthread_hurd_cond_wait_np;
+    pthread_hurd_cond_timedwait_np;
   }
 }

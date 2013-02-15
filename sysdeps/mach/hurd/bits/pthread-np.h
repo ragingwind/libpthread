@@ -29,4 +29,10 @@
 extern int pthread_hurd_cond_wait_np (pthread_cond_t *__restrict __cond,
 				      pthread_mutex_t *__restrict __mutex);
 
+/* Same as pthread_cond_timedwait, but for Hurd-specific cancellation.
+   See hurd_thread_cancel.  */
+extern int pthread_hurd_cond_timedwait_np (pthread_cond_t *__restrict __cond,
+					   pthread_mutex_t *__restrict __mutex,
+					   const struct timespec *abstime);
+
 #endif /* bits/pthread-np.h */
