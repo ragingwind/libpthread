@@ -26,6 +26,9 @@
 
 #include <pt-internal.h>
 
+#ifdef IS_IN_libpthread
+# include <ctype.h>
+#endif
 #ifdef HAVE_USELOCALE
 # include <locale.h>
 #endif
@@ -44,6 +47,10 @@ entry_point (struct __pthread *self, void *(*start_routine)(void *), void *arg)
   ___pthread_self = self;
 #endif
 
+#ifdef IS_IN_libpthread
+  /* Initialize pointers to locale data.  */
+  __ctype_init ();
+#endif
 #ifdef HAVE_USELOCALE
   /* A fresh thread needs to be bound to the global locale.  */
   uselocale (LC_GLOBAL_LOCALE);
