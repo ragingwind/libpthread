@@ -195,16 +195,16 @@ __pthread_create_internal (struct __pthread **thread,
 
   /* At this point it is possible to guess our pthread ID.  We have to
      make sure that all functions taking a pthread_t argument can
-     handle the fact that this thread isn't really running yet.  */
+     handle the fact that this thread isn't really running yet.  Since
+     the new thread might be passed its ID through pthread_create (to
+     avoid calling pthread_self), read it before starting the thread.  */
+  *thread = pthread;
 
   /* Schedule the new thread.  */
   err = __pthread_thread_start (pthread);
   if (err)
     goto failed_starting;
 
-  /* At this point the new thread is up and running.  */
-
-  *thread = pthread;
 
   return 0;
 
