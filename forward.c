@@ -17,6 +17,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
+#include <errno.h>
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <shlib-compat.h>
@@ -125,3 +126,107 @@ FORWARD (pthread_setcanceltype, (int type, int *oldtype), (type, oldtype), 0)
 
 struct __pthread_cancelation_handler *dummy_list;
 FORWARD2 (__pthread_get_cleanup_stack, struct __pthread_cancelation_handler **, (void), (), return &dummy_list);
+
+
+/* Fork interaction */
+
+struct atfork {
+  void (*prepare) (void);
+  void (*parent) (void);
+  void (*child) (void);
+  struct atfork *prev;
+  struct atfork *next;
+};
+
+/* TODO: better locking */
+static struct mutex atfork_lock;
+static struct atfork *fork_handlers, *fork_last_handler;
+
+static void
+atfork_pthread_prepare (void)
+{
+  struct atfork *handlers, *last_handler;
+
+  __mutex_lock (&atfork_lock);
+  handlers = fork_handlers;
+  last_handler = fork_last_handler;
+  __mutex_unlock (&atfork_lock);
+
+  if (!last_handler)
+    return;
+
+  while(1)
+  {
+    if (last_handler->prepare != NULL)
+      last_handler->prepare ();
+    if (last_handler == handlers)
+      break;
+    last_handler = last_handler->prev;
+  }
+}
+text_set_element (_hurd_atfork_prepare_hook, atfork_pthread_prepare);
+
+static void
+atfork_pthread_parent (void)
+{
+  struct atfork *handlers;
+
+  __mutex_lock (&atfork_lock);
+  handlers = fork_handlers;
+  __mutex_unlock (&atfork_lock);
+
+  while (handlers)
+  {
+    if (handlers->parent != NULL)
+      handlers->parent ();
+    handlers = handlers->next;
+  }
+}
+text_set_element (_hurd_atfork_parent_hook, atfork_pthread_parent);
+
+static void
+atfork_pthread_child (void)
+{
+  struct atfork *handlers;
+
+  __mutex_lock (&atfork_lock);
+  handlers = fork_handlers;
+  __mutex_unlock (&atfork_lock);
+
+  while (handlers)
+  {
+    if (handlers->child != NULL)
+      handlers->child ();
+    handlers = handlers->next;
+  }
+}
+text_set_element (_hurd_atfork_child_hook, atfork_pthread_child);
+
+int
+__register_atfork (
+    void (*prepare) (void),
+    void (*parent) (void),
+    void (*child) (void))
+{
+  struct atfork *new = malloc (sizeof (*new));
+  if (!new)
+    return errno;
+
+  new->prepare = prepare;
+  new->parent = parent;
+  new->child = child;
+  new->prev = NULL;
+
+  __mutex_lock (&atfork_lock);
+  new->next = fork_handlers;
+  if (fork_handlers)
+  	fork_handlers->prev = new;
+  fork_handlers = new;
+  if (!fork_last_handler)
+    fork_last_handler = new;
+  __mutex_unlock (&atfork_lock);
+
+  return 0;
+}
+
+/* TODO: unregister_atfork, and define UNREGISTER_ATFORK, for module unload support */

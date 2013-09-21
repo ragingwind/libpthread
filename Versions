@@ -18,6 +18,7 @@ libc {
     __pthread_get_cleanup_stack;
   GLIBC_PRIVATE {
     __libc_pthread_init;
+    __register_atfork;
   }
 }
 

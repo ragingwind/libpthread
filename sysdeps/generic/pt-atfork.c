@@ -25,5 +25,5 @@ pthread_atfork (void (*prepare) (void),
 		void (*parent) (void),
 		void (*child) (void))
 {
-  return ENOSYS;
+  return __register_atfork (prepare, parent, child);
 }
