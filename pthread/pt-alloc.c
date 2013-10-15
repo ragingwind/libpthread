@@ -75,6 +75,10 @@ initialize_pthread (struct __pthread *new, int recycling)
 
   new->cancelation_handlers = 0;
 
+#ifdef ENABLE_TLS
+  new->tcb = NULL;
+#endif
+
   new->next = 0;
   new->prevp = 0;
 
@@ -118,6 +122,15 @@ __pthread_alloc (struct __pthread **pthread)
 	 __pthread_dealloc or in __pthread_thread_halt.  In both
 	 cases, we are interrupt it.  */
       __pthread_thread_halt (new);
+
+#ifdef ENABLE_TLS
+      if (new->tcb)
+	{
+	  /* Drop old values */
+	  _dl_deallocate_tls (new->tcb, 1);
+	  new->tcb = NULL;
+	}
+#endif /* ENABLE_TLS */
 
       err = initialize_pthread (new, 1);
       if (! err)

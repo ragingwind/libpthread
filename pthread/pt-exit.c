@@ -69,11 +69,6 @@ __pthread_exit (void *status)
   if (self->cancel_state == PTHREAD_CANCEL_ENABLE && self->cancel_pending)
     status = PTHREAD_CANCELED;
 
-#ifdef ENABLE_TLS
-  if (self->tcb)
-    _dl_deallocate_tls (self->tcb, 1);
-#endif /* ENABLE_TLS */
-
   switch (self->state)
     {
     default:
@@ -85,7 +80,7 @@ __pthread_exit (void *status)
       /* Make sure that nobody can reference this thread anymore, and
          mark it as terminated.  Our thread ID will immediately become
          available for re-use.  For obvious reasons, we cannot
-         deallocate our own stack.  However, it will eventually be
+         deallocate our own stack and TLS.  However, it will eventually be
          reused when this thread structure is recycled.  */
       __pthread_mutex_unlock (&self->state_lock);
 

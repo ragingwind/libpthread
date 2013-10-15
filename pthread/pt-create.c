@@ -216,6 +216,7 @@ __pthread_create_internal (struct __pthread **thread,
  failed_setup:
 #ifdef ENABLE_TLS
   _dl_deallocate_tls (pthread->tcb, 1);
+  pthread->tcb = NULL;
  failed_thread_tls_alloc:
 #endif /* ENABLE_TLS */
   __pthread_thread_dealloc (pthread);
