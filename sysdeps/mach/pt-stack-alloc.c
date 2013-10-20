@@ -49,8 +49,8 @@ __pthread_stack_alloc (void **stackaddr, size_t stacksize)
   for (base = next_stack_base;
        base < VM_MAX_ADDRESS
 	 && __vm_allocate (__mach_task_self (), &base,
-			   __pthread_stacksize, FALSE) != KERN_SUCCESS;
-       base += __pthread_stacksize)
+			   stacksize, FALSE) != KERN_SUCCESS;
+       base += stacksize)
     ;
 
   if (base >= VM_MAX_ADDRESS)
@@ -67,7 +67,7 @@ __pthread_stack_alloc (void **stackaddr, size_t stacksize)
   if (base >= VM_MAX_ADDRESS)
     return EAGAIN;
 
-  next_stack_base = base + __pthread_stacksize;
+  next_stack_base = base + stacksize;
 
   (*stackaddr) = (void *) base;
   return 0;
